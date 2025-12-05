@@ -126,6 +126,11 @@ const EXAMPLES_MAP: Record<string, ExampleConfig> = {
     test: 'test/concepts/FHEAccessControl.ts',
     description: 'Critical access control patterns: FHE.allow, allowThis, allowTransient',
   },
+  'fhe-input-proof': {
+    contract: 'contracts/concepts/FHEInputProof.sol',
+    test: 'test/concepts/FHEInputProof.ts',
+    description: 'Input proof validation for encrypted inputs: single, multiple, batched',
+  },
 };
 
 function copyDirectoryRecursive(source: string, destination: string): void {
