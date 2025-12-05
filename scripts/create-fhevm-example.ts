@@ -121,6 +121,11 @@ const EXAMPLES_MAP: Record<string, ExampleConfig> = {
     testFixture: 'test/openzeppelin-confidential-contracts/confidentialToken/confToken.fixture.ts',
     description: 'ERC7984 confidential token standard implementation',
   },
+  'fhe-access-control': {
+    contract: 'contracts/concepts/FHEAccessControl.sol',
+    test: 'test/concepts/FHEAccessControl.ts',
+    description: 'Critical access control patterns: FHE.allow, allowThis, allowTransient',
+  },
 };
 
 function copyDirectoryRecursive(source: string, destination: string): void {

@@ -1,0 +1,127 @@
+import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+import { expect } from "chai";
+import { ethers } from "hardhat";
+import * as hre from "hardhat";
+
+import { FHEAccessControl, FHEAccessControl__factory } from "../../../types";
+import type { Signers } from "../../types";
+
+async function deployFixture() {
+  const factory = (await ethers.getContractFactory("FHEAccessControl")) as FHEAccessControl__factory;
+  const contract = (await factory.deploy()) as FHEAccessControl;
+  const contractAddress = await contract.getAddress();
+  return { contract, contractAddress };
+}
+
+/**
+ * @notice Tests FHE access control patterns
+ * Demonstrates correct and incorrect permission handling
+ */
+describe("FHEAccessControl", function () {
+  let contract: FHEAccessControl;
+  let contractAddress: string;
+  let signers: Signers;
+  let bob: HardhatEthersSigner;
+
+  before(async function () {
+    if (!hre.fhevm.isMock) {
+      throw new Error(`This hardhat test suite cannot run on Sepolia Testnet`);
+    }
+    const ethSigners: HardhatEthersSigner[] = await ethers.getSigners();
+    signers = { owner: ethSigners[0], alice: ethSigners[1] };
+    bob = ethSigners[2];
+  });
+
+  beforeEach(async function () {
+    const deployment = await deployFixture();
+    contractAddress = deployment.contractAddress;
+    contract = deployment.contract;
+  });
+
+  describe("Correct Access Control Pattern", function () {
+    const secretValue = 42;
+
+    it("should allow user decryption with full access", async function () {
+      const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
+
+      // Store value with proper permissions
+      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(secretValue)
+        .encrypt();
+      await contract.connect(signers.alice).storeWithFullAccess(input.handles[0], input.inputProof);
+
+      // Verify access was granted
+      expect(await contract.hasAccess(signers.alice.address)).to.equal(true);
+
+      // User should be able to decrypt
+      const encrypted = await contract.getSecretValue();
+      const decrypted = await fhevm.userDecryptEuint(
+        FhevmType.euint32,
+        encrypted,
+        contractAddress,
+        signers.alice,
+      );
+      expect(decrypted).to.equal(secretValue);
+    });
+
+    it("should allow granting access to additional users", async function () {
+      const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
+
+      // Alice stores the value
+      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(secretValue)
+        .encrypt();
+      await contract.connect(signers.alice).storeWithFullAccess(input.handles[0], input.inputProof);
+
+      // Alice grants access to Bob
+      await contract.connect(signers.alice).grantAccess(bob.address);
+
+      // Bob can now decrypt
+      const encrypted = await contract.getSecretValue();
+      const decrypted = await fhevm.userDecryptEuint(
+        FhevmType.euint32,
+        encrypted,
+        contractAddress,
+        bob,
+      );
+      expect(decrypted).to.equal(secretValue);
+    });
+  });
+
+  describe("Wrong Access Control Patterns", function () {
+    const secretValue = 42;
+
+    it("should FAIL user decryption without allowThis", async function () {
+      const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
+
+      // Store value WITHOUT allowThis (wrong pattern)
+      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(secretValue)
+        .encrypt();
+      await contract.connect(signers.alice).storeWithoutAllowThis(input.handles[0], input.inputProof);
+
+      // Attempting to decrypt should fail
+      const encrypted = await contract.getSecretValue();
+      await expect(
+        fhevm.userDecryptEuint(FhevmType.euint32, encrypted, contractAddress, signers.alice)
+      ).to.be.rejected;
+    });
+
+    it("should FAIL user decryption without user allow", async function () {
+      const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
+
+      // Store value WITHOUT user allow (wrong pattern)
+      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(secretValue)
+        .encrypt();
+      await contract.connect(signers.alice).storeWithoutUserAllow(input.handles[0], input.inputProof);
+
+      // User (alice) cannot decrypt because no permission was granted
+      const encrypted = await contract.getSecretValue();
+      await expect(
+        fhevm.userDecryptEuint(FhevmType.euint32, encrypted, contractAddress, signers.alice)
+      ).to.be.rejected;
+    });
+  });
+});
