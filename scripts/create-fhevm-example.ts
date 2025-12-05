@@ -131,6 +131,11 @@ const EXAMPLES_MAP: Record<string, ExampleConfig> = {
     test: 'test/concepts/FHEInputProof.ts',
     description: 'Input proof validation for encrypted inputs: single, multiple, batched',
   },
+  'fhe-handles': {
+    contract: 'contracts/concepts/FHEHandles.sol',
+    test: 'test/concepts/FHEHandles.ts',
+    description: 'Handle lifecycle: creation, computation, immutability, symbolic execution',
+  },
 };
 
 function copyDirectoryRecursive(source: string, destination: string): void {
