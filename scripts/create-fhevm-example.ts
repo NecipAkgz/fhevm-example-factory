@@ -94,6 +94,16 @@ const EXAMPLES_MAP: Record<string, ExampleConfig> = {
     test: 'test/basic/fhe-operators/FHEIfThenElse.ts',
     description: 'Shows conditional operations on encrypted values',
   },
+  'fhe-arithmetic': {
+    contract: 'contracts/basic/fhe-operations/FHEArithmetic.sol',
+    test: 'test/basic/fhe-operations/FHEArithmetic.ts',
+    description: 'Demonstrates all FHE arithmetic operations: add, sub, mul, div, rem, min, max',
+  },
+  'fhe-comparison': {
+    contract: 'contracts/basic/fhe-operations/FHEComparison.sol',
+    test: 'test/basic/fhe-operations/FHEComparison.ts',
+    description: 'Demonstrates all FHE comparison operations: eq, ne, gt, lt, ge, le, select',
+  },
   'blind-auction': {
     contract: 'contracts/auctions/BlindAuction.sol',
     test: 'test/blindAuction/BlindAuction.ts',
@@ -167,6 +177,20 @@ func.tags = ["${contractName}"];
 `;
 
   fs.writeFileSync(deployScriptPath, deployScript);
+}
+
+function updateHardhatConfig(outputDir: string, contractName: string): void {
+  const configPath = path.join(outputDir, 'hardhat.config.ts');
+  let configContent = fs.readFileSync(configPath, 'utf-8');
+
+  // Replace task import
+  // Expecting: import "./tasks/FHECounter";
+  configContent = configContent.replace(
+    /import "\.\/tasks\/FHECounter";/g,
+    `import "./tasks/${contractName}";`
+  );
+
+  fs.writeFileSync(configPath, configContent);
 }
 
 function updatePackageJson(outputDir: string, exampleName: string, description: string): void {
@@ -343,7 +367,9 @@ function createExample(exampleName: string, outputDir: string): void {
   // Step 4: Update configuration files
   log('\n⚙️  Step 4: Updating configuration...', Color.Cyan);
   updateDeployScript(outputDir, contractName);
+  updateHardhatConfig(outputDir, contractName);
   updatePackageJson(outputDir, exampleName, example.description);
+
   success('Configuration updated');
 
   // Step 5: Generate README
