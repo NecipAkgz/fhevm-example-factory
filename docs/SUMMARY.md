@@ -21,6 +21,7 @@
 - [User Decrypt Single Value](fhe-user-decrypt-single-value.md)
 - [User Decrypt Multiple Values](fhe-user-decrypt-multiple-values.md)
 - [Public Decrypt Single Value](fhe-public-decrypt-single-value.md)
+- [Public Decrypt Multiple Values](fhe-public-decrypt-multiple-values.md)
 
 ---
 

@@ -138,8 +138,8 @@ const EXAMPLES_CONFIG: Record<string, DocsConfig> = {
   'public-decrypt-multiple-values': {
     title: 'Public Decrypt Multiple Values',
     description: 'This example shows how to publicly decrypt multiple encrypted values in a single transaction.',
-    contract: 'contracts/basic/decrypt/PublicDecryptMultipleValue.sol',
-    test: 'test/basic/decrypt/PublicDecryptMultipleValue.ts',
+    contract: 'contracts/basic/decrypt/PublicDecryptMultipleValues.sol',
+    test: 'test/basic/decrypt/PublicDecryptMultipleValues.ts',
     output: 'docs/fhe-public-decrypt-multiple-values.md',
     category: 'Basic - Decryption',
   },
