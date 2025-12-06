@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Tooling for generating standalone FHEVM example repositories and documentation",
   "scripts": {
+    "cli": "npx ts-node scripts/cli.ts",
     "create-example": "npx ts-node scripts/create-fhevm-example.ts",
     "create-category": "npx ts-node scripts/create-fhevm-category.ts",
     "generate-docs": "npx ts-node scripts/generate-docs.ts",
@@ -30,7 +31,9 @@
     "url": "https://github.com/zama-ai/fhevm-examples"
   },
   "devDependencies": {
+    "@clack/prompts": "^0.11.0",
     "@types/node": "^20.19.8",
+    "picocolors": "^1.1.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
