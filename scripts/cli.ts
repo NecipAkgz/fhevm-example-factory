@@ -37,91 +37,105 @@ const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/FHECounter.sol",
     test: "test/basic/FHECounter.ts",
     description:
-      "A simple FHE counter demonstrating basic encrypted operations",
+      "This example demonstrates how to build a confidential counter using FHEVM, in comparison to a simple counter.",
     category: "Basic",
   },
   "encrypt-single-value": {
     contract: "contracts/basic/encrypt/EncryptSingleValue.sol",
     test: "test/basic/encrypt/EncryptSingleValue.ts",
-    description: "Demonstrates FHE encryption mechanism and common pitfalls",
+    description:
+      "This example demonstrates the FHE encryption mechanism and highlights a common pitfall developers may encounter.",
     category: "Basic - Encryption",
   },
   "encrypt-multiple-values": {
     contract: "contracts/basic/encrypt/EncryptMultipleValues.sol",
     test: "test/basic/encrypt/EncryptMultipleValues.ts",
-    description: "Shows how to encrypt and handle multiple values",
+    description:
+      "This example shows how to encrypt and handle multiple values in a single transaction.",
     category: "Basic - Encryption",
   },
   "user-decrypt-single-value": {
     contract: "contracts/basic/decrypt/UserDecryptSingleValue.sol",
     test: "test/basic/decrypt/UserDecryptSingleValue.ts",
-    description: "Demonstrates user decryption and permission requirements",
+    description:
+      "This example demonstrates the FHE user decryption mechanism and highlights common pitfalls developers may encounter.",
     category: "Basic - Decryption",
   },
   "user-decrypt-multiple-values": {
     contract: "contracts/basic/decrypt/UserDecryptMultipleValues.sol",
     test: "test/basic/decrypt/UserDecryptMultipleValues.ts",
-    description: "Shows how to decrypt multiple encrypted values",
+    description:
+      "This example shows how to decrypt multiple encrypted values for a user.",
     category: "Basic - Decryption",
   },
   "public-decrypt-single-value": {
     contract: "contracts/basic/decrypt/PublicDecryptSingleValue.sol",
     test: "test/basic/decrypt/PublicDecryptSingleValue.ts",
-    description: "Demonstrates public decryption mechanism",
+    description:
+      "This example demonstrates how to publicly decrypt a single encrypted value on-chain.",
     category: "Basic - Decryption",
   },
   "public-decrypt-multiple-values": {
     contract: "contracts/basic/decrypt/PublicDecryptMultipleValues.sol",
     test: "test/basic/decrypt/PublicDecryptMultipleValues.ts",
-    description: "Shows public decryption with multiple values",
+    description:
+      "This example shows how to publicly decrypt multiple encrypted values in a single transaction.",
     category: "Basic - Decryption",
   },
   "fhe-add": {
     contract: "contracts/basic/fhe-operations/FHEAdd.sol",
     test: "test/basic/fhe-operations/FHEAdd.ts",
-    description: "Demonstrates FHE addition operations",
+    description:
+      "This example demonstrates how to perform addition operations on encrypted values.",
     category: "FHE Operations",
   },
   "fhe-if-then-else": {
     contract: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
     test: "test/basic/fhe-operations/FHEIfThenElse.ts",
-    description: "Shows conditional operations on encrypted values",
+    description:
+      "This example shows conditional operations on encrypted values using FHE.",
     category: "FHE Operations",
   },
   "fhe-arithmetic": {
     contract: "contracts/basic/fhe-operations/FHEArithmetic.sol",
     test: "test/basic/fhe-operations/FHEArithmetic.ts",
-    description: "All FHE arithmetic: add, sub, mul, div, rem, min, max",
+    description:
+      "Comprehensive example demonstrating all FHE arithmetic operations: add, sub, mul, div, rem, min, max.",
     category: "FHE Operations",
   },
   "fhe-comparison": {
     contract: "contracts/basic/fhe-operations/FHEComparison.sol",
     test: "test/basic/fhe-operations/FHEComparison.ts",
-    description: "All FHE comparisons: eq, ne, gt, lt, ge, le, select",
+    description:
+      "Demonstrates all FHE comparison operations: eq, ne, gt, lt, ge, le, and the select function for encrypted conditionals.",
     category: "FHE Operations",
   },
   "fhe-access-control": {
     contract: "contracts/concepts/FHEAccessControl.sol",
     test: "test/concepts/FHEAccessControl.ts",
-    description: "Critical patterns: FHE.allow, allowThis, allowTransient",
+    description:
+      "Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient. Includes common mistakes and correct implementations.",
     category: "Concepts",
   },
   "fhe-input-proof": {
     contract: "contracts/concepts/FHEInputProof.sol",
     test: "test/concepts/FHEInputProof.ts",
-    description: "Input proof validation for encrypted inputs",
+    description:
+      "Explains input proof validation in FHEVM: what proofs are, why they are needed, and how to use them correctly with single and batched inputs.",
     category: "Concepts",
   },
   "fhe-handles": {
     contract: "contracts/concepts/FHEHandles.sol",
     test: "test/concepts/FHEHandles.ts",
-    description: "Handle lifecycle: creation, computation, immutability",
+    description:
+      "Understanding FHE handles: creation, computation, immutability, and symbolic execution in mock mode.",
     category: "Concepts",
   },
   "fhe-anti-patterns": {
     contract: "contracts/concepts/FHEAntiPatterns.sol",
     test: "test/concepts/FHEAntiPatterns.ts",
-    description: "Common FHE mistakes and correct patterns",
+    description:
+      "Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.",
     category: "Concepts",
   },
 };
