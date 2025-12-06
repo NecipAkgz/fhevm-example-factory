@@ -136,6 +136,11 @@ const EXAMPLES_MAP: Record<string, ExampleConfig> = {
     test: 'test/concepts/FHEHandles.ts',
     description: 'Handle lifecycle: creation, computation, immutability, symbolic execution',
   },
+  'fhe-anti-patterns': {
+    contract: 'contracts/concepts/FHEAntiPatterns.sol',
+    test: 'test/concepts/FHEAntiPatterns.ts',
+    description: 'Common FHE mistakes and correct patterns: branching, permissions, validation',
+  },
 };
 
 function copyDirectoryRecursive(source: string, destination: string): void {
