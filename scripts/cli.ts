@@ -526,19 +526,36 @@ async function generateDocumentation(
     const contractContent = fs.readFileSync(contractPath, "utf-8");
     const testContent = fs.readFileSync(testPath, "utf-8");
     const contractName = getContractName(example.contract) || "Contract";
+    const testFileName = path.basename(example.test);
 
-    // Generate GitBook markdown
+    // Generate GitBook markdown (matching generate-docs.ts format)
     let markdown = `${example.description}\n\n`;
+
+    // Add hint block
     markdown += `{% hint style="info" %}\n`;
-    markdown += `Place .sol in \`contracts/\` and .ts in \`test/\`\n`;
+    markdown += `To run this example correctly, make sure the files are placed in the following directories:\n\n`;
+    markdown += `- \`.sol\` file → \`<your-project-root-dir>/contracts/\`\n`;
+    markdown += `- \`.ts\` file → \`<your-project-root-dir>/test/\`\n\n`;
+    markdown += `This ensures Hardhat can compile and test your contracts as expected.\n`;
     markdown += `{% endhint %}\n\n`;
+
+    // Add tabs for contract and test
     markdown += `{% tabs %}\n\n`;
+
+    // Contract tab
     markdown += `{% tab title="${contractName}.sol" %}\n\n`;
-    markdown += `\`\`\`solidity\n${contractContent}\n\`\`\`\n\n`;
+    markdown += `\`\`\`solidity\n`;
+    markdown += contractContent;
+    markdown += `\n\`\`\`\n\n`;
     markdown += `{% endtab %}\n\n`;
-    markdown += `{% tab title="${path.basename(example.test)}" %}\n\n`;
-    markdown += `\`\`\`typescript\n${testContent}\n\`\`\`\n\n`;
+
+    // Test tab
+    markdown += `{% tab title="${testFileName}" %}\n\n`;
+    markdown += `\`\`\`typescript\n`;
+    markdown += testContent;
+    markdown += `\n\`\`\`\n\n`;
     markdown += `{% endtab %}\n\n`;
+
     markdown += `{% endtabs %}\n`;
 
     const outputPath = path.join(rootDir, "docs", `${name}.md`);
