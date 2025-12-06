@@ -6,10 +6,10 @@
 
 ### FHE Operations
 
-- [Add](fheadd.md)
-- [If-Then-Else](fheifthenelse.md)
+- [Add](fhe-add.md)
 - [Arithmetic Operations](fhe-arithmetic.md)
 - [Comparison Operations](fhe-comparison.md)
+- [If-Then-Else](fhe-if-then-else.md)
 
 ### Encryption
 

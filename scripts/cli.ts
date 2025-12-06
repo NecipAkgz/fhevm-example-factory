@@ -558,7 +558,9 @@ async function generateDocumentation(
 
     markdown += `{% endtabs %}\n`;
 
-    const outputPath = path.join(rootDir, "docs", `${name}.md`);
+    // Generate consistent filename with fhe- prefix
+    const docFileName = name.startsWith("fhe-") ? name : `fhe-${name}`;
+    const outputPath = path.join(rootDir, "docs", `${docFileName}.md`);
     fs.writeFileSync(outputPath, markdown);
     count++;
   }

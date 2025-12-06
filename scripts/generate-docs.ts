@@ -100,7 +100,7 @@ const EXAMPLES_CONFIG: Record<string, DocsConfig> = {
     description: 'This example demonstrates how to perform addition operations on encrypted values.',
     contract: 'contracts/basic/fhe-operations/FHEAdd.sol',
     test: 'test/basic/fhe-operations/FHEAdd.ts',
-    output: 'docs/fheadd.md',
+    output: 'docs/fhe-add.md',
     category: 'Basic - FHE Operations',
   },
   'fhe-if-then-else': {
@@ -108,7 +108,7 @@ const EXAMPLES_CONFIG: Record<string, DocsConfig> = {
     description: 'This example shows conditional operations on encrypted values using FHE.',
     contract: 'contracts/basic/fhe-operations/FHEIfThenElse.sol',
     test: 'test/basic/fhe-operations/FHEIfThenElse.ts',
-    output: 'docs/fheifthenelse.md',
+    output: 'docs/fhe-if-then-else.md',
     category: 'Basic - FHE Operations',
   },
   'fhe-arithmetic': {
