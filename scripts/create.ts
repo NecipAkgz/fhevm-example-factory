@@ -11,14 +11,9 @@ import * as p from "@clack/prompts";
 import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
+import { spawn } from "child_process";
 
-import {
-  EXAMPLES,
-  CATEGORIES,
-  getDocsFileName,
-  ExampleConfig,
-  CategoryConfig,
-} from "./shared/config";
+import { EXAMPLES, CATEGORIES, getDocsFileName } from "./shared/config";
 
 import {
   getRootDir,
@@ -29,8 +24,6 @@ import {
   generateExampleReadme,
   generateCategoryReadme,
   generateGitBookMarkdown,
-  readFile,
-  writeFile,
 } from "./shared/utils";
 
 // =============================================================================
@@ -252,6 +245,142 @@ async function generateDocumentation(
 }
 
 // =============================================================================
+// Install and Test Helper
+// =============================================================================
+
+function runCommand(cmd: string, args: string[], cwd: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(cmd, args, {
+      cwd,
+      shell: true,
+      stdio: "pipe",
+    });
+
+    let stdout = "";
+    let stderr = "";
+
+    child.stdout?.on("data", (data) => {
+      stdout += data.toString();
+    });
+
+    child.stderr?.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve(stdout);
+      } else {
+        reject(
+          new Error(stderr || stdout || `Command failed with code ${code}`)
+        );
+      }
+    });
+
+    child.on("error", reject);
+  });
+}
+
+function extractTestResults(output: string): string | null {
+  // Look for test summary lines like "4 passing (2s)"
+  const passingMatch = output.match(/(\d+)\s+passing/);
+  const failingMatch = output.match(/(\d+)\s+failing/);
+
+  if (passingMatch) {
+    const passing = passingMatch[1];
+    const failing = failingMatch ? failingMatch[1] : "0";
+    if (failing === "0") {
+      return `${passing} tests passing ✓`;
+    } else {
+      return `${passing} passing, ${failing} failing`;
+    }
+  }
+  return null;
+}
+
+async function runInstallAndTest(projectPath: string): Promise<void> {
+  const steps = [
+    {
+      name: "Installing dependencies",
+      cmd: "npm",
+      args: ["install"],
+      showOutput: false,
+    },
+    {
+      name: "Compiling contracts",
+      cmd: "npm",
+      args: ["run", "compile"],
+      showOutput: false,
+    },
+    {
+      name: "Running tests",
+      cmd: "npm",
+      args: ["run", "test"],
+      showOutput: true,
+    },
+  ];
+
+  for (const step of steps) {
+    const s = p.spinner();
+    s.start(step.name + "...");
+
+    try {
+      const output = await runCommand(step.cmd, step.args, projectPath);
+
+      if (step.showOutput) {
+        const testResults = extractTestResults(output);
+        if (testResults) {
+          s.stop(pc.green(`✓ ${step.name} - ${testResults}`));
+        } else {
+          s.stop(pc.green(`✓ ${step.name} completed`));
+        }
+      } else {
+        s.stop(pc.green(`✓ ${step.name} completed`));
+      }
+    } catch (error) {
+      s.stop(pc.red(`✗ ${step.name} failed`));
+      if (error instanceof Error) {
+        p.log.error(error.message);
+      }
+      throw new Error(`${step.name} failed`);
+    }
+  }
+
+  p.log.success(pc.green("All steps completed successfully!"));
+}
+
+function showQuickStart(relativePath: string): void {
+  p.note(
+    `${pc.dim("$")} cd ${relativePath}\n${pc.dim("$")} npm install\n${pc.dim(
+      "$"
+    )} npm run compile\n${pc.dim("$")} npm run test`,
+    "🚀 Quick Start"
+  );
+}
+
+async function askInstallAndTest(
+  resolvedOutput: string,
+  relativePath: string
+): Promise<void> {
+  const shouldInstall = await p.confirm({
+    message: "Install dependencies and run tests?",
+    initialValue: false,
+  });
+
+  if (p.isCancel(shouldInstall)) {
+    showQuickStart(relativePath);
+    return;
+  }
+
+  if (shouldInstall) {
+    p.log.message("");
+    await runInstallAndTest(resolvedOutput);
+  } else {
+    showQuickStart(relativePath);
+  }
+}
+
+// =============================================================================
 // CLI Handlers
 // =============================================================================
 
@@ -332,12 +461,7 @@ async function handleSingleExample(): Promise<void> {
     p.log.success(`📁 Created: ${pc.cyan(relativePath)}`);
     p.log.info(`📝 Example: ${pc.yellow(exampleConfig?.title || example)}`);
 
-    p.note(
-      `${pc.dim("$")} cd ${relativePath}\n${pc.dim("$")} npm install\n${pc.dim(
-        "$"
-      )} npm run compile\n${pc.dim("$")} npm run test`,
-      "🚀 Quick Start"
-    );
+    await askInstallAndTest(resolvedOutput, relativePath);
   } catch (error) {
     s.stop("Failed to create project");
     p.log.error(error instanceof Error ? error.message : String(error));
@@ -405,19 +529,7 @@ async function handleCategory(): Promise<void> {
       `📄 Contracts: ${pc.green(String(categoryConfig?.contracts.length || 0))}`
     );
 
-    p.note(
-      `${pc.dim("$")} cd ${relativePath}\n${pc.dim("$")} npm install\n${pc.dim(
-        "$"
-      )} npm run compile\n${pc.dim("$")} npm run test`,
-      "🚀 Quick Start"
-    );
-
-    p.log.message("");
-    p.log.message(pc.dim("📚 Resources:"));
-    p.log.message(pc.dim("   • FHEVM Docs: https://docs.zama.ai/fhevm"));
-    p.log.message(
-      pc.dim("   • Examples: https://docs.zama.org/protocol/examples")
-    );
+    await askInstallAndTest(resolvedOutput, relativePath);
   } catch (error) {
     s.stop("Failed to create project");
     p.log.error(error instanceof Error ? error.message : String(error));
