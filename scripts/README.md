@@ -1,45 +1,101 @@
-# FHEVM Example Generator Scripts
+# FHEVM Example Factory - Scripts
 
-This directory contains automation scripts for generating standalone FHEVM example repositories and documentation.
+This directory contains the unified CLI tool for generating standalone FHEVM example repositories and documentation.
+
+## Quick Start
+
+```bash
+# Interactive mode with guided prompts
+npm run create
+
+# Show all available commands
+npm run create-help
+```
 
 ## Scripts Overview
 
-### 1. `create-fhevm-example.js` - Single Example Generator
+### Unified CLI: `create.ts`
 
-Generates a complete, standalone FHEVM example repository from the base template.
-
-**Usage:**
-```bash
-ts-node scripts/create-fhevm-example.ts <example-name> [output-dir]
-```
+A modern, interactive CLI built with `@clack/prompts` that provides a beautiful developer experience. Supports both interactive mode (menus) and direct mode (command line arguments).
 
 **Features:**
-- Clones the `fhevm-hardhat-template/` base template
-- Copies specified contract from `contracts/`
-- Copies corresponding test from `test/`
-- Updates deployment scripts with correct contract name
-- Generates example-specific README.md
-- Updates package.json with example metadata
-- Creates a ready-to-use, standalone repository
 
-**Available Examples:**
-- `fhe-counter` - Basic encrypted counter
-- `encrypt-single-value` - Single value encryption
-- `encrypt-multiple-values` - Multiple value encryption
-- `user-decrypt-single-value` - User decryption single
-- `user-decrypt-multiple-values` - User decryption multiple
-- `public-decrypt-single-value` - Public decryption single
-- `public-decrypt-multiple-values` - Public decryption multiple
-- `fhe-add` - FHE addition operations
-- `fhe-if-then-else` - FHE conditional operations
-- `blind-auction` - Sealed-bid auction
-- `confidential-dutch-auction` - Dutch auction with encryption
-- `erc7984-example` - ERC7984 confidential token
+- 🎯 **Interactive Mode** - Guided prompts for easy navigation
+- ⚡ **Direct Mode** - Fast command line usage for automation
+- 📦 **Single Example Generator** - Create standalone project from any example
+- 📂 **Category Generator** - Bundle multiple related examples
+- 📄 **Documentation Generator** - GitBook-compatible markdown output
+- 🎨 **Beautiful Output** - Colored terminal output with spinners
 
-**Example:**
+**What it does:**
+
+1. Clones the `fhevm-hardhat-template/` base template
+2. Copies specified contract(s) and test(s) from source
+3. Updates deployment scripts with correct contract names
+4. Generates example-specific `README.md`
+5. Updates `package.json` with example metadata
+6. Creates a ready-to-use, standalone repository
+
+## Available Commands
+
+| Command                                   | Description                                        |
+| ----------------------------------------- | -------------------------------------------------- |
+| `npm run create`                          | Interactive mode with guided prompts               |
+| `npm run create-example <name> [output]`  | Generate a single example project                  |
+| `npm run create-category <name> [output]` | Generate a category project with multiple examples |
+| `npm run create-docs <example>`           | Generate GitBook documentation for one example     |
+| `npm run create-docs-all`                 | Generate documentation for all examples            |
+| `npm run create-help`                     | Show help with all options                         |
+
+## Usage Examples
+
+### Interactive Mode (Recommended)
+
+The easiest way to get started - guided prompts walk you through the process:
+
+```bash
+npm run create
+```
+
+**Example output:**
+
+```
+┌   🔐 FHEVM Example Factory
+│
+◇  What would you like to do?
+│  Create a single example
+│
+◇  Select an example:
+│  fhe-counter
+│
+◇  Project name:
+│  my-fhe-counter-project
+│
+◇  Output directory:
+│  ./output/my-fhe-counter-project
+│
+◇  Project created successfully!
+│
+◆  📁 Created: output/my-fhe-counter-project
+●  📝 Example: FHE Counter
+│
+◇  🚀 Quick Start ─────────────────────╮
+│                                      │
+│  $ cd output/my-fhe-counter-project  │
+│  $ npm install                       │
+│  $ npm run compile                   │
+│  $ npm run test                      │
+│                                      │
+├──────────────────────────────────────╯
+│
+└  🎉 Happy coding with FHEVM!
+```
+
+### Create a Single Example (Direct)
+
 ```bash
 # Generate fhe-counter example
-ts-node scripts/create-fhevm-example.ts fhe-counter ./output/fhe-counter-example
+npm run create-example fhe-counter ./output/fhe-counter-example
 
 # Navigate to generated example
 cd output/fhe-counter-example
@@ -50,78 +106,142 @@ npm run compile
 npm run test
 ```
 
-### 2. `create-fhevm-category.js` - Category Project Generator
+### Create a Category Project
 
-Generates a project containing all examples from a specific category.
-
-**Usage:**
 ```bash
-ts-node scripts/create-fhevm-category.ts <category> [output-dir]
+# Generate all basic examples in one project
+npm run create-category basic ./output/basic-examples
+
+# Includes: FHECounter, EncryptSingleValue, EncryptMultipleValues,
+#           UserDecryptSingleValue, UserDecryptMultipleValues, etc.
 ```
 
-**Features:**
-- Copies all contracts from a category
-- Includes all corresponding tests
-- Generates unified deployment script for all contracts
-- Creates comprehensive README listing all examples
-- Perfect for learning multiple related concepts at once
+### Generate Documentation
 
-**Available Categories:**
-- `basic` - 9 contracts (FHE operations, encryption, decryption)
-- `auctions` - 2 contracts (Blind auction, Dutch auction)
-- `openzeppelin` - 4 contracts (ERC7984, token wrappers, swaps)
-- `games` - 2 contracts (FHEWordle)
-
-**Example:**
-```bash
-# Generate basic examples project
-ts-node scripts/create-fhevm-category.ts basic ./output/basic-examples
-
-# Navigate and test
-cd output/basic-examples
-npm install
-npm run compile
-npm run test
-```
-
-### 3. `generate-docs.js` - Documentation Generator
-
-Generates GitBook-formatted documentation from contract and test files.
-
-**Usage:**
-```bash
-node scripts/generate-docs.js <example-name>
-node scripts/generate-docs.js --all
-```
-
-**Features:**
-- Extracts contract and test code
-- Generates GitBook markdown with tabs
-- Creates side-by-side contract/test view
-- Auto-updates `examples/SUMMARY.md`
-- Includes hints and proper formatting
-
-**Example:**
 ```bash
 # Generate docs for single example
-ts-node scripts/generate-docs.ts fhe-counter
+npm run create-docs fhe-counter
 
 # Generate all documentation
-ts-node scripts/generate-docs.ts --all
+npm run create-docs-all
 ```
 
 **Output Format:**
-The generator creates GitBook-compatible markdown files in `examples/` with:
+The generator creates GitBook-compatible markdown files in `docs/` with:
+
 - Description and info hints
 - Tabbed interface for contract and test code
 - Proper syntax highlighting
-- Organized by category in SUMMARY.md
+- Organized in SUMMARY.md
+
+## Available Examples
+
+| Example                          | Description                                        |
+| -------------------------------- | -------------------------------------------------- |
+| `fhe-counter`                    | Basic encrypted counter                            |
+| `encrypt-single-value`           | Single value encryption                            |
+| `encrypt-multiple-values`        | Multiple value encryption                          |
+| `user-decrypt-single-value`      | User decryption (single)                           |
+| `user-decrypt-multiple-values`   | User decryption (multiple)                         |
+| `public-decrypt-single-value`    | Public decryption (single)                         |
+| `public-decrypt-multiple-values` | Public decryption (multiple)                       |
+| `fhe-add`                        | FHE addition operations                            |
+| `fhe-if-then-else`               | FHE conditional operations                         |
+| `fhe-arithmetic`                 | All arithmetic (add, sub, mul, div, rem, min, max) |
+| `fhe-comparison`                 | All comparisons (eq, ne, gt, lt, ge, le, select)   |
+| `fhe-access-control`             | Access control (allow, allowThis, allowTransient)  |
+| `fhe-input-proof`                | Input proof validation                             |
+| `fhe-handles`                    | Handle lifecycle management                        |
+| `fhe-anti-patterns`              | Common mistakes and correct patterns               |
+
+## Available Categories
+
+| Category     | Contracts | Description                                    |
+| ------------ | --------- | ---------------------------------------------- |
+| `basic`      | 9         | Encryption, decryption, basic operations       |
+| `concepts`   | 4         | Access control, proofs, handles, anti-patterns |
+| `operations` | 4         | Arithmetic, comparison, conditionals           |
+
+## Project Structure
+
+```
+scripts/
+├── README.md               # This file
+├── create.ts               # Main CLI (interactive + direct mode)
+└── shared/
+    ├── config.ts           # All EXAMPLES and CATEGORIES definitions
+    ├── utils.ts            # Utility functions
+    └── index.ts            # Module exports
+```
+
+**Note:** All scripts are written in TypeScript for better type safety and maintainability.
+
+## Configuration
+
+All examples and categories are defined in `shared/config.ts` as the **single source of truth**.
+
+### Example Configuration
+
+```typescript
+// shared/config.ts
+export interface ExampleConfig {
+  contract: string; // Path to Solidity contract
+  test: string; // Path to TypeScript test
+  testFixture?: string; // Optional fixture file
+  description: string; // Full description for docs
+  category: string; // Category grouping
+  docsOutput: string; // Output path for documentation
+  title: string; // Display title
+}
+
+export const EXAMPLES: Record<string, ExampleConfig> = {
+  "fhe-counter": {
+    contract: "contracts/basic/FHECounter.sol",
+    test: "test/basic/FHECounter.ts",
+    description:
+      "This example demonstrates how to build a confidential counter...",
+    category: "Basic",
+    docsOutput: "docs/fhe-counter.md",
+    title: "FHE Counter",
+  },
+  // ... more examples
+};
+```
+
+### Category Configuration
+
+```typescript
+export interface CategoryConfig {
+  name: string; // Display name
+  description: string; // Category description
+  contracts: Array<{
+    // List of contracts
+    sol: string;
+    test?: string;
+  }>;
+}
+
+export const CATEGORIES: Record<string, CategoryConfig> = {
+  basic: {
+    name: "Basic FHEVM Examples",
+    description: "Fundamental FHEVM operations...",
+    contracts: [
+      {
+        sol: "contracts/basic/FHECounter.sol",
+        test: "test/basic/FHECounter.ts",
+      },
+      // ... more contracts
+    ],
+  },
+};
+```
 
 ## Development Workflow
 
-### Creating a New Example
+### Adding a New Example
 
 1. **Write the contract** in `contracts/<category>/`
+
    ```solidity
    // contracts/basic/MyExample.sol
    contract MyExample is SepoliaConfig {
@@ -130,112 +250,56 @@ The generator creates GitBook-compatible markdown files in `examples/` with:
    ```
 
 2. **Write comprehensive tests** in `test/<category>/`
+
    ```typescript
    // test/basic/MyExample.ts
    describe("MyExample", function () {
-       // Tests with explanatory comments
-       // Include both success and failure cases
+     // Tests with explanatory comments
+     // Include both success and failure cases
    });
    ```
 
-3. **Add to script configurations**
-   - Update `EXAMPLES_MAP` in `create-fhevm-example.ts`
-   - Update `EXAMPLES_CONFIG` in `generate-docs.ts`
+3. **Update configuration** in `scripts/shared/config.ts`
 
-4. **Generate documentation**
-   ```bash
-   ts-node scripts/generate-docs.ts my-example
+   ```typescript
+   // Add to EXAMPLES object:
+   "my-new-example": {
+     contract: "contracts/basic/MyExample.sol",
+     test: "test/basic/MyExample.ts",
+     description: "What this example demonstrates.",
+     category: "Basic",
+     docsOutput: "docs/fhe-my-new-example.md",
+     title: "My New Example",
+   },
    ```
 
-5. **Create standalone repo**
+4. **Test the generation**
+
    ```bash
-   ts-node scripts/create-fhevm-example.ts my-example ./output/my-example
+   npm run create-example my-new-example ./test-output
+   cd test-output && npm install && npm run compile && npm run test
+   ```
+
+5. **Generate documentation**
+   ```bash
+   npm run create-docs my-new-example
    ```
 
 ### Testing Generated Examples
 
 Always test that generated examples work:
+
 ```bash
 cd output/my-example
 npm install
 npm run compile
 npm run test
-npm run lint
 ```
-
-## File Structure
-
-```
-scripts/
-├── README.md                    # This file
-├── create-fhevm-example.ts     # Repository generator (TypeScript)
-├── create-fhevm-category.ts    # Category project generator (TypeScript)
-└── generate-docs.ts            # Documentation generator (TypeScript)
-```
-
-**Note:** All scripts are written in TypeScript for better type safety and maintainability.
-
-## Configuration
-
-All scripts use TypeScript configuration objects that map example names to their source files:
-
-**create-fhevm-example.ts:**
-```typescript
-interface ExampleConfig {
-  contract: string;
-  test: string;
-  testFixture?: string;
-  description: string;
-}
-
-const EXAMPLES_MAP: Record<string, ExampleConfig> = {
-  'example-name': {
-    contract: 'path/to/contract.sol',
-    test: 'path/to/test.ts',
-    testFixture: 'path/to/fixture.ts',  // Optional
-    description: 'Short description',
-  },
-  // ...
-};
-```
-
-**generate-docs.ts:**
-```typescript
-interface DocsConfig {
-  title: string;
-  description: string;
-  contract: string;
-  test: string;
-  output: string;
-  category: string;
-}
-
-const EXAMPLES_CONFIG: Record<string, DocsConfig> = {
-  'example-name': {
-    title: 'Display Title',
-    description: 'Full description for docs',
-    contract: 'path/to/contract.sol',
-    test: 'path/to/test.ts',
-    output: 'examples/output-file.md',
-    category: 'Category Name',
-  },
-  // ...
-};
-```
-
-## Contributing
-
-When adding new examples:
-1. Ensure contracts include detailed comments explaining FHE concepts
-2. Tests should demonstrate both correct usage and common pitfalls
-3. Use ✅/❌ markers to highlight good vs bad patterns
-4. Update both script configurations
-5. Test the generated standalone repository
-6. Verify documentation renders correctly in GitBook
 
 ## Maintenance
 
 When updating `@fhevm/solidity` or other dependencies:
+
 1. Update the base template in `fhevm-hardhat-template/`
 2. Regenerate all examples to ensure compatibility
 3. Update documentation if APIs have changed
@@ -243,21 +307,44 @@ When updating `@fhevm/solidity` or other dependencies:
 
 ```bash
 # Quick regeneration of all docs
-ts-node scripts/generate-docs.ts --all
+npm run create-docs-all
 ```
 
 ## Troubleshooting
 
+**"Unknown example" error:**
+
+- Check that the example name exists in `shared/config.ts`
+- Run `npm run create-help` to see available examples
+
 **Contract name extraction fails:**
+
 - Ensure contract declaration is on its own line
 - Format: `contract ContractName is BaseContract {`
 
 **Generated example doesn't compile:**
+
 - Check that all dependencies are in base template
 - Verify import paths are correct
 - Ensure no template-specific files are referenced
 
 **Documentation missing in SUMMARY.md:**
+
 - Check category name matches existing categories
-- Verify output path is in `examples/` directory
-- Run generator again without `--no-summary` flag
+- Verify output path is in `docs/` directory
+- Run generator again
+
+## Contributing
+
+When adding new examples:
+
+1. Ensure contracts include detailed comments explaining FHE concepts
+2. Tests should demonstrate both correct usage and common pitfalls
+3. Use ✅/❌ markers to highlight good vs bad patterns
+4. Update configuration in `shared/config.ts`
+5. Test the generated standalone repository
+6. Verify documentation renders correctly in GitBook
+
+---
+
+**Built with ❤️ using [FHEVM](https://github.com/zama-ai/fhevm) by Zama**
