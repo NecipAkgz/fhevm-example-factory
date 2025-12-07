@@ -186,7 +186,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Confidential token using OpenZeppelin's ERC7984 standard with mint/burn functionality.",
     category: "OpenZeppelin",
-    docsOutput: "docs/erc7984.md",
+    docsOutput: "docs/openzeppelin/erc7984.md",
     title: "ERC7984 Tutorial",
   },
   "erc7984-erc20-wrapper": {
@@ -195,7 +195,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Wraps a standard ERC20 token into a confidential ERC7984 token.",
     category: "OpenZeppelin",
-    docsOutput: "docs/erc7984-erc20-wrapper.md",
+    docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
     title: "ERC7984 to ERC20 Wrapper",
   },
   "swap-erc7984-to-erc20": {
@@ -204,7 +204,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Swap ERC7984 → ERC20 using FHEVM v0.9 makePubliclyDecryptable + checkSignatures.",
     category: "OpenZeppelin",
-    docsOutput: "docs/swap-erc7984-to-erc20.md",
+    docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
     title: "Swap ERC7984 to ERC20",
   },
   "swap-erc7984-to-erc7984": {
@@ -212,7 +212,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
     description: "Fully confidential atomic swap between two ERC7984 tokens.",
     category: "OpenZeppelin",
-    docsOutput: "docs/swap-erc7984-to-erc7984.md",
+    docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 to ERC7984",
   },
   "vesting-wallet": {
@@ -221,7 +221,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Linear vesting wallet for ERC7984 tokens with encrypted amounts.",
     category: "OpenZeppelin",
-    docsOutput: "docs/vesting-wallet.md",
+    docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet",
   },
 };

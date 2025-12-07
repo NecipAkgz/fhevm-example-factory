@@ -249,9 +249,17 @@ async function generateDocumentation(
       testFileName
     );
 
-    // Use consistent filename with fhe- prefix
-    const docFileName = getDocsFileName(name);
-    const outputPath = path.join(rootDir, "docs", `${docFileName}.md`);
+    // Use docsOutput from config if available, otherwise fallback to fhe- prefix
+    const outputPath = example.docsOutput
+      ? path.join(rootDir, example.docsOutput)
+      : path.join(rootDir, "docs", `${getDocsFileName(name)}.md`);
+
+    // Ensure output directory exists
+    const outputDir = path.dirname(outputPath);
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir, { recursive: true });
+    }
+
     fs.writeFileSync(outputPath, markdown);
     count++;
   }
