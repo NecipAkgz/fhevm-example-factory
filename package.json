@@ -3,14 +3,7 @@
   "version": "1.0.0",
   "description": "Tooling for generating standalone FHEVM example repositories and documentation",
   "scripts": {
-    "cli": "npx ts-node scripts/cli.ts",
-    "create-example": "npx ts-node scripts/create-fhevm-example.ts",
-    "create-category": "npx ts-node scripts/create-fhevm-category.ts",
-    "generate-docs": "npx ts-node scripts/generate-docs.ts",
-    "generate-all-docs": "npx ts-node scripts/generate-docs.ts --all",
-    "help:create": "npx ts-node scripts/create-fhevm-example.ts --help",
-    "help:category": "npx ts-node scripts/create-fhevm-category.ts --help",
-    "help:docs": "npx ts-node scripts/generate-docs.ts --help"
+    "create": "npx ts-node scripts/create.ts"
   },
   "keywords": [
     "fhevm",
