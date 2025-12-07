@@ -11,18 +11,18 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @title FHEAntiPatterns
- * @notice Educational contract showing common FHE mistakes and their correct alternatives.
+ * @notice ❌ Common FHE mistakes and ✅ their correct alternatives
  *
- * @dev This contract demonstrates DO's and DON'Ts when working with FHEVM.
- * Each anti-pattern is paired with its correct implementation.
- *
- * ANTI-PATTERNS COVERED:
- *
- * 1. Branching on encrypted values (causes decryption!)
- * 2. Returning encrypted values from view without permissions
- * 3. Forgetting allowThis for user decryption
- * 4. Using require/revert with encrypted conditions
- * 5. Comparing encrypted values in conditionals
+ * @dev ANTI-PATTERNS COVERED:
+ *      1. Branching on encrypted values (causes decryption!)
+ *      2. Returning encrypted values without permissions
+ *      3. Using require/revert with encrypted conditions
+ *      4. Encrypted computation without permission grants
+ *      5. Leaking information through gas/timing
+ *      6. Unauthenticated re-encryption (security critical!)
+ *      7. Encrypted loop iterations (gas/timing leak)
+ *      8. Too many chained operations (noise accumulation)
+ *      9. Using deprecated FHEVM APIs
  */
 contract FHEAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretBalance;

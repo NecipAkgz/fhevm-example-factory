@@ -1,5 +1,20 @@
 Comprehensive example demonstrating all FHE arithmetic operations: add, sub, mul, div, rem, min, max.
 
+## Concept Overview
+
+without ever revealing the underlying data.
+
+Available operations:
+- FHE.add(a, b)  : Addition
+- FHE.sub(a, b)  : Subtraction
+- FHE.mul(a, b)  : Multiplication
+- FHE.div(a, b)  : Division (integer)
+- FHE.rem(a, b)  : Remainder (modulo)
+- FHE.min(a, b)  : Minimum of two values
+- FHE.max(a, b)  : Maximum of two values
+
+---
+
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
 
@@ -23,17 +38,6 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @title FHEArithmetic
  * @notice Demonstrates all FHE arithmetic operations on encrypted integers.
- * @dev This contract shows how to perform mathematical operations on encrypted values
- *      without ever revealing the underlying data.
- *
- * Available operations:
- * - FHE.add(a, b)  : Addition
- * - FHE.sub(a, b)  : Subtraction
- * - FHE.mul(a, b)  : Multiplication
- * - FHE.div(a, b)  : Division (integer)
- * - FHE.rem(a, b)  : Remainder (modulo)
- * - FHE.min(a, b)  : Minimum of two values
- * - FHE.max(a, b)  : Maximum of two values
  */
 contract FHEArithmetic is ZamaEthereumConfig {
     euint32 private _a;

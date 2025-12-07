@@ -119,10 +119,6 @@ export function copyDirectoryRecursive(
   });
 }
 
-// =============================================================================
-// GitBook Documentation Utilities
-// =============================================================================
-
 /**
  * Generate GitBook-formatted markdown documentation
  */

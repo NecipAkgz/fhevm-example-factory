@@ -17,31 +17,46 @@ This ensures Hardhat can compile and test your contracts as expected.
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.24;
 
-import { FHE, externalEuint32, euint32 } from "@fhevm/solidity/lib/FHE.sol";
-import { ZamaEthereumConfig } from "@fhevm/solidity/config/ZamaConfig.sol";
+import {FHE, externalEuint32, euint32} from "@fhevm/solidity/lib/FHE.sol";
+import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * This trivial example demonstrates the FHE encryption mechanism.
+ * @title EncryptSingleValue
+ * @notice Demonstrates receiving and storing a single encrypted value
  */
 contract EncryptSingleValue is ZamaEthereumConfig {
-  euint32 private _encryptedEuint32;
+    // 🔐 Stored encrypted - only authorized users can decrypt
+    euint32 private _encryptedEuint32;
 
-  // solhint-disable-next-line no-empty-blocks
-  constructor() {}
+    constructor() {}
 
-  function initialize(externalEuint32 inputEuint32, bytes calldata inputProof) external {
-    _encryptedEuint32 = FHE.fromExternal(inputEuint32, inputProof);
+    /// @notice Store an encrypted value submitted by the user
+    /// @param inputEuint32 Encrypted value (created client-side with fhevm.createEncryptedInput())
+    /// @param inputProof Zero-knowledge proof that the encryption is valid
+    function initialize(
+        externalEuint32 inputEuint32,
+        bytes calldata inputProof
+    ) external {
+        // Convert external input to internal handle
+        // 📋 The proof ensures:
+        //    - Value was encrypted for THIS contract address
+        //    - Value was encrypted by THIS user (msg.sender)
+        //    - Prevents replay attacks from other contracts/users
+        _encryptedEuint32 = FHE.fromExternal(inputEuint32, inputProof);
 
-    // Grant FHE permission to both the contract itself (`address(this)`) and the caller (`msg.sender`),
-    // to allow future decryption by the caller (`msg.sender`).
-    FHE.allowThis(_encryptedEuint32);
-    FHE.allow(_encryptedEuint32, msg.sender);
-  }
+        // ⚠️ CRITICAL: Grant permissions for future decryption
+        // Without BOTH of these, user decryption will fail!
+        FHE.allowThis(_encryptedEuint32); // Contract can operate on it
+        FHE.allow(_encryptedEuint32, msg.sender); // User can decrypt it
+    }
 
-  function encryptedUint32() public view returns (euint32) {
-    return _encryptedEuint32;
-  }
+    /// @notice Returns the encrypted handle (not the actual value!)
+    /// @dev To decrypt, use fhevm.userDecryptEuint() on the client side
+    function encryptedUint32() public view returns (euint32) {
+        return _encryptedEuint32;
+    }
 }
+
 ```
 
 {% endtab %}

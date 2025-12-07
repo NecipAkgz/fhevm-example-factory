@@ -1,5 +1,20 @@
 Demonstrates all FHE comparison operations: eq, ne, gt, lt, ge, le, and the select function for encrypted conditionals.
 
+## Concept Overview
+
+Comparison results are returned as encrypted booleans (ebool).
+
+Available operations:
+- FHE.eq(a, b)   : Equal (a == b)
+- FHE.ne(a, b)   : Not equal (a != b)
+- FHE.gt(a, b)   : Greater than (a > b)
+- FHE.lt(a, b)   : Less than (a < b)
+- FHE.ge(a, b)   : Greater or equal (a >= b)
+- FHE.le(a, b)   : Less or equal (a <= b)
+- FHE.select(cond, a, b) : Conditional selection (cond ? a : b)
+
+---
+
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
 
@@ -28,17 +43,6 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @title FHEComparison
  * @notice Demonstrates all FHE comparison operations on encrypted integers.
- * @dev This contract shows how to compare encrypted values without decrypting them.
- *      Comparison results are returned as encrypted booleans (ebool).
- *
- * Available operations:
- * - FHE.eq(a, b)   : Equal (a == b)
- * - FHE.ne(a, b)   : Not equal (a != b)
- * - FHE.gt(a, b)   : Greater than (a > b)
- * - FHE.lt(a, b)   : Less than (a < b)
- * - FHE.ge(a, b)   : Greater or equal (a >= b)
- * - FHE.le(a, b)   : Less or equal (a <= b)
- * - FHE.select(cond, a, b) : Conditional selection (cond ? a : b)
  */
 contract FHEComparison is ZamaEthereumConfig {
     euint32 private _a;

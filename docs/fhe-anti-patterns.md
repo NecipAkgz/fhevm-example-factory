@@ -1,5 +1,19 @@
 Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.
 
+## Concept Overview
+
+1. Branching on encrypted values (causes decryption!)
+2. Returning encrypted values without permissions
+3. Using require/revert with encrypted conditions
+4. Encrypted computation without permission grants
+5. Leaking information through gas/timing
+6. Unauthenticated re-encryption (security critical!)
+7. Encrypted loop iterations (gas/timing leak)
+8. Too many chained operations (noise accumulation)
+9. Using deprecated FHEVM APIs
+
+---
+
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
 
@@ -27,18 +41,7 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @title FHEAntiPatterns
- * @notice Educational contract showing common FHE mistakes and their correct alternatives.
- *
- * @dev This contract demonstrates DO's and DON'Ts when working with FHEVM.
- * Each anti-pattern is paired with its correct implementation.
- *
- * ANTI-PATTERNS COVERED:
- *
- * 1. Branching on encrypted values (causes decryption!)
- * 2. Returning encrypted values from view without permissions
- * 3. Forgetting allowThis for user decryption
- * 4. Using require/revert with encrypted conditions
- * 5. Comparing encrypted values in conditionals
+ * @notice ❌ Common FHE mistakes and ✅ their correct alternatives
  */
 contract FHEAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretBalance;
