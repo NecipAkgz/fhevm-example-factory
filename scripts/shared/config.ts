@@ -181,8 +181,8 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
 
   // OpenZeppelin Confidential Contracts
   erc7984: {
-    contract: "contracts/openzeppelin/ERC7984Example.sol",
-    test: "test/openzeppelin/ERC7984Example.ts",
+    contract: "contracts/openzeppelin/ERC7984.sol",
+    test: "test/openzeppelin/ERC7984.ts",
     description:
       "Confidential token using OpenZeppelin's ERC7984 standard with mint/burn functionality.",
     category: "OpenZeppelin",
@@ -190,8 +190,8 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     title: "ERC7984 Tutorial",
   },
   "erc7984-erc20-wrapper": {
-    contract: "contracts/openzeppelin/ERC7984ERC20WrapperExample.sol",
-    test: "test/openzeppelin/ERC7984ERC20WrapperExample.ts",
+    contract: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
+    test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
     description:
       "Wraps a standard ERC20 token into a confidential ERC7984 token.",
     category: "OpenZeppelin",
@@ -199,8 +199,8 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     title: "ERC7984 to ERC20 Wrapper",
   },
   "swap-erc7984-to-erc20": {
-    contract: "contracts/openzeppelin/SwapERC7984ToERC20Example.sol",
-    test: "test/openzeppelin/SwapERC7984ToERC20Example.ts",
+    contract: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
+    test: "test/openzeppelin/SwapERC7984ToERC20.ts",
     description:
       "Swap ERC7984 → ERC20 using FHEVM v0.9 makePubliclyDecryptable + checkSignatures.",
     category: "OpenZeppelin",
@@ -208,16 +208,16 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     title: "Swap ERC7984 to ERC20",
   },
   "swap-erc7984-to-erc7984": {
-    contract: "contracts/openzeppelin/SwapERC7984ToERC7984Example.sol",
-    test: "test/openzeppelin/SwapERC7984ToERC7984Example.ts",
+    contract: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
+    test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
     description: "Fully confidential atomic swap between two ERC7984 tokens.",
     category: "OpenZeppelin",
     docsOutput: "docs/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 to ERC7984",
   },
   "vesting-wallet": {
-    contract: "contracts/openzeppelin/VestingWalletExample.sol",
-    test: "test/openzeppelin/VestingWalletExample.ts",
+    contract: "contracts/openzeppelin/VestingWallet.sol",
+    test: "test/openzeppelin/VestingWallet.ts",
     description:
       "Linear vesting wallet for ERC7984 tokens with encrypted amounts.",
     category: "OpenZeppelin",
@@ -324,24 +324,24 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       "ERC7984 confidential token standard, wrappers, swaps, and vesting",
     contracts: [
       {
-        sol: "contracts/openzeppelin/ERC7984Example.sol",
-        test: "test/openzeppelin/ERC7984Example.ts",
+        sol: "contracts/openzeppelin/ERC7984.sol",
+        test: "test/openzeppelin/ERC7984.ts",
       },
       {
-        sol: "contracts/openzeppelin/ERC7984ERC20WrapperExample.sol",
-        test: "test/openzeppelin/ERC7984ERC20WrapperExample.ts",
+        sol: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
+        test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
       },
       {
-        sol: "contracts/openzeppelin/SwapERC7984ToERC20Example.sol",
-        test: "test/openzeppelin/SwapERC7984ToERC20Example.ts",
+        sol: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
+        test: "test/openzeppelin/SwapERC7984ToERC20.ts",
       },
       {
-        sol: "contracts/openzeppelin/SwapERC7984ToERC7984Example.sol",
-        test: "test/openzeppelin/SwapERC7984ToERC7984Example.ts",
+        sol: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
+        test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
       },
       {
-        sol: "contracts/openzeppelin/VestingWalletExample.sol",
-        test: "test/openzeppelin/VestingWalletExample.ts",
+        sol: "contracts/openzeppelin/VestingWallet.sol",
+        test: "test/openzeppelin/VestingWallet.ts",
       },
     ],
   },
