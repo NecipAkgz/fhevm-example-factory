@@ -498,22 +498,23 @@ function showHelp(): void {
 ${pc.cyan("FHEVM Example Factory")}
 
 ${pc.yellow("Usage:")}
-  npm run create                                ${pc.dim("# Interactive mode")}
-  npm run create example <name> [output]        ${pc.dim(
+  npm run create                               ${pc.dim("# Interactive mode")}
+  npm run create-example <name> [output]       ${pc.dim(
     "# Create single example"
   )}
-  npm run create category <name> [output]       ${pc.dim(
+  npm run create-category <name> [output]      ${pc.dim(
     "# Create category project"
   )}
-  npm run create docs <example|--all>           ${pc.dim(
-    "# Generate documentation"
+  npm run create-docs <example>                ${pc.dim(
+    "# Generate single doc"
   )}
+  npm run create-docs-all                      ${pc.dim("# Generate all docs")}
 
 ${pc.yellow("Examples:")}
-  ${pc.green("npm run create example fhe-counter ./my-project")}
-  ${pc.green("npm run create category basic ./basic-examples")}
-  ${pc.green("npm run create docs fhe-counter")}
-  ${pc.green("npm run create docs --all")}
+  ${pc.green("npm run create-example fhe-counter ./my-project")}
+  ${pc.green("npm run create-category basic ./basic-examples")}
+  ${pc.green("npm run create-docs fhe-counter")}
+  ${pc.green("npm run create-docs-all")}
 
 ${pc.yellow("Available examples:")}
   ${Object.keys(EXAMPLES).join(", ")}
