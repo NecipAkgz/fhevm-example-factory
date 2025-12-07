@@ -184,7 +184,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/ERC7984.sol",
     test: "test/openzeppelin/ERC7984.ts",
     description:
-      "Confidential token using OpenZeppelin's ERC7984 standard with mint/burn functionality.",
+      "This example demonstrates how to create a confidential token (ERC7984) using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. It shows how to extend the ERC7984 base contract with mint/burn functionality.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/erc7984.md",
     title: "ERC7984 Tutorial",
@@ -193,7 +193,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
     test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
     description:
-      "Wraps a standard ERC20 token into a confidential ERC7984 token.",
+      "This example demonstrates how to wrap a standard ERC20 token into a confidential ERC7984 token using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. It enables privacy for any existing ERC20.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
     title: "ERC7984 to ERC20 Wrapper",
@@ -202,7 +202,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
     test: "test/openzeppelin/SwapERC7984ToERC20.ts",
     description:
-      "Swap ERC7984 → ERC20 using FHEVM v0.9 makePubliclyDecryptable + checkSignatures.",
+      "This example demonstrates how to swap between a confidential token (ERC7984) and ERC20 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. It uses the new v0.9 decryption API (makePubliclyDecryptable + checkSignatures).",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
     title: "Swap ERC7984 to ERC20",
@@ -210,7 +210,8 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "swap-erc7984-to-erc7984": {
     contract: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
     test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
-    description: "Fully confidential atomic swap between two ERC7984 tokens.",
+    description:
+      "This example demonstrates how to perform a fully confidential atomic swap between two ERC7984 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. Both input and output amounts remain encrypted.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 to ERC7984",
@@ -219,7 +220,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/VestingWallet.sol",
     test: "test/openzeppelin/VestingWallet.ts",
     description:
-      "Linear vesting wallet for ERC7984 tokens with encrypted amounts.",
+      "This example demonstrates how to create a linear vesting wallet for ERC7984 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. Vested amounts remain encrypted for privacy.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet",
