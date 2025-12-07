@@ -73,9 +73,15 @@ async function createSingleExample(
     path.join(outputDir, "contracts", `${contractName}.sol`)
   );
 
+  // Remove .gitkeep from contracts (no longer needed)
+  const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
+  if (fs.existsSync(contractsGitkeep)) {
+    fs.unlinkSync(contractsGitkeep);
+  }
+
   const testDir = path.join(outputDir, "test");
   fs.readdirSync(testDir).forEach((file) => {
-    if (file.endsWith(".ts")) {
+    if (file.endsWith(".ts") || file === ".gitkeep") {
       fs.unlinkSync(path.join(testDir, file));
     }
   });
@@ -97,28 +103,18 @@ async function createSingleExample(
   packageJson.description = example.description;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-  // Update hardhat.config.ts
+  // Update hardhat.config.ts - remove FHECounter task import
   const configPath = path.join(outputDir, "hardhat.config.ts");
   let configContent = fs.readFileSync(configPath, "utf-8");
   configContent = configContent.replace(
-    /import "\.\/tasks\/FHECounter";/g,
-    `import "./tasks/${contractName}";`
+    /import "\.\/tasks\/FHECounter";\n?/g,
+    ""
   );
   fs.writeFileSync(configPath, configContent);
 
-  // Update tasks
+  // Remove FHECounter task (it's example-specific and not applicable to other contracts)
   const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
   if (fs.existsSync(oldTaskFile)) {
-    let taskContent = fs.readFileSync(oldTaskFile, "utf-8");
-    taskContent = taskContent.replace(/FHECounter/g, contractName);
-    taskContent = taskContent.replace(
-      /fheCounter/g,
-      contractName.charAt(0).toLowerCase() + contractName.slice(1)
-    );
-    fs.writeFileSync(
-      path.join(outputDir, "tasks", `${contractName}.ts`),
-      taskContent
-    );
     fs.unlinkSync(oldTaskFile);
   }
 
@@ -152,9 +148,13 @@ async function createCategoryProject(
   const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
   if (fs.existsSync(templateContract)) fs.unlinkSync(templateContract);
 
+  // Remove .gitkeep from contracts (no longer needed)
+  const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
+  if (fs.existsSync(contractsGitkeep)) fs.unlinkSync(contractsGitkeep);
+
   const testDir = path.join(outputDir, "test");
   fs.readdirSync(testDir).forEach((file) => {
-    if (file.endsWith(".ts")) {
+    if (file.endsWith(".ts") || file === ".gitkeep") {
       fs.unlinkSync(path.join(testDir, file));
     }
   });
@@ -182,6 +182,21 @@ async function createCategoryProject(
         );
       }
     }
+  }
+
+  // Update hardhat.config.ts - remove FHECounter task import
+  const configPath = path.join(outputDir, "hardhat.config.ts");
+  let configContent = fs.readFileSync(configPath, "utf-8");
+  configContent = configContent.replace(
+    /import "\.\/tasks\/FHECounter";\n?/g,
+    ""
+  );
+  fs.writeFileSync(configPath, configContent);
+
+  // Remove FHECounter task (it's example-specific)
+  const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
+  if (fs.existsSync(oldTaskFile)) {
+    fs.unlinkSync(oldTaskFile);
   }
 
   // Update package.json
