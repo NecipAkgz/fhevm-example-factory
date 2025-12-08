@@ -12,9 +12,18 @@ import {
 } from "@openzeppelin/confidential-contracts/token/ERC7984/ERC7984.sol";
 
 /**
- * Confidential token using OpenZeppelin's ERC7984 standard
+ * @notice Confidential token using OpenZeppelin's ERC7984 standard
+ *
+ * @dev Demonstrates minting and burning with both visible and encrypted amounts.
+ *      Shows how to integrate FHE with standard token operations.
  */
 contract ERC7984Example is ZamaEthereumConfig, ERC7984Base, Ownable2Step {
+    /// @notice Creates a new confidential ERC7984 token with initial supply
+    /// @param owner Address that will own the token and receive initial supply
+    /// @param amount Initial supply amount (visible on-chain but stored encrypted)
+    /// @param name_ Token name
+    /// @param symbol_ Token symbol
+    /// @param tokenURI_ Token metadata URI
     constructor(
         address owner,
         uint64 amount,

@@ -21,10 +21,10 @@ import {FHE, ebool} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Implements a simple Heads or Tails game demonstrating public, permissionless decryption
- * using the FHE.makePubliclyDecryptable feature.
+ * @notice Implements a simple Heads or Tails game demonstrating public, permissionless decryption
  *
- * @dev Inherits from ZamaEthereumConfig to access FHE functions like FHE.randEbool() and FHE.verifySignatures().
+ * @dev Uses FHE.makePubliclyDecryptable feature to allow anyone to decrypt the game results.
+ *      Inherits from ZamaEthereumConfig to access FHE functions like FHE.randEbool() and FHE.checkSignatures().
  */
 contract HeadsOrTails is ZamaEthereumConfig {
     constructor() {}
@@ -36,25 +36,20 @@ contract HeadsOrTails is ZamaEthereumConfig {
      * Defines the entire state for a single Heads or Tails game instance.
      */
     struct Game {
-        // The address of the player who chose Heads.
         address headsPlayer;
-        // The address of the player who chose Tails.
         address tailsPlayer;
-        // The core encrypted result. This is a publicly decryptable ebool handle.
-        // true means Heads won; false means Tails won.
         ebool encryptedHasHeadsWon;
-        // The clear address of the final winner, set after decryption and verification.
         address winner;
     }
 
     // Mapping to store all game states, accessible by a unique game ID.
     mapping(uint256 gameId => Game game) public games;
 
-    /// Emitted when a new game is started, providing the encrypted handle required for decryption.
-    /// gameId: The unique identifier for the game.
-    /// headsPlayer: The address choosing Heads.
-    /// tailsPlayer: The address choosing Tails.
-    /// encryptedHasHeadsWon: The encrypted handle (ciphertext) storing the result.
+    /// @notice Emitted when a new game is started, providing the encrypted handle required for decryption
+    /// @param gameId The unique identifier for the game
+    /// @param headsPlayer The address choosing Heads
+    /// @param tailsPlayer The address choosing Tails
+    /// @param encryptedHasHeadsWon The encrypted handle (ciphertext) storing the result
     event GameCreated(
         uint256 indexed gameId,
         address indexed headsPlayer,
@@ -64,8 +59,6 @@ contract HeadsOrTails is ZamaEthereumConfig {
 
     /// @notice Initiates a new Heads or Tails game, generates the result using FHE,
     /// @notice and makes the result publicly available for decryption.
-    /// @dev headsPlayer: The player address choosing Heads.
-    ///      tailsPlayer: The player address choosing Tails.
     function headsOrTails(address headsPlayer, address tailsPlayer) external {
         require(headsPlayer != address(0), "Heads player is address zero");
         require(tailsPlayer != address(0), "Tails player is address zero");
@@ -108,15 +101,11 @@ contract HeadsOrTails is ZamaEthereumConfig {
     }
 
     /// @notice Returns the encrypted ebool handle that stores the game result.
-    /// @dev gameId: The ID of the game.
-    ///      returns: The encrypted result (ebool handle).
     function hasHeadsWon(uint256 gameId) public view returns (ebool) {
         return games[gameId].encryptedHasHeadsWon;
     }
 
     /// @notice Returns the address of the game winner.
-    /// @dev gameId: The ID of the game.
-    ///      returns: The winner's address (address(0) if not yet revealed).
     function getWinner(uint256 gameId) public view returns (address) {
         require(
             games[gameId].winner != address(0),

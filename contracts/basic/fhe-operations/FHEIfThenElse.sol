@@ -5,7 +5,9 @@ import {FHE, ebool, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates conditional logic: max(a, b) using encrypted comparison
+ * @notice Demonstrates conditional logic: max(a, b) using encrypted comparison
+ *
+ * @dev Shows how to use FHE.select() for encrypted if-then-else logic.
  */
 contract FHEIfThenElse is ZamaEthereumConfig {
     euint8 private _a;
@@ -14,18 +16,20 @@ contract FHEIfThenElse is ZamaEthereumConfig {
 
     constructor() {}
 
+    /// @notice Sets the first operand (encrypted)
     function setA(externalEuint8 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
         FHE.allowThis(_a);
     }
 
+    /// @notice Sets the second operand (encrypted)
     function setB(externalEuint8 inputB, bytes calldata inputProof) external {
         _b = FHE.fromExternal(inputB, inputProof);
         FHE.allowThis(_b);
     }
 
     /// @notice Compute max(a, b) without revealing which is larger
-    /// @notice Uses FHE.select() - the encrypted "if-then-else"
+    /// @dev Uses FHE.select() - the encrypted "if-then-else"
     function computeMax() external {
         // 🔍 Compare encrypted values - result is encrypted boolean!
         // We don't know if a >= b, only the encrypted result
@@ -42,6 +46,7 @@ contract FHEIfThenElse is ZamaEthereumConfig {
         FHE.allow(_max, msg.sender);
     }
 
+    /// @notice Returns the encrypted result
     function result() public view returns (euint8) {
         return _max;
     }

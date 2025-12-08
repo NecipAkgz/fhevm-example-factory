@@ -44,8 +44,6 @@ contract FHEInputProof is ZamaEthereumConfig {
     // ==================== SINGLE INPUT ====================
 
     /// @notice Receive single encrypted value with proof
-    /// @dev encryptedInput: Handle from client (fhevm.createEncryptedInput)
-    ///      inputProof: Proof that encryption is valid
     function setSingleValue(
         externalEuint32 encryptedInput,
         bytes calldata inputProof

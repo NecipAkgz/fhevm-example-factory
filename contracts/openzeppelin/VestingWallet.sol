@@ -12,10 +12,12 @@ import {
 } from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
 
 /**
- * Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!
+ * @notice Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!
  *
  * @dev Timeline: |--START--|---VESTING---|--END--|
  *                 0%        linear        100%
+ *
+ * All vesting calculations are performed on encrypted values using FHE operations.
  */
 contract VestingWalletExample is
     Ownable,
@@ -27,11 +29,18 @@ contract VestingWalletExample is
     uint64 private _start;
     uint64 private _duration;
 
+    /// @notice Emitted when vested tokens are released to beneficiary
+    /// @param token The ERC7984 token address
+    /// @param amount The encrypted amount released
     event VestingWalletConfidentialTokenReleased(
         address indexed token,
         euint64 amount
     );
 
+    /// @notice Creates a new vesting wallet for a beneficiary
+    /// @param beneficiary Address that will receive vested tokens
+    /// @param startTimestamp Unix timestamp when vesting begins
+    /// @param durationSeconds Duration of the vesting period in seconds
     constructor(
         address beneficiary,
         uint48 startTimestamp,

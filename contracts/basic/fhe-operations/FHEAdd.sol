@@ -5,7 +5,9 @@ import {FHE, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Simple example: adding two encrypted values (a + b)
+ * @notice Simple example: adding two encrypted values (a + b)
+ *
+ * @dev Demonstrates the most basic FHE operation and permission flow.
  */
 contract FHEAdd is ZamaEthereumConfig {
     euint8 private _a;
@@ -42,6 +44,7 @@ contract FHEAdd is ZamaEthereumConfig {
         FHE.allow(_result, msg.sender); // Caller can decrypt result
     }
 
+    /// @notice Returns the encrypted result
     function result() public view returns (euint8) {
         return _result;
     }

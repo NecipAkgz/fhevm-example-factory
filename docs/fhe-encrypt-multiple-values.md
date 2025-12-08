@@ -29,7 +29,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates encrypting multiple values of different types
+ * @notice Demonstrates encrypting multiple values of different types
  *
  * @dev Supported encrypted types:
  *   - euint8/16/32/64/128/256: encrypted integers

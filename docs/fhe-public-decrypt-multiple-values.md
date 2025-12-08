@@ -21,10 +21,10 @@ import {FHE, euint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption
- * using the FHE.makePubliclyDecryptable feature.
+ * @notice Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption
  *
- * @dev Inherits from ZamaEthereumConfig to access FHE functions like FHE.randEbool() and FHE.verifySignatures().
+ * @dev Uses FHE.makePubliclyDecryptable feature to allow anyone to decrypt the game results.
+ *      Inherits from ZamaEthereumConfig to access FHE functions like FHE.randEuint8() and FHE.checkSignatures().
  */
 contract HighestDieRoll is ZamaEthereumConfig {
     constructor() {}
@@ -33,31 +33,26 @@ contract HighestDieRoll is ZamaEthereumConfig {
     uint256 private counter = 0;
 
     /**
-     * Defines the entire state for a single Heads or Tails game instance.
+     * Defines the entire state for a single Die Roll game instance.
      */
     struct Game {
-        // The address of the player who chose Heads.
         address playerA;
-        // The address of the player who chose Tails.
         address playerB;
-        // The core encrypted result. This is a publicly decryptable set of 4 handle.
         euint8 playerAEncryptedDieRoll;
         euint8 playerBEncryptedDieRoll;
-        // The clear address of the final winne, address(0) if draw, set after decryption and verification.
         address winner;
-        // true if the game result is revealed
         bool revealed;
     }
 
     // Mapping to store all game states, accessible by a unique game ID.
     mapping(uint256 gameId => Game game) public games;
 
-    // Emitted when a new game is started, providing the encrypted handle required for decryption.
-    // gameId: The unique identifier for the game.
-    // playerA: The address of playerA.
-    // playerB: The address of playerB.
-    // playerAEncryptedDieRoll: The encrypted die roll result of playerA.
-    // playerBEncryptedDieRoll: The encrypted die roll result of playerB.
+    /// @notice Emitted when a new game is started, providing the encrypted handle required for decryption
+    /// @param gameId The unique identifier for the game
+    /// @param playerA The address of playerA
+    /// @param playerB The address of playerB
+    /// @param playerAEncryptedDieRoll The encrypted die roll result of playerA
+    /// @param playerBEncryptedDieRoll The encrypted die roll result of playerB
     event GameCreated(
         uint256 indexed gameId,
         address indexed playerA,
@@ -68,8 +63,6 @@ contract HighestDieRoll is ZamaEthereumConfig {
 
     /// @notice Initiates a new highest die roll game, generates the result using FHE,
     /// @notice and makes the result publicly available for decryption.
-    /// playerA: The player address choosing Heads.
-    /// playerB: The player address choosing Tails.
     function highestDieRoll(address playerA, address playerB) external {
         require(playerA != address(0), "playerA is address zero");
         require(playerB != address(0), "playerB player is address zero");
@@ -112,40 +105,29 @@ contract HighestDieRoll is ZamaEthereumConfig {
     }
 
     /// @notice Returns the encrypted euint8 handle that stores the playerA die roll.
-    /// @dev gameId: The ID of the game.
-    ///      returns: The encrypted result (euint8 handle).
     function getPlayerADieRoll(uint256 gameId) public view returns (euint8) {
         return games[gameId].playerAEncryptedDieRoll;
     }
 
     /// @notice Returns the encrypted euint8 handle that stores the playerB die roll.
-    /// @dev gameId: The ID of the game.
-    ///      returns: The encrypted result (euint8 handle).
     function getPlayerBDieRoll(uint256 gameId) public view returns (euint8) {
         return games[gameId].playerBEncryptedDieRoll;
     }
 
     /// @notice Returns the address of the game winner. If the game is finalized, the function returns `address(0)`
     /// @notice if the game is a draw.
-    /// @dev gameId: The ID of the game.
-    ///      returns: The winner's address (address(0) if not yet revealed or draw).
     function getWinner(uint256 gameId) public view returns (address) {
         require(games[gameId].revealed, "Game winner not yet revealed");
         return games[gameId].winner;
     }
 
     /// @notice Returns `true` if the game result is publicly revealed, `false` otherwise.
-    /// @dev gameId: The ID of the game.
-    ///      returns: true if the game is publicly revealed.
     function isGameRevealed(uint256 gameId) public view returns (bool) {
         return games[gameId].revealed;
     }
 
     /// @notice Verifies the provided (decryption proof, ABI-encoded clear values) pair against the stored ciphertext,
     /// @notice and then stores the winner of the game.
-    /// @dev gameId: The ID of the game to settle.
-    ///      abiEncodedClearGameResult: The ABI-encoded clear values (uint8, uint8) associated to the `decryptionProof`.
-    ///      decryptionProof: The proof that validates the decryption.
     function recordAndVerifyWinner(
         uint256 gameId,
         bytes memory abiEncodedClearGameResult,

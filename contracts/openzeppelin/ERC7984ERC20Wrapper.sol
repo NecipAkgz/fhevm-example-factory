@@ -18,6 +18,11 @@ contract ERC7984ERC20WrapperExample is
     ERC7984ERC20WrapperBase,
     ZamaEthereumConfig
 {
+    /// @notice Creates a new ERC20-to-ERC7984 wrapper
+    /// @param token The ERC20 token to wrap
+    /// @param name Name for the wrapped ERC7984 token
+    /// @param symbol Symbol for the wrapped ERC7984 token
+    /// @param uri Metadata URI for the wrapped token
     constructor(
         IERC20 token,
         string memory name,

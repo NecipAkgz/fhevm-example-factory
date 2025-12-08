@@ -10,7 +10,8 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates all FHE comparison operations on encrypted integers.
+ * @notice Demonstrates all FHE comparison operations on encrypted integers
+ *
  * @dev This contract shows how to compare encrypted values without decrypting them.
  *      Comparison results are returned as encrypted booleans (ebool).
  *

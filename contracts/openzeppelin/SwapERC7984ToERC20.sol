@@ -12,9 +12,9 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Swap confidential ERC7984 tokens to regular ERC20 tokens
+ * @notice Swap confidential ERC7984 tokens to regular ERC20 tokens
  *
- * @dev Uses FHEVM v0.9 decryption:
+ * @dev Uses FHEVM v0.9 decryption flow:
  *      FHE.makePubliclyDecryptable() + FHE.checkSignatures()
  */
 contract SwapERC7984ToERC20Example is ZamaEthereumConfig {

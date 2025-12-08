@@ -5,7 +5,10 @@ import {FHE, externalEuint32, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates receiving and storing a single encrypted value
+ * @notice Demonstrates receiving and storing a single encrypted value
+ *
+ * @dev Shows the complete flow: receiving encrypted input from user, validating proof,
+ *      storing the encrypted value, and granting permissions for decryption.
  */
 contract EncryptSingleValue is ZamaEthereumConfig {
     // 🔐 Stored encrypted - only authorized users can decrypt
@@ -33,7 +36,7 @@ contract EncryptSingleValue is ZamaEthereumConfig {
         FHE.allow(_encryptedEuint32, msg.sender); // User can decrypt it
     }
 
-    // Returns the encrypted handle (not the actual value!)
+    /// @notice Returns the encrypted handle (not the actual value!)
     /// @dev To decrypt, use fhevm.userDecryptEuint() on the client side
     function encryptedUint32() public view returns (euint32) {
         return _encryptedEuint32;

@@ -24,9 +24,9 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Fully confidential swap between two ERC7984 tokens
+ * @notice Fully confidential swap between two ERC7984 tokens
  *
- * @dev Both input and output amounts remain encrypted
+ * @dev Both input and output amounts remain encrypted throughout the swap.
  */
 contract SwapERC7984ToERC7984Example is ZamaEthereumConfig {
     /// @notice Swap confidential token for another confidential token

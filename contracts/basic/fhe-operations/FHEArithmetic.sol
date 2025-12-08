@@ -5,7 +5,8 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates all FHE arithmetic operations on encrypted integers.
+ * @notice Demonstrates all FHE arithmetic operations on encrypted integers
+ *
  * @dev This contract shows how to perform mathematical operations on encrypted values
  *      without ever revealing the underlying data.
  *
@@ -27,16 +28,12 @@ contract FHEArithmetic is ZamaEthereumConfig {
     constructor() {}
 
     /// @notice Sets the first operand (encrypted)
-    /// @dev inputA: The encrypted value for operand A
-    ///      inputProof: The proof validating the encrypted input
     function setA(externalEuint32 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
         FHE.allowThis(_a);
     }
 
     /// @notice Sets the second operand (encrypted)
-    /// @dev inputB: The encrypted value for operand B
-    ///      inputProof: The proof validating the encrypted input
     function setB(externalEuint32 inputB, bytes calldata inputProof) external {
         _b = FHE.fromExternal(inputB, inputProof);
         FHE.allowThis(_b);
@@ -64,7 +61,6 @@ contract FHEArithmetic is ZamaEthereumConfig {
 
     /// @notice Computes encrypted division: result = a / b (scalar)
     /// @dev Divisor must be a scalar (plaintext) because FHE division by encrypted value is not supported.
-    ///      divisor: The scalar divisor
     function computeDiv(uint32 divisor) external {
         _result = FHE.div(_a, divisor);
         _grantPermissions();
@@ -72,7 +68,6 @@ contract FHEArithmetic is ZamaEthereumConfig {
 
     /// @notice Computes encrypted remainder: result = a % b (scalar)
     /// @dev Divisor must be a scalar (plaintext).
-    ///      modulus: The scalar modulus
     function computeRem(uint32 modulus) external {
         _result = FHE.rem(_a, modulus);
         _grantPermissions();

@@ -21,7 +21,10 @@ import {FHE, ebool, euint32, euint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates user decryption of multiple encrypted values
+ * @notice Demonstrates user decryption of multiple encrypted values
+ *
+ * @dev Shows how to create encrypted values from plaintext and grant permissions
+ *      for multiple values of different types (ebool, euint32, euint64).
  */
 contract UserDecryptMultipleValues is ZamaEthereumConfig {
     // 🔐 Multiple encrypted values of different types
@@ -54,17 +57,20 @@ contract UserDecryptMultipleValues is ZamaEthereumConfig {
         FHE.allow(_encryptedUint64, msg.sender);
     }
 
-    // Getters return encrypted handles
-    // Client decrypts with: fhevm.userDecryptEuint(FhevmType.euint32, handle, ...)
-
+    /// @notice Returns the encrypted boolean value
+    /// @dev Client decrypts with: fhevm.userDecrypt(FhevmType.ebool, handle, ...)
     function encryptedBool() public view returns (ebool) {
         return _encryptedBool;
     }
 
+    /// @notice Returns the encrypted uint32 value
+    /// @dev Client decrypts with: fhevm.userDecrypt(FhevmType.euint32, handle, ...)
     function encryptedUint32() public view returns (euint32) {
         return _encryptedUint32;
     }
 
+    /// @notice Returns the encrypted uint64 value
+    /// @dev Client decrypts with: fhevm.userDecrypt(FhevmType.euint64, handle, ...)
     function encryptedUint64() public view returns (euint64) {
         return _encryptedUint64;
     }

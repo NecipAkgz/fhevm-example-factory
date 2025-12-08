@@ -5,8 +5,10 @@ import {FHE, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * This trivial example demonstrates the FHE decryption mechanism
- * and highlights common pitfalls developers may encounter.
+ * @notice Demonstrates the FHE decryption mechanism and highlights common pitfalls
+ *
+ * @dev This trivial example shows correct vs incorrect permission granting patterns.
+ *      Emphasizes that BOTH FHE.allowThis() and FHE.allow(user) are required for user decryption.
  */
 contract UserDecryptSingleValue is ZamaEthereumConfig {
     euint32 private _trivialEuint32;
@@ -16,7 +18,6 @@ contract UserDecryptSingleValue is ZamaEthereumConfig {
 
     /// @notice Initialize with a trivial formula (value + 1)
     /// @dev Demonstrates correct permission granting
-    ///      value: The plaintext value to encrypt and compute on
     function initializeUint32(uint32 value) external {
         // Compute a trivial FHE formula _trivialEuint32 = value + 1
         _trivialEuint32 = FHE.add(FHE.asEuint32(value), FHE.asEuint32(1));
@@ -51,6 +52,7 @@ contract UserDecryptSingleValue is ZamaEthereumConfig {
         FHE.allow(_trivialEuint32, msg.sender);
     }
 
+    /// @notice Returns the encrypted uint32 value
     function encryptedUint32() public view returns (euint32) {
         return _trivialEuint32;
     }

@@ -26,9 +26,9 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * ❌ Common FHE mistakes and ✅ their correct alternatives
+ * @notice Common FHE mistakes and their correct alternatives - Educational reference
  *
- * @dev ANTI-PATTERNS COVERED:
+ * @dev This contract demonstrates 9 critical anti-patterns in FHE development:
  *      1. Branching on encrypted values (causes decryption!)
  *      2. Returning encrypted values without permissions
  *      3. Using require/revert with encrypted conditions
@@ -38,6 +38,8 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
  *      7. Encrypted loop iterations (gas/timing leak)
  *      8. Too many chained operations (noise accumulation)
  *      9. Using deprecated FHEVM APIs
+ *
+ *      Each anti-pattern shows both ❌ WRONG and ✅ CORRECT implementations.
  */
 contract FHEAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretBalance;
@@ -46,6 +48,8 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // solhint-disable-next-line no-empty-blocks
     constructor() {}
 
+    /// @notice Initialize the contract with encrypted balance and threshold values
+    /// @dev Both values are encrypted and permissions are granted to the caller
     function initialize(
         externalEuint32 balance,
         externalEuint32 threshold,
@@ -78,8 +82,8 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // }
 
     /**
-     * ✅ CORRECT: Use FHE.select for conditional logic
-     * @dev All computation stays encrypted
+     * @notice ✅ CORRECT: Use FHE.select for conditional logic
+     * @dev All computation stays encrypted - demonstrates proper encrypted branching
      */
     function correctConditional() external {
         // Compare encrypted values - result is encrypted boolean
@@ -107,7 +111,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // ========================================================================
 
     /**
-     * ❌ WRONG: Returns encrypted value but caller can't decrypt
+     * @notice ❌ WRONG: Returns encrypted value but caller can't decrypt
      * @dev Without prior allow(), the returned handle is useless
      */
     function wrongGetBalance() external view returns (euint32) {
@@ -116,7 +120,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     }
 
     /**
-     * ✅ CORRECT: Ensure permissions were granted before returning
+     * @notice ✅ CORRECT: Ensure permissions were granted before returning
      * @dev Caller must have been granted access in a previous transaction
      */
     function correctGetBalance() external view returns (euint32) {
@@ -140,7 +144,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // }
 
     /**
-     * ✅ CORRECT: Use encrypted flags instead of require
+     * @notice ✅ CORRECT: Use encrypted flags instead of require
      * @dev Store result and let client check after decryption
      */
     function correctValidation() external returns (ebool) {
@@ -158,7 +162,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // ========================================================================
 
     /**
-     * ❌ WRONG: Compute but forget to grant permissions
+     * @notice ❌ WRONG: Compute but forget to grant permissions
      * @dev Result exists but no one can ever decrypt it
      */
     function wrongCompute() external {
@@ -168,7 +172,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         // This value is now locked forever
     }
 
-    // ✅ CORRECT: Always grant permissions after computation
+    /// @notice ✅ CORRECT: Always grant permissions after computation
     function correctCompute() external {
         euint32 doubled = FHE.mul(_secretBalance, FHE.asEuint32(2));
         _secretBalance = doubled;
@@ -183,7 +187,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // ========================================================================
 
     /**
-     * ⚠️ CAUTION: Be aware of side-channel attacks
+     * @notice ⚠️ CAUTION: Be aware of side-channel attacks
      * @dev Even with FHE.select, be careful about operations that might
      *      have different gas costs based on values
      *
@@ -201,7 +205,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // ========================================================================
 
     /**
-     * ❌ WRONG: Re-encrypt for any provided public key
+     * @notice ❌ WRONG: Re-encrypt for any provided public key
      * @dev This allows impersonation attacks - anyone can request re-encryption
      *      for any public key and pretend to be that user
      *
@@ -218,7 +222,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // }
 
     /**
-     * ✅ CORRECT: Require cryptographic proof of identity
+     * @notice ✅ CORRECT: Require cryptographic proof of identity
      * @dev Use EIP-712 signature to prove the requester owns the public key
      *
      * CLIENT-SIDE:
@@ -280,7 +284,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // ANTI-PATTERN 8: Too Many Chained Operations (Noise Accumulation)
     // ========================================================================
 
-    /// ⚠️ CAUTION: FHE operations accumulate "noise"
+    /// @notice ⚠️ CAUTION: FHE operations accumulate "noise"
     /// @dev Each FHE operation adds noise to the ciphertext. After too many
     ///      operations, the ciphertext becomes corrupted and undecryptable.
     ///
@@ -301,8 +305,9 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     // ANTI-PATTERN 9: Using Deprecated FHEVM APIs
     // ========================================================================
 
-     *
-     * OLD (v0.8 and earlier):
+    /**
+     * @notice Caution about deprecated FHEVM APIs
+     * @dev OLD (v0.8 and earlier):
      * - Decryption went through Zama Oracle
      * - Used TFHE.decrypt() directly
      *
