@@ -322,6 +322,18 @@ npm run create-docs-all            # All examples
 
 ## 🔄 Maintenance
 
+### 🧪 Test Examples
+
+Generate standalone projects from examples, then compile and run tests to verify compatibility:
+
+```bash
+# Interactive mode - select with space, confirm with enter
+npm run test-all
+
+# Direct mode - test specific examples
+npm run test-all fhe-counter,fhe-add
+```
+
 ### Updating FHEVM Dependencies
 
 When `@fhevm/solidity` or related packages release new versions:
@@ -329,21 +341,13 @@ When `@fhevm/solidity` or related packages release new versions:
 1. **Update the submodule template:**
 
    ```bash
-   # Fetches the latest changes from fhevm-hardhat-template upstream repo
    git submodule update --remote --merge
    ```
 
-2. **Test example generation:**
+2. **Test all examples for compatibility:**
 
    ```bash
-   npm run create-example fhe-counter ./test-output
-   cd test-output && npm install && npm run test
-   ```
-
-   Or use **interactive mode** which includes install & test options:
-
-   ```bash
-   npm run create
+   npm run test-all
    ```
 
 3. **Regenerate documentation if APIs changed:**
