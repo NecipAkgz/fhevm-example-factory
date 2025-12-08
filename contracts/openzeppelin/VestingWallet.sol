@@ -12,8 +12,7 @@ import {
 } from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
 
 /**
- * @title VestingWalletExample
- * @notice Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!
+ * Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!
  *
  * @dev Timeline: |--START--|---VESTING---|--END--|
  *                 0%        linear        100%
@@ -56,14 +55,14 @@ contract VestingWalletExample is
         return start() + duration();
     }
 
-    /// @notice Encrypted amount already released for token
+    /// Encrypted amount already released for token
     function released(address token) public view virtual returns (euint128) {
         return _tokenReleased[token];
     }
 
     // ==================== CORE LOGIC ====================
 
-    /// @notice Calculate how much can be released now
+    /// Calculate how much can be released now
     /// @dev Returns encrypted amount - no one knows the actual value
     function releasable(address token) public virtual returns (euint64) {
         euint128 vestedAmount_ = vestedAmount(token, uint48(block.timestamp));
@@ -81,7 +80,7 @@ contract VestingWalletExample is
             );
     }
 
-    /// @notice Release vested tokens to beneficiary
+    /// Release vested tokens to beneficiary
     function release(address token) public virtual nonReentrant {
         euint64 amount = releasable(token);
 
@@ -101,7 +100,7 @@ contract VestingWalletExample is
         emit VestingWalletConfidentialTokenReleased(token, amountSent);
     }
 
-    /// @notice Calculate vested amount at timestamp
+    /// Calculate vested amount at timestamp
     function vestedAmount(
         address token,
         uint48 timestamp

@@ -12,8 +12,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title SwapERC7984ToERC20Example
- * @notice Swap confidential ERC7984 tokens to regular ERC20 tokens
+ * Swap confidential ERC7984 tokens to regular ERC20 tokens
  *
  * @dev Uses FHEVM v0.9 decryption:
  *      FHE.makePubliclyDecryptable() + FHE.checkSignatures()
@@ -45,7 +44,7 @@ contract SwapERC7984ToERC20Example is ZamaEthereumConfig {
 
     // ==================== STEP 1: INITIATE ====================
 
-    /// @notice Start the swap - transfers ERC7984 and requests decryption
+    /// Start the swap - transfers ERC7984 and requests decryption
     function initiateSwap(
         externalEuint64 encryptedInput,
         bytes calldata inputProof
@@ -76,10 +75,10 @@ contract SwapERC7984ToERC20Example is ZamaEthereumConfig {
 
     // ==================== STEP 2: FINALIZE ====================
 
-    /// @notice Complete the swap with decryption proof from KMS
-    /// @param encryptedAmount The handle from initiateSwap
-    /// @param cleartextAmount The decrypted value
-    /// @param decryptionProof Proof from KMS that decryption is valid
+    /// Complete the swap with decryption proof from KMS
+    /// encryptedAmount: The handle from initiateSwap
+    /// cleartextAmount: The decrypted value
+    /// decryptionProof: Proof from KMS that decryption is valid
     function finalizeSwap(
         euint64 encryptedAmount,
         uint64 cleartextAmount,

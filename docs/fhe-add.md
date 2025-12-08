@@ -21,8 +21,7 @@ import {FHE, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title FHEAdd
- * @notice Simple example: adding two encrypted values (a + b)
+ * Simple example: adding two encrypted values (a + b)
  */
 contract FHEAdd is ZamaEthereumConfig {
     euint8 private _a;
@@ -31,20 +30,20 @@ contract FHEAdd is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// @notice Set the first operand (encrypted)
+    /// Set the first operand (encrypted)
     function setA(externalEuint8 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
         // Only contract needs permission to use this for computation
         FHE.allowThis(_a);
     }
 
-    /// @notice Set the second operand (encrypted)
+    /// Set the second operand (encrypted)
     function setB(externalEuint8 inputB, bytes calldata inputProof) external {
         _b = FHE.fromExternal(inputB, inputProof);
         FHE.allowThis(_b);
     }
 
-    /// @notice Compute a + b on encrypted values
+    /// Compute a + b on encrypted values
     /// @dev The contract computes on ciphertexts - it never sees actual values!
     function computeAPlusB() external {
         // 🔐 Addition on encrypted values

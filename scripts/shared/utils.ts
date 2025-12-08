@@ -222,7 +222,7 @@ The main contract is \`${contractName}\` located in \`contracts/${contractName}.
 
 ## Resources
 
-- [FHEVM Documentation](https://docs.zama.ai/fhevm)
+- [FHEVM Documentation](https://docs.zama.org/protocol/solidity-guides)
 - [FHEVM Examples](https://docs.zama.org/protocol/examples)
 
 ## License
@@ -261,7 +261,7 @@ npm run test
 
 ## Resources
 
-- [FHEVM Documentation](https://docs.zama.ai/fhevm)
+- [FHEVM Documentation](https://docs.zama.org/protocol/solidity-guides
 - [FHEVM Examples](https://docs.zama.org/protocol/examples)
 
 ## License

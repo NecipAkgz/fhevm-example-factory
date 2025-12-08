@@ -13,8 +13,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title EncryptMultipleValues
- * @notice Demonstrates encrypting multiple values of different types
+ * Demonstrates encrypting multiple values of different types
  *
  * @dev Supported encrypted types:
  *   - euint8/16/32/64/128/256: encrypted integers
@@ -30,7 +29,7 @@ contract EncryptMultipleValues is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// @notice Store multiple encrypted values from a single batched input
+    /// Store multiple encrypted values from a single batched input
     /// @dev Client-side batching example:
     ///   const input = await fhevm.createEncryptedInput(contractAddr, userAddr)
     ///     .addBool(true).add32(123).addAddress(addr).encrypt();

@@ -21,21 +21,20 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title FHECounter
- * @notice Simple encrypted counter - the "Hello World" of FHEVM
+ * Simple encrypted counter - the "Hello World" of FHEVM
  */
 contract FHECounter is ZamaEthereumConfig {
     // 🔐 The count is always encrypted - no one can see the actual value
     euint32 private _count;
 
-    /// @notice Returns the encrypted count handle (not the actual value!)
+    /// Returns the encrypted count handle (not the actual value!)
     function getCount() external view returns (euint32) {
         return _count;
     }
 
-    /// @notice Increments the counter by an encrypted value
-    /// @param inputEuint32 The encrypted increment value (created client-side)
-    /// @param inputProof Proof that the encryption is valid for this contract+user
+    /// Increments the counter by an encrypted value
+    /// inputEuint32: The encrypted increment value (created client-side)
+    /// inputProof: Proof that the encryption is valid for this contract+user
     function increment(
         externalEuint32 inputEuint32,
         bytes calldata inputProof
@@ -53,7 +52,7 @@ contract FHECounter is ZamaEthereumConfig {
         FHE.allow(_count, msg.sender); // Caller can decrypt it
     }
 
-    /// @notice Decrements the counter by an encrypted value
+    /// Decrements the counter by an encrypted value
     function decrement(
         externalEuint32 inputEuint32,
         bytes calldata inputProof

@@ -11,8 +11,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title FHEInputProof
- * @notice Demonstrates input proof validation - how users securely submit encrypted data
+ * Demonstrates input proof validation - how users securely submit encrypted data
  *
  * @dev Why proofs? They ensure:
  *      1. Ciphertext is valid (not garbage data)
@@ -28,9 +27,9 @@ contract FHEInputProof is ZamaEthereumConfig {
 
     // ==================== SINGLE INPUT ====================
 
-    /// @notice Receive single encrypted value with proof
-    /// @param encryptedInput Handle from client (fhevm.createEncryptedInput)
-    /// @param inputProof Proof that encryption is valid
+    /// Receive single encrypted value with proof
+    /// encryptedInput: Handle from client (fhevm.createEncryptedInput)
+    /// inputProof: Proof that encryption is valid
     function setSingleValue(
         externalEuint32 encryptedInput,
         bytes calldata inputProof
@@ -49,7 +48,7 @@ contract FHEInputProof is ZamaEthereumConfig {
 
     // ==================== MULTIPLE INPUTS (BATCHED) ====================
 
-    /// @notice Receive multiple encrypted values with SINGLE proof
+    /// Receive multiple encrypted values with SINGLE proof
     /// @dev Client-side batching is more gas-efficient!
     ///
     /// Client code:
@@ -76,7 +75,7 @@ contract FHEInputProof is ZamaEthereumConfig {
 
     // ==================== COMPUTATION WITH NEW INPUT ====================
 
-    /// @notice Add new encrypted input to existing stored value
+    /// Add new encrypted input to existing stored value
     function addToValue(
         externalEuint32 addend,
         bytes calldata inputProof

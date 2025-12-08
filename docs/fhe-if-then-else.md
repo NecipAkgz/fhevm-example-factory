@@ -21,8 +21,7 @@ import {FHE, ebool, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title FHEIfThenElse
- * @notice Demonstrates conditional logic: max(a, b) using encrypted comparison
+ * Demonstrates conditional logic: max(a, b) using encrypted comparison
  */
 contract FHEIfThenElse is ZamaEthereumConfig {
     euint8 private _a;
@@ -41,8 +40,8 @@ contract FHEIfThenElse is ZamaEthereumConfig {
         FHE.allowThis(_b);
     }
 
-    /// @notice Compute max(a, b) without revealing which is larger
-    /// @dev Uses FHE.select() - the encrypted "if-then-else"
+    /// Compute max(a, b) without revealing which is larger
+    /// Uses FHE.select() - the encrypted "if-then-else"
     function computeMax() external {
         // 🔍 Compare encrypted values - result is encrypted boolean!
         // We don't know if a >= b, only the encrypted result

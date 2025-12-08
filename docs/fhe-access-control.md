@@ -21,8 +21,7 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title FHEAccessControl
- * @notice Demonstrates FHE access control - the most critical concept in FHEVM
+ * Demonstrates FHE access control - the most critical concept in FHEVM
  *
  * @dev Key functions:
  *      FHE.allow(handle, address) - permanent permission
@@ -37,7 +36,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
 
     // ==================== CORRECT PATTERN ====================
 
-    /// @notice ✅ CORRECT: Full access pattern for user decryption
+    /// ✅ CORRECT: Full access pattern for user decryption
     function storeWithFullAccess(
         externalEuint32 input,
         bytes calldata inputProof
@@ -55,7 +54,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
         hasAccess[msg.sender] = true;
     }
 
-    /// @notice Grant access to additional users
+    /// Grant access to additional users
     function grantAccess(address user) external {
         require(hasAccess[msg.sender], "Caller has no access to grant");
 
@@ -70,7 +69,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
 
     // ==================== WRONG PATTERNS (EDUCATIONAL) ====================
 
-    /// @notice ❌ WRONG: Missing allowThis → user decryption FAILS
+    /// ❌ WRONG: Missing allowThis → user decryption FAILS
     function storeWithoutAllowThis(
         externalEuint32 input,
         bytes calldata inputProof
@@ -82,7 +81,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
         FHE.allow(_secretValue, msg.sender);
     }
 
-    /// @notice ❌ WRONG: Missing allow(user) → no one can decrypt
+    /// ❌ WRONG: Missing allow(user) → no one can decrypt
     function storeWithoutUserAllow(
         externalEuint32 input,
         bytes calldata inputProof
@@ -96,7 +95,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
 
     // ==================== TRANSIENT ACCESS ====================
 
-    /// @notice Temporary access - expires at end of transaction
+    /// Temporary access - expires at end of transaction
     /// @dev Use for: passing values between contracts in same tx
     function computeAndShareTransient(
         address recipient

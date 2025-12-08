@@ -5,8 +5,7 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title FHEHandles
- * @notice Demonstrates FHE handle lifecycle: creation, computation, and storage
+ * Demonstrates FHE handle lifecycle: creation, computation, and storage
  *
  * @dev Handle = uint256 pointer to encrypted data stored by FHE coprocessor.
  *      Types: euint8/16/32/64/128/256, ebool, eaddress, ebytes64/128/256
@@ -24,7 +23,7 @@ contract FHEHandles is ZamaEthereumConfig {
 
     // ==================== HANDLE CREATION ====================
 
-    /// @notice Pattern 1: Create handle from user's encrypted input
+    /// Pattern 1: Create handle from user's encrypted input
     function createFromExternal(
         externalEuint32 input,
         bytes calldata inputProof
@@ -41,7 +40,7 @@ contract FHEHandles is ZamaEthereumConfig {
         FHE.allow(_storedValue, msg.sender);
     }
 
-    /// @notice Pattern 2: Create handle from plaintext constant
+    /// Pattern 2: Create handle from plaintext constant
     /// @dev ⚠️ The plaintext IS visible on-chain! But result is encrypted.
     function createFromPlaintext(uint32 plaintextValue) external {
         uint256 gasBefore = gasleft();
@@ -58,7 +57,7 @@ contract FHEHandles is ZamaEthereumConfig {
 
     // ==================== HANDLE COMPUTATION ====================
 
-    /// @notice Key insight: FHE operations create NEW handles
+    /// Key insight: FHE operations create NEW handles
     /// @dev Original handles are IMMUTABLE - they never change
     function computeNewHandle() external {
         uint256 gasBefore = gasleft();
@@ -79,7 +78,7 @@ contract FHEHandles is ZamaEthereumConfig {
         emit HandleStored("Computed value stored with new handle");
     }
 
-    /// @notice Chained operations = multiple intermediate handles
+    /// Chained operations = multiple intermediate handles
     function chainedOperations() external {
         // 📝 Each operation creates a new handle:
         euint32 step1 = FHE.add(_storedValue, FHE.asEuint32(5)); // Handle #1
@@ -97,7 +96,7 @@ contract FHEHandles is ZamaEthereumConfig {
 
     // ==================== HANDLE IMMUTABILITY ====================
 
-    /// @notice Demonstrates: updating a variable creates NEW handle
+    /// Demonstrates: updating a variable creates NEW handle
     function demonstrateImmutability()
         external
         returns (euint32 original, euint32 updated)

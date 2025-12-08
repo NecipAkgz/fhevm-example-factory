@@ -21,8 +21,7 @@ import {FHE, ebool, euint32, euint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @title UserDecryptMultipleValues
- * @notice Demonstrates user decryption of multiple encrypted values
+ * Demonstrates user decryption of multiple encrypted values
  */
 contract UserDecryptMultipleValues is ZamaEthereumConfig {
     // 🔐 Multiple encrypted values of different types
@@ -32,9 +31,9 @@ contract UserDecryptMultipleValues is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// @notice Initialize multiple encrypted values from plaintext
-    /// @dev Uses FHE.asEuintX() to create encrypted constants from plaintext
-    ///      (The plaintext IS visible on-chain, but result is encrypted)
+    /// Initialize multiple encrypted values from plaintext
+    /// Uses FHE.asEuintX() to create encrypted constants from plaintext
+    /// (The plaintext IS visible on-chain, but result is encrypted)
     function initialize(bool a, uint32 b, uint64 c) external {
         // Create encrypted values from plaintext constants
         // FHE.asEbool(a) encrypts a boolean value
