@@ -133,7 +133,7 @@ fhevm-examples-generator/
 
 ## 📋 Available Examples
 
-**20 examples total** - Click to expand each category:
+**22 examples total** - Click to expand each category:
 
 <details>
 <summary><b>🟢 Basic & Encryption Examples (3)</b></summary>
@@ -185,6 +185,14 @@ fhevm-examples-generator/
 
 </details>
 
+<details>
+<summary><b>🚀 Advanced Examples (2)</b></summary>
+
+- `blind-auction` - Encrypted bids, winner computed via FHE.gt/select
+- `hidden-voting` - Homomorphic vote tallying, private ballots
+
+</details>
+
 ---
 
 ## 📦 Categories
@@ -195,6 +203,7 @@ Generate entire category projects with multiple related examples:
 - **`concepts`** (4 examples) - Access control, proofs, handles, anti-patterns
 - **`operations`** (4 examples) - Arithmetic, comparison, conditionals
 - **`openzeppelin`** (5 examples) - ERC7984, wrappers, swaps, vesting
+- **`advanced`** (2 examples) - Blind auction, encrypted voting
 
 ```bash
 npm run create-category basic ./my-basic-project

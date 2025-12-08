@@ -225,6 +225,26 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet",
   },
+
+  // Advanced Examples
+  "blind-auction": {
+    contract: "contracts/advanced/BlindAuction.sol",
+    test: "test/advanced/BlindAuction.ts",
+    description:
+      "Encrypted blind auction where bids remain confidential. Uses FHE.gt() and FHE.select() to find the winner without revealing losing bids. Only the winning price is decrypted.",
+    category: "Advanced",
+    docsOutput: "docs/advanced/blind-auction.md",
+    title: "Blind Auction",
+  },
+  "hidden-voting": {
+    contract: "contracts/advanced/HiddenVoting.sol",
+    test: "test/advanced/HiddenVoting.ts",
+    description:
+      "Encrypted voting mechanism with homomorphic tallying. Individual votes remain private forever while final counts are revealed using FHE.makePubliclyDecryptable().",
+    category: "Advanced",
+    docsOutput: "docs/advanced/hidden-voting.md",
+    title: "Hidden Voting",
+  },
 };
 
 // =============================================================================
@@ -343,6 +363,21 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/openzeppelin/VestingWallet.sol",
         test: "test/openzeppelin/VestingWallet.ts",
+      },
+    ],
+  },
+  advanced: {
+    name: "Advanced Examples",
+    description:
+      "Complex FHE applications: blind auctions, encrypted voting systems",
+    contracts: [
+      {
+        sol: "contracts/advanced/BlindAuction.sol",
+        test: "test/advanced/BlindAuction.ts",
+      },
+      {
+        sol: "contracts/advanced/HiddenVoting.sol",
+        test: "test/advanced/HiddenVoting.ts",
       },
     ],
   },

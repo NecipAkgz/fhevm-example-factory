@@ -24,6 +24,11 @@
 - [Handles & Lifecycle](fhe-handles.md)
 - [Anti-Patterns](fhe-anti-patterns.md)
 
+## Advanced Examples
+
+- [Blind Auction](advanced/blind-auction.md)
+- [Hidden Voting](advanced/hidden-voting.md)
+
 ## OpenZeppelin Confidential Contracts
 
 - [Library Installation and Overview](openzeppelin/README.md)
