@@ -46,10 +46,10 @@ contract HeadsOrTails is ZamaEthereumConfig {
         ebool encryptedHasHeadsWon
     );
 
-    /// Initiates a new Heads or Tails game, generates the result using FHE,
-    /// and makes the result publicly available for decryption.
-    /// headsPlayer: The player address choosing Heads.
-    /// tailsPlayer: The player address choosing Tails.
+    /// @notice Initiates a new Heads or Tails game, generates the result using FHE,
+    /// @notice and makes the result publicly available for decryption.
+    /// @dev headsPlayer: The player address choosing Heads.
+    ///      tailsPlayer: The player address choosing Tails.
     function headsOrTails(address headsPlayer, address tailsPlayer) external {
         require(headsPlayer != address(0), "Heads player is address zero");
         require(tailsPlayer != address(0), "Tails player is address zero");
@@ -86,21 +86,21 @@ contract HeadsOrTails is ZamaEthereumConfig {
         );
     }
 
-    /// Returns the number of games created so far.
+    /// @notice Returns the number of games created so far.
     function getGamesCount() public view returns (uint256) {
         return counter;
     }
 
-    /// Returns the encrypted ebool handle that stores the game result.
-    /// gameId: The ID of the game.
-    /// returns: The encrypted result (ebool handle).
+    /// @notice Returns the encrypted ebool handle that stores the game result.
+    /// @dev gameId: The ID of the game.
+    ///      returns: The encrypted result (ebool handle).
     function hasHeadsWon(uint256 gameId) public view returns (ebool) {
         return games[gameId].encryptedHasHeadsWon;
     }
 
-    /// Returns the address of the game winner.
-    /// gameId: The ID of the game.
-    /// returns: The winner's address (address(0) if not yet revealed).
+    /// @notice Returns the address of the game winner.
+    /// @dev gameId: The ID of the game.
+    ///      returns: The winner's address (address(0) if not yet revealed).
     function getWinner(uint256 gameId) public view returns (address) {
         require(
             games[gameId].winner != address(0),
@@ -109,11 +109,11 @@ contract HeadsOrTails is ZamaEthereumConfig {
         return games[gameId].winner;
     }
 
-    /// Verifies the provided (decryption proof, ABI-encoded clear value) pair against the stored ciphertext,
-    /// and then stores the winner of the game.
-    /// gameId: The ID of the game to settle.
-    /// abiEncodedClearGameResult: The ABI-encoded clear value (bool) associated to the `decryptionProof`.
-    /// decryptionProof: The proof that validates the decryption.
+    /// @notice Verifies the provided (decryption proof, ABI-encoded clear value) pair against the stored ciphertext,
+    /// @notice and then stores the winner of the game.
+    /// @dev gameId: The ID of the game to settle.
+    ///      abiEncodedClearGameResult: The ABI-encoded clear value (bool) associated to the `decryptionProof`.
+    ///      decryptionProof: The proof that validates the decryption.
     function recordAndVerifyWinner(
         uint256 gameId,
         bytes memory abiEncodedClearGameResult,

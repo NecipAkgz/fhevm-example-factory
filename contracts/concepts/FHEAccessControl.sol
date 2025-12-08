@@ -20,7 +20,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
 
     // ==================== CORRECT PATTERN ====================
 
-    /// ✅ CORRECT: Full access pattern for user decryption
+    /// @notice ✅ CORRECT: Full access pattern for user decryption
     function storeWithFullAccess(
         externalEuint32 input,
         bytes calldata inputProof
@@ -38,7 +38,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
         hasAccess[msg.sender] = true;
     }
 
-    /// Grant access to additional users
+    /// @notice Grant access to additional users
     function grantAccess(address user) external {
         require(hasAccess[msg.sender], "Caller has no access to grant");
 
@@ -53,7 +53,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
 
     // ==================== WRONG PATTERNS (EDUCATIONAL) ====================
 
-    /// ❌ WRONG: Missing allowThis → user decryption FAILS
+    /// @notice ❌ WRONG: Missing allowThis → user decryption FAILS
     function storeWithoutAllowThis(
         externalEuint32 input,
         bytes calldata inputProof
@@ -65,7 +65,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
         FHE.allow(_secretValue, msg.sender);
     }
 
-    /// ❌ WRONG: Missing allow(user) → no one can decrypt
+    /// @notice ❌ WRONG: Missing allow(user) → no one can decrypt
     function storeWithoutUserAllow(
         externalEuint32 input,
         bytes calldata inputProof
@@ -79,7 +79,7 @@ contract FHEAccessControl is ZamaEthereumConfig {
 
     // ==================== TRANSIENT ACCESS ====================
 
-    /// Temporary access - expires at end of transaction
+    /// @notice Temporary access - expires at end of transaction
     /// @dev Use for: passing values between contracts in same tx
     function computeAndShareTransient(
         address recipient

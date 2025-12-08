@@ -232,7 +232,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
     //     // }
     // }
 
-    /// ✅ CORRECT: Use fixed iteration count with select
+    /// @notice ✅ CORRECT: Use fixed iteration count with select
     /// @dev Always iterate the maximum possible times, use FHE.select to
     ///      conditionally apply operations
     function correctFixedIterations() external {

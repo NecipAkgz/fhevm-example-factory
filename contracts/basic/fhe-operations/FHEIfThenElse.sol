@@ -24,8 +24,8 @@ contract FHEIfThenElse is ZamaEthereumConfig {
         FHE.allowThis(_b);
     }
 
-    /// Compute max(a, b) without revealing which is larger
-    /// Uses FHE.select() - the encrypted "if-then-else"
+    /// @notice Compute max(a, b) without revealing which is larger
+    /// @notice Uses FHE.select() - the encrypted "if-then-else"
     function computeMax() external {
         // 🔍 Compare encrypted values - result is encrypted boolean!
         // We don't know if a >= b, only the encrypted result

@@ -23,7 +23,7 @@ contract FHEHandles is ZamaEthereumConfig {
 
     // ==================== HANDLE CREATION ====================
 
-    /// Pattern 1: Create handle from user's encrypted input
+    /// @notice Pattern 1: Create handle from user's encrypted input
     function createFromExternal(
         externalEuint32 input,
         bytes calldata inputProof
@@ -40,7 +40,7 @@ contract FHEHandles is ZamaEthereumConfig {
         FHE.allow(_storedValue, msg.sender);
     }
 
-    /// Pattern 2: Create handle from plaintext constant
+    /// @notice Pattern 2: Create handle from plaintext constant
     /// @dev ⚠️ The plaintext IS visible on-chain! But result is encrypted.
     function createFromPlaintext(uint32 plaintextValue) external {
         uint256 gasBefore = gasleft();
@@ -57,7 +57,7 @@ contract FHEHandles is ZamaEthereumConfig {
 
     // ==================== HANDLE COMPUTATION ====================
 
-    /// Key insight: FHE operations create NEW handles
+    /// @notice Key insight: FHE operations create NEW handles
     /// @dev Original handles are IMMUTABLE - they never change
     function computeNewHandle() external {
         uint256 gasBefore = gasleft();
@@ -78,7 +78,7 @@ contract FHEHandles is ZamaEthereumConfig {
         emit HandleStored("Computed value stored with new handle");
     }
 
-    /// Chained operations = multiple intermediate handles
+    /// @notice Chained operations = multiple intermediate handles
     function chainedOperations() external {
         // 📝 Each operation creates a new handle:
         euint32 step1 = FHE.add(_storedValue, FHE.asEuint32(5)); // Handle #1
@@ -96,7 +96,7 @@ contract FHEHandles is ZamaEthereumConfig {
 
     // ==================== HANDLE IMMUTABILITY ====================
 
-    /// Demonstrates: updating a variable creates NEW handle
+    /// @notice Demonstrates: updating a variable creates NEW handle
     function demonstrateImmutability()
         external
         returns (euint32 original, euint32 updated)

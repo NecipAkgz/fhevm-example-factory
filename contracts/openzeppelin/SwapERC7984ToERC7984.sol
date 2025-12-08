@@ -13,11 +13,11 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
  * @dev Both input and output amounts remain encrypted
  */
 contract SwapERC7984ToERC7984Example is ZamaEthereumConfig {
-    /// Swap confidential token for another confidential token
-    /// fromToken: The token to swap from
-    /// toToken: The token to receive
-    /// amountInput: Encrypted amount to swap
-    /// inputProof: Proof for the encrypted input
+    /// @notice Swap confidential token for another confidential token
+    /// @dev fromToken: The token to swap from
+    ///      toToken: The token to receive
+    ///      amountInput: Encrypted amount to swap
+    ///      inputProof: Proof for the encrypted input
     function swapConfidentialForConfidential(
         IERC7984 fromToken,
         IERC7984 toToken,

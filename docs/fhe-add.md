@@ -30,20 +30,20 @@ contract FHEAdd is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// Set the first operand (encrypted)
+    /// @notice Set the first operand (encrypted)
     function setA(externalEuint8 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
         // Only contract needs permission to use this for computation
         FHE.allowThis(_a);
     }
 
-    /// Set the second operand (encrypted)
+    /// @notice Set the second operand (encrypted)
     function setB(externalEuint8 inputB, bytes calldata inputProof) external {
         _b = FHE.fromExternal(inputB, inputProof);
         FHE.allowThis(_b);
     }
 
-    /// Compute a + b on encrypted values
+    /// @notice Compute a + b on encrypted values
     /// @dev The contract computes on ciphertexts - it never sees actual values!
     function computeAPlusB() external {
         // 🔐 Addition on encrypted values

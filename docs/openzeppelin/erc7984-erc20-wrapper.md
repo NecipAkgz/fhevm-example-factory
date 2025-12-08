@@ -25,7 +25,7 @@ import {
 } from "@openzeppelin/confidential-contracts/token/ERC7984/extensions/ERC7984ERC20Wrapper.sol";
 
 /**
- * Wraps ERC20 tokens into confidential ERC7984 tokens
+ * @notice Wraps ERC20 tokens into confidential ERC7984 tokens
  *
  * @dev WRAP: ERC20 → ERC7984 (public → private)
  *      UNWRAP: ERC7984 → ERC20 (private → public, requires decryption)

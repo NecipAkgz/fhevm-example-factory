@@ -27,12 +27,12 @@ contract FHECounter is ZamaEthereumConfig {
     // 🔐 The count is always encrypted - no one can see the actual value
     euint32 private _count;
 
-    /// Returns the encrypted count handle (not the actual value!)
+    /// @notice Returns the encrypted count handle (not the actual value!)
     function getCount() external view returns (euint32) {
         return _count;
     }
 
-    /// Increments the counter by an encrypted value
+    /// @notice Increments the counter by an encrypted value
     /// inputEuint32: The encrypted increment value (created client-side)
     /// inputProof: Proof that the encryption is valid for this contract+user
     function increment(
@@ -52,7 +52,7 @@ contract FHECounter is ZamaEthereumConfig {
         FHE.allow(_count, msg.sender); // Caller can decrypt it
     }
 
-    /// Decrements the counter by an encrypted value
+    /// @notice Decrements the counter by an encrypted value
     function decrement(
         externalEuint32 inputEuint32,
         bytes calldata inputProof

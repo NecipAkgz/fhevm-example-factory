@@ -55,14 +55,14 @@ contract VestingWalletExample is
         return start() + duration();
     }
 
-    /// Encrypted amount already released for token
+    /// @notice Encrypted amount already released for token
     function released(address token) public view virtual returns (euint128) {
         return _tokenReleased[token];
     }
 
     // ==================== CORE LOGIC ====================
 
-    /// Calculate how much can be released now
+    /// @notice Calculate how much can be released now
     /// @dev Returns encrypted amount - no one knows the actual value
     function releasable(address token) public virtual returns (euint64) {
         euint128 vestedAmount_ = vestedAmount(token, uint48(block.timestamp));
@@ -80,7 +80,7 @@ contract VestingWalletExample is
             );
     }
 
-    /// Release vested tokens to beneficiary
+    /// @notice Release vested tokens to beneficiary
     function release(address token) public virtual nonReentrant {
         euint64 amount = releasable(token);
 
@@ -100,7 +100,7 @@ contract VestingWalletExample is
         emit VestingWalletConfidentialTokenReleased(token, amountSent);
     }
 
-    /// Calculate vested amount at timestamp
+    /// @notice Calculate vested amount at timestamp
     function vestedAmount(
         address token,
         uint48 timestamp

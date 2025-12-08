@@ -31,9 +31,9 @@ contract UserDecryptMultipleValues is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// Initialize multiple encrypted values from plaintext
-    /// Uses FHE.asEuintX() to create encrypted constants from plaintext
-    /// (The plaintext IS visible on-chain, but result is encrypted)
+    /// @notice Initialize multiple encrypted values from plaintext
+    /// @dev Uses FHE.asEuintX() to create encrypted constants from plaintext
+    ///      (The plaintext IS visible on-chain, but result is encrypted)
     function initialize(bool a, uint32 b, uint64 c) external {
         // Create encrypted values from plaintext constants
         // FHE.asEbool(a) encrypts a boolean value

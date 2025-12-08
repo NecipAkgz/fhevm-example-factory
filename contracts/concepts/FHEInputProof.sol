@@ -27,9 +27,9 @@ contract FHEInputProof is ZamaEthereumConfig {
 
     // ==================== SINGLE INPUT ====================
 
-    /// Receive single encrypted value with proof
-    /// encryptedInput: Handle from client (fhevm.createEncryptedInput)
-    /// inputProof: Proof that encryption is valid
+    /// @notice Receive single encrypted value with proof
+    /// @dev encryptedInput: Handle from client (fhevm.createEncryptedInput)
+    ///      inputProof: Proof that encryption is valid
     function setSingleValue(
         externalEuint32 encryptedInput,
         bytes calldata inputProof
@@ -48,7 +48,7 @@ contract FHEInputProof is ZamaEthereumConfig {
 
     // ==================== MULTIPLE INPUTS (BATCHED) ====================
 
-    /// Receive multiple encrypted values with SINGLE proof
+    /// @notice Receive multiple encrypted values with SINGLE proof
     /// @dev Client-side batching is more gas-efficient!
     ///
     /// Client code:
@@ -75,7 +75,7 @@ contract FHEInputProof is ZamaEthereumConfig {
 
     // ==================== COMPUTATION WITH NEW INPUT ====================
 
-    /// Add new encrypted input to existing stored value
+    /// @notice Add new encrypted input to existing stored value
     function addToValue(
         externalEuint32 addend,
         bytes calldata inputProof

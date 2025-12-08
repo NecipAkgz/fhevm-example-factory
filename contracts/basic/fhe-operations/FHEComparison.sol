@@ -32,55 +32,55 @@ contract FHEComparison is ZamaEthereumConfig {
     // solhint-disable-next-line no-empty-blocks
     constructor() {}
 
-    /// Sets the first operand (encrypted)
+    /// @notice Sets the first operand (encrypted)
     function setA(externalEuint32 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
         FHE.allowThis(_a);
     }
 
-    /// Sets the second operand (encrypted)
+    /// @notice Sets the second operand (encrypted)
     function setB(externalEuint32 inputB, bytes calldata inputProof) external {
         _b = FHE.fromExternal(inputB, inputProof);
         FHE.allowThis(_b);
     }
 
-    /// Computes encrypted equality: result = (a == b)
+    /// @notice Computes encrypted equality: result = (a == b)
     function computeEq() external {
         _boolResult = FHE.eq(_a, _b);
         _grantBoolPermissions();
     }
 
-    /// Computes encrypted inequality: result = (a != b)
+    /// @notice Computes encrypted inequality: result = (a != b)
     function computeNe() external {
         _boolResult = FHE.ne(_a, _b);
         _grantBoolPermissions();
     }
 
-    /// Computes encrypted greater than: result = (a > b)
+    /// @notice Computes encrypted greater than: result = (a > b)
     function computeGt() external {
         _boolResult = FHE.gt(_a, _b);
         _grantBoolPermissions();
     }
 
-    /// Computes encrypted less than: result = (a < b)
+    /// @notice Computes encrypted less than: result = (a < b)
     function computeLt() external {
         _boolResult = FHE.lt(_a, _b);
         _grantBoolPermissions();
     }
 
-    /// Computes encrypted greater or equal: result = (a >= b)
+    /// @notice Computes encrypted greater or equal: result = (a >= b)
     function computeGe() external {
         _boolResult = FHE.ge(_a, _b);
         _grantBoolPermissions();
     }
 
-    /// Computes encrypted less or equal: result = (a <= b)
+    /// @notice Computes encrypted less or equal: result = (a <= b)
     function computeLe() external {
         _boolResult = FHE.le(_a, _b);
         _grantBoolPermissions();
     }
 
-    /// Computes encrypted maximum using select: result = (a > b) ? a : b
+    /// @notice Computes encrypted maximum using select: result = (a > b) ? a : b
     /// @dev Demonstrates FHE.select for conditional logic on encrypted values
     function computeMaxViaSelect() external {
         ebool aGtB = FHE.gt(_a, _b);
@@ -89,7 +89,7 @@ contract FHEComparison is ZamaEthereumConfig {
         FHE.allow(_selectedResult, msg.sender);
     }
 
-    /// Computes encrypted minimum using select: result = (a < b) ? a : b
+    /// @notice Computes encrypted minimum using select: result = (a < b) ? a : b
     function computeMinViaSelect() external {
         ebool aLtB = FHE.lt(_a, _b);
         _selectedResult = FHE.select(aLtB, _a, _b);
@@ -97,12 +97,12 @@ contract FHEComparison is ZamaEthereumConfig {
         FHE.allow(_selectedResult, msg.sender);
     }
 
-    /// Returns the encrypted boolean result
+    /// @notice Returns the encrypted boolean result
     function getBoolResult() public view returns (ebool) {
         return _boolResult;
     }
 
-    /// Returns the encrypted selected result
+    /// @notice Returns the encrypted selected result
     function getSelectedResult() public view returns (euint32) {
         return _selectedResult;
     }

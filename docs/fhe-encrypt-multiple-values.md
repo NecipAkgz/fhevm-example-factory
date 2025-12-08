@@ -45,7 +45,7 @@ contract EncryptMultipleValues is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// Store multiple encrypted values from a single batched input
+    /// @notice Store multiple encrypted values from a single batched input
     /// @dev Client-side batching example:
     ///   const input = await fhevm.createEncryptedInput(contractAddr, userAddr)
     ///     .addBool(true).add32(123).addAddress(addr).encrypt();

@@ -29,9 +29,9 @@ contract EncryptSingleValue is ZamaEthereumConfig {
 
     constructor() {}
 
-    /// Store an encrypted value submitted by the user
-    /// inputEuint32: Encrypted value (created client-side with fhevm.createEncryptedInput())
-    /// inputProof: Zero-knowledge proof that the encryption is valid
+    /// @notice Store an encrypted value submitted by the user
+    /// @dev inputEuint32: Encrypted value (created client-side with fhevm.createEncryptedInput())
+    ///      inputProof: Zero-knowledge proof that the encryption is valid
     function initialize(
         externalEuint32 inputEuint32,
         bytes calldata inputProof
