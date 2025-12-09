@@ -1,0 +1,46 @@
+{
+  "name": "create-fhevm-example",
+  "version": "1.0.1",
+  "description": "Create FHEVM example projects with a single command",
+  "type": "module",
+  "bin": {
+    "create-fhevm-example": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "fhevm",
+    "zama",
+    "encryption",
+    "blockchain",
+    "examples",
+    "cli",
+    "create",
+    "scaffold"
+  ],
+  "author": "Zama",
+  "license": "BSD-3-Clause-Clear",
+  "engines": {
+    "node": ">=20"
+  },
+  "homepage": "https://github.com/NecipAkgz/fhevm-example-factory/tree/main/packages/create-fhevm-example#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NecipAkgz/fhevm-example-factory",
+    "directory": "packages/create-fhevm-example"
+  },
+  "dependencies": {
+    "@clack/prompts": "^0.11.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.8",
+    "typescript": "^5.8.3"
+  }
+}

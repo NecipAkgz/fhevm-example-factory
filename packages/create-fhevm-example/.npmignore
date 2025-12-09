@@ -1,0 +1,17 @@
+# Source files
+src/
+
+# Development
+node_modules/
+*.log
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/

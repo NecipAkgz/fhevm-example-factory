@@ -12,6 +12,9 @@
     "test-all": "npx ts-node scripts/maintenance.ts test-all",
     "postinstall": "git submodule update --init --recursive"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "keywords": [
     "fhevm",
     "zama",
@@ -28,7 +31,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/zama-ai/fhevm-examples"
+    "url": "https://github.com/NecipAkgz/fhevm-example-factory"
   },
   "devDependencies": {
     "@clack/prompts": "^0.11.0",
