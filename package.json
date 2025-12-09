@@ -8,7 +8,7 @@
     "create-category": "npx ts-node scripts/create.ts category",
     "create-docs": "npx ts-node scripts/create.ts docs",
     "create-docs-all": "npx ts-node scripts/create.ts docs --all",
-    "create-help": "npx ts-node scripts/create.ts help",
+    "create help": "npx ts-node scripts/create.ts help",
     "test-all": "npx ts-node scripts/maintenance.ts test-all",
     "postinstall": "git submodule update --init --recursive"
   },

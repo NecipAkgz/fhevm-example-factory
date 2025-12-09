@@ -89,7 +89,7 @@ npm run create-docs [name]
 npm run create-docs-all
 
 # ❓ Show Help
-npm run create-help
+npm run create help
 ```
 
 ---
@@ -223,7 +223,7 @@ Empower your development with tools designed to automate the repetitive parts of
 
 Creates a production-ready Hardhat environment tailored for a single example. It handles the heavy lifting:
 
-- 🏗️ **Scaffolds** a new project using the official `fhevm-hardhat-template`
+- 🏗️ **Scaffolds** a new clean project using the official `fhevm-hardhat-template`
 - 📋 **Injects** the specific contract and its corresponding test suite
 - ⚙️ **Configures** Hardhat and generates deployment scripts automatically
 - 📝 **Customizes** the README with project-specific details
