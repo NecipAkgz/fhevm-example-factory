@@ -346,5 +346,3 @@ When adding new examples:
 6. Verify documentation renders correctly in GitBook
 
 ---
-
-**Built with ❤️ using [FHEVM](https://github.com/zama-ai/fhevm) by Zama**

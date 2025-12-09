@@ -47,7 +47,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/FHECounter.sol",
     test: "test/basic/FHECounter.ts",
     description:
-      "This example demonstrates how to build a confidential counter using FHEVM, in comparison to a simple counter.",
+      "Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.",
     category: "Basic",
     docsOutput: "docs/fhe-counter.md",
     title: "FHE Counter",
@@ -56,7 +56,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/encrypt/EncryptSingleValue.sol",
     test: "test/basic/encrypt/EncryptSingleValue.ts",
     description:
-      "This example demonstrates the FHE encryption mechanism and highlights a common pitfall developers may encounter.",
+      "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
     category: "Basic - Encryption",
     docsOutput: "docs/fhe-encrypt-single-value.md",
     title: "Encrypt Single Value",
@@ -65,7 +65,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/encrypt/EncryptMultipleValues.sol",
     test: "test/basic/encrypt/EncryptMultipleValues.ts",
     description:
-      "This example shows how to encrypt and handle multiple values in a single transaction.",
+      "Encrypting and handling multiple values in a single transaction efficiently.",
     category: "Basic - Encryption",
     docsOutput: "docs/fhe-encrypt-multiple-values.md",
     title: "Encrypt Multiple Values",
@@ -74,7 +74,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/UserDecryptSingleValue.sol",
     test: "test/basic/decrypt/UserDecryptSingleValue.ts",
     description:
-      "This example demonstrates the FHE user decryption mechanism and highlights common pitfalls developers may encounter.",
+      "FHE user decryption mechanism for single values, with common pitfalls and correct implementation patterns.",
     category: "Basic - Decryption",
     docsOutput: "docs/fhe-user-decrypt-single-value.md",
     title: "User Decrypt Single Value",
@@ -83,7 +83,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/UserDecryptMultipleValues.sol",
     test: "test/basic/decrypt/UserDecryptMultipleValues.ts",
     description:
-      "This example shows how to decrypt multiple encrypted values for a user.",
+      "Decrypting multiple encrypted values for a user in a single operation.",
     category: "Basic - Decryption",
     docsOutput: "docs/fhe-user-decrypt-multiple-values.md",
     title: "User Decrypt Multiple Values",
@@ -92,7 +92,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/PublicDecryptSingleValue.sol",
     test: "test/basic/decrypt/PublicDecryptSingleValue.ts",
     description:
-      "This example demonstrates how to publicly decrypt a single encrypted value on-chain.",
+      "Publicly decrypting a single encrypted value on-chain for transparent results.",
     category: "Basic - Decryption",
     docsOutput: "docs/fhe-public-decrypt-single-value.md",
     title: "Public Decrypt Single Value",
@@ -101,7 +101,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/PublicDecryptMultipleValues.sol",
     test: "test/basic/decrypt/PublicDecryptMultipleValues.ts",
     description:
-      "This example shows how to publicly decrypt multiple encrypted values in a single transaction.",
+      "Publicly decrypting multiple encrypted values in a single transaction for batch transparency.",
     category: "Basic - Decryption",
     docsOutput: "docs/fhe-public-decrypt-multiple-values.md",
     title: "Public Decrypt Multiple Values",
@@ -110,7 +110,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEAdd.sol",
     test: "test/basic/fhe-operations/FHEAdd.ts",
     description:
-      "This example demonstrates how to perform addition operations on encrypted values.",
+      "Addition operations on encrypted values using FHE.add() for homomorphic computation.",
     category: "FHE Operations",
     docsOutput: "docs/fhe-add.md",
     title: "FHE Add Operation",
@@ -119,7 +119,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
     test: "test/basic/fhe-operations/FHEIfThenElse.ts",
     description:
-      "This example shows conditional operations on encrypted values using FHE.",
+      "Conditional operations on encrypted values using FHE.select() for encrypted branching logic.",
     category: "FHE Operations",
     docsOutput: "docs/fhe-if-then-else.md",
     title: "FHE If-Then-Else",
@@ -184,7 +184,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/ERC7984.sol",
     test: "test/openzeppelin/ERC7984.ts",
     description:
-      "This example demonstrates how to create a confidential token (ERC7984) using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. It shows how to extend the ERC7984 base contract with mint/burn functionality.",
+      "Confidential token (ERC7984) with mint/burn functionality using OpenZeppelin's library powered by ZAMA's FHEVM.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/erc7984.md",
     title: "ERC7984 Tutorial",
@@ -193,7 +193,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
     test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
     description:
-      "This example demonstrates how to wrap a standard ERC20 token into a confidential ERC7984 token using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. It enables privacy for any existing ERC20.",
+      "Wrapping standard ERC20 tokens into confidential ERC7984 tokens to enable privacy for any existing ERC20.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
     title: "ERC7984 to ERC20 Wrapper",
@@ -202,7 +202,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
     test: "test/openzeppelin/SwapERC7984ToERC20.ts",
     description:
-      "This example demonstrates how to swap between a confidential token (ERC7984) and ERC20 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. It uses the new v0.9 decryption API (makePubliclyDecryptable + checkSignatures).",
+      "Swapping between confidential ERC7984 and ERC20 tokens using the new v0.9 decryption API (makePubliclyDecryptable + checkSignatures).",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
     title: "Swap ERC7984 to ERC20",
@@ -211,7 +211,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
     test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
     description:
-      "This example demonstrates how to perform a fully confidential atomic swap between two ERC7984 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. Both input and output amounts remain encrypted.",
+      "Fully confidential atomic swap between two ERC7984 tokens where both input and output amounts remain encrypted.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 to ERC7984",
@@ -220,7 +220,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/VestingWallet.sol",
     test: "test/openzeppelin/VestingWallet.ts",
     description:
-      "This example demonstrates how to create a linear vesting wallet for ERC7984 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. Vested amounts remain encrypted for privacy.",
+      "Linear vesting wallet for ERC7984 tokens where vested amounts remain encrypted for privacy.",
     category: "OpenZeppelin",
     docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet",

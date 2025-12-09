@@ -47,7 +47,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/FHECounter.sol",
     test: "test/basic/FHECounter.ts",
     description:
-      "This example demonstrates how to build a confidential counter using FHEVM, in comparison to a simple counter.",
+      "Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.",
     category: "Basic",
     title: "FHE Counter",
   },
@@ -55,7 +55,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/encrypt/EncryptSingleValue.sol",
     test: "test/basic/encrypt/EncryptSingleValue.ts",
     description:
-      "This example demonstrates the FHE encryption mechanism and highlights a common pitfall developers may encounter.",
+      "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
     category: "Basic - Encryption",
     title: "Encrypt Single Value",
   },
@@ -63,7 +63,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/encrypt/EncryptMultipleValues.sol",
     test: "test/basic/encrypt/EncryptMultipleValues.ts",
     description:
-      "This example shows how to encrypt and handle multiple values in a single transaction.",
+      "Encrypting and handling multiple values in a single transaction efficiently.",
     category: "Basic - Encryption",
     title: "Encrypt Multiple Values",
   },
@@ -71,7 +71,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/UserDecryptSingleValue.sol",
     test: "test/basic/decrypt/UserDecryptSingleValue.ts",
     description:
-      "This example demonstrates the FHE user decryption mechanism and highlights common pitfalls developers may encounter.",
+      "FHE user decryption mechanism for single values, with common pitfalls and correct implementation patterns.",
     category: "Basic - Decryption",
     title: "User Decrypt Single Value",
   },
@@ -79,7 +79,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/UserDecryptMultipleValues.sol",
     test: "test/basic/decrypt/UserDecryptMultipleValues.ts",
     description:
-      "This example shows how to decrypt multiple encrypted values for a user.",
+      "Decrypting multiple encrypted values for a user in a single operation.",
     category: "Basic - Decryption",
     title: "User Decrypt Multiple Values",
   },
@@ -87,7 +87,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/PublicDecryptSingleValue.sol",
     test: "test/basic/decrypt/PublicDecryptSingleValue.ts",
     description:
-      "This example demonstrates how to publicly decrypt a single encrypted value on-chain.",
+      "Publicly decrypting a single encrypted value on-chain for transparent results.",
     category: "Basic - Decryption",
     title: "Public Decrypt Single Value",
   },
@@ -95,7 +95,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decrypt/PublicDecryptMultipleValues.sol",
     test: "test/basic/decrypt/PublicDecryptMultipleValues.ts",
     description:
-      "This example shows how to publicly decrypt multiple encrypted values in a single transaction.",
+      "Publicly decrypting multiple encrypted values in a single transaction for batch transparency.",
     category: "Basic - Decryption",
     title: "Public Decrypt Multiple Values",
   },
@@ -103,7 +103,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEAdd.sol",
     test: "test/basic/fhe-operations/FHEAdd.ts",
     description:
-      "This example demonstrates how to perform addition operations on encrypted values.",
+      "Addition operations on encrypted values using FHE.add() for homomorphic computation.",
     category: "FHE Operations",
     title: "FHE Add Operation",
   },
@@ -111,7 +111,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
     test: "test/basic/fhe-operations/FHEIfThenElse.ts",
     description:
-      "This example shows conditional operations on encrypted values using FHE.",
+      "Conditional operations on encrypted values using FHE.select() for encrypted branching logic.",
     category: "FHE Operations",
     title: "FHE If-Then-Else",
   },
@@ -167,7 +167,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/ERC7984.sol",
     test: "test/openzeppelin/ERC7984.ts",
     description:
-      "This example demonstrates how to create a confidential token (ERC7984) using OpenZeppelin's smart contract library powered by ZAMA's FHEVM.",
+      "Confidential token (ERC7984) with mint/burn functionality using OpenZeppelin's library powered by ZAMA's FHEVM.",
     category: "OpenZeppelin",
     title: "ERC7984 Tutorial",
   },
@@ -175,7 +175,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
     test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
     description:
-      "This example demonstrates how to wrap a standard ERC20 token into a confidential ERC7984 token.",
+      "Wrapping standard ERC20 tokens into confidential ERC7984 tokens to enable privacy for any existing ERC20.",
     category: "OpenZeppelin",
     title: "ERC7984 to ERC20 Wrapper",
   },
@@ -183,7 +183,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
     test: "test/openzeppelin/SwapERC7984ToERC20.ts",
     description:
-      "This example demonstrates how to swap between a confidential token (ERC7984) and ERC20 tokens.",
+      "Swapping between confidential ERC7984 and ERC20 tokens using the new v0.9 decryption API (makePubliclyDecryptable + checkSignatures).",
     category: "OpenZeppelin",
     title: "Swap ERC7984 to ERC20",
   },
@@ -191,7 +191,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
     test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
     description:
-      "This example demonstrates how to perform a fully confidential atomic swap between two ERC7984 tokens.",
+      "Fully confidential atomic swap between two ERC7984 tokens where both input and output amounts remain encrypted.",
     category: "OpenZeppelin",
     title: "Swap ERC7984 to ERC7984",
   },
@@ -199,7 +199,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/openzeppelin/VestingWallet.sol",
     test: "test/openzeppelin/VestingWallet.ts",
     description:
-      "This example demonstrates how to create a linear vesting wallet for ERC7984 tokens.",
+      "Linear vesting wallet for ERC7984 tokens where vested amounts remain encrypted for privacy.",
     category: "OpenZeppelin",
     title: "Vesting Wallet",
   },

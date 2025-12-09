@@ -230,23 +230,45 @@ async function runInteractiveMode() {
     let categoryName = "";
     let projectName = "";
     if (mode === "single") {
+        // Category icons for visual organization
+        const categoryIcons = {
+            Basic: "📚",
+            "Basic - Encryption": "🔐",
+            "Basic - Decryption": "🔓",
+            "FHE Operations": "🔢",
+            Concepts: "💡",
+            OpenZeppelin: "🛡️",
+            Advanced: "🚀",
+        };
         // Group examples by category
         const grouped = {};
         for (const [key, config] of Object.entries(EXAMPLES)) {
             if (!grouped[config.category]) {
                 grouped[config.category] = [];
             }
+            const icon = categoryIcons[config.category] || "📁";
             grouped[config.category].push({
                 value: key,
-                label: key,
-                hint: config.description.slice(0, 50) +
-                    (config.description.length > 50 ? "..." : ""),
+                label: `${icon} ${key}`,
+                hint: config.description.slice(0, 80) +
+                    (config.description.length > 80 ? "..." : ""),
             });
         }
-        // Flatten to options
+        // Build options with category order
         const options = [];
-        for (const [, items] of Object.entries(grouped)) {
-            options.push(...items);
+        const categoryOrder = [
+            "Basic",
+            "Basic - Encryption",
+            "Basic - Decryption",
+            "FHE Operations",
+            "Concepts",
+            "OpenZeppelin",
+            "Advanced",
+        ];
+        for (const category of categoryOrder) {
+            if (grouped[category]) {
+                options.push(...grouped[category]);
+            }
         }
         exampleName = await p.select({
             message: "Select an example:",
@@ -263,11 +285,19 @@ async function runInteractiveMode() {
         });
     }
     else {
+        // Category icons for visual organization
+        const categoryIcons = {
+            basic: "📚",
+            concepts: "💡",
+            operations: "🔢",
+            openzeppelin: "🛡️",
+            advanced: "🚀",
+        };
         categoryName = await p.select({
             message: "Select a category:",
             options: Object.entries(CATEGORIES).map(([key, config]) => ({
                 value: key,
-                label: config.name,
+                label: `${categoryIcons[key] || "📁"} ${config.name}`,
                 hint: `${config.contracts.length} contracts`,
             })),
         });

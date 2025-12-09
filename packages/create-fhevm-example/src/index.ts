@@ -327,6 +327,17 @@ async function runInteractiveMode(): Promise<void> {
   let projectName: string | symbol = "";
 
   if (mode === "single") {
+    // Category icons for visual organization
+    const categoryIcons: Record<string, string> = {
+      Basic: "📚",
+      "Basic - Encryption": "🔐",
+      "Basic - Decryption": "🔓",
+      "FHE Operations": "🔢",
+      Concepts: "💡",
+      OpenZeppelin: "🛡️",
+      Advanced: "🚀",
+    };
+
     // Group examples by category
     const grouped: Record<
       string,
@@ -336,19 +347,32 @@ async function runInteractiveMode(): Promise<void> {
       if (!grouped[config.category]) {
         grouped[config.category] = [];
       }
+      const icon = categoryIcons[config.category] || "📁";
       grouped[config.category].push({
         value: key,
-        label: key,
+        label: `${icon} ${key}`,
         hint:
-          config.description.slice(0, 50) +
-          (config.description.length > 50 ? "..." : ""),
+          config.description.slice(0, 60) +
+          (config.description.length > 60 ? "..." : ""),
       });
     }
 
-    // Flatten to options
+    // Build options with category order
     const options: Array<{ value: string; label: string; hint?: string }> = [];
-    for (const [, items] of Object.entries(grouped)) {
-      options.push(...items);
+    const categoryOrder = [
+      "Basic",
+      "Basic - Encryption",
+      "Basic - Decryption",
+      "FHE Operations",
+      "Concepts",
+      "OpenZeppelin",
+      "Advanced",
+    ];
+
+    for (const category of categoryOrder) {
+      if (grouped[category]) {
+        options.push(...grouped[category]);
+      }
     }
 
     exampleName = await p.select({
@@ -367,11 +391,20 @@ async function runInteractiveMode(): Promise<void> {
       defaultValue: `my-${exampleName}-project`,
     });
   } else {
+    // Category icons for visual organization
+    const categoryIcons: Record<string, string> = {
+      basic: "📚",
+      concepts: "💡",
+      operations: "🔢",
+      openzeppelin: "🛡️",
+      advanced: "🚀",
+    };
+
     categoryName = await p.select({
       message: "Select a category:",
       options: Object.entries(CATEGORIES).map(([key, config]) => ({
         value: key,
-        label: config.name,
+        label: `${categoryIcons[key] || "📁"} ${config.name}`,
         hint: `${config.contracts.length} contracts`,
       })),
     });
