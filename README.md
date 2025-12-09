@@ -61,11 +61,16 @@ npm install
 
 ### 2. Interactive Mode (Recommended)
 
-Run the wizard to select any example or category:
+Run the wizard to browse examples by category:
 
 ```bash
 npm run create
 ```
+
+The interactive CLI now features **category-first browsing**:
+- Select a category to see related examples grouped together
+- View example counts per category
+- Browse only the examples you're interested in
 
 <p align="left">
   <img src="https://i.ibb.co/sdYVXFXm/create-cli.gif" alt="Interactive CLI Demo" width="400px" />

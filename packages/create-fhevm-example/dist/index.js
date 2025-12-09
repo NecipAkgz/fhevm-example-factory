@@ -238,22 +238,7 @@ async function runInteractiveMode() {
             OpenZeppelin: "🛡️",
             Advanced: "🚀",
         };
-        // Group examples by category
-        const grouped = {};
-        for (const [key, config] of Object.entries(EXAMPLES)) {
-            if (!grouped[config.category]) {
-                grouped[config.category] = [];
-            }
-            const icon = categoryIcons[config.category] || "📁";
-            grouped[config.category].push({
-                value: key,
-                label: `${icon} ${key}`,
-                hint: config.description.slice(0, 60) +
-                    (config.description.length > 60 ? "..." : ""),
-            });
-        }
-        // Build options with category order
-        const options = [];
+        // Step 1: Select Category
         const categoryOrder = [
             "Basic",
             "Basic - Encryption",
@@ -263,14 +248,36 @@ async function runInteractiveMode() {
             "OpenZeppelin",
             "Advanced",
         ];
-        for (const category of categoryOrder) {
-            if (grouped[category]) {
-                options.push(...grouped[category]);
-            }
+        // Count examples per category
+        const categoryCounts = {};
+        for (const config of Object.values(EXAMPLES)) {
+            categoryCounts[config.category] =
+                (categoryCounts[config.category] || 0) + 1;
         }
+        const selectedCategory = await p.select({
+            message: "Select a category:",
+            options: categoryOrder.map((category) => ({
+                value: category,
+                label: `${categoryIcons[category] || "📁"} ${category}`,
+                hint: `${categoryCounts[category] || 0} example${categoryCounts[category] !== 1 ? "s" : ""}`,
+            })),
+        });
+        if (p.isCancel(selectedCategory)) {
+            p.cancel("Operation cancelled.");
+            process.exit(0);
+        }
+        // Step 2: Select Example from Category
+        const categoryExamples = Object.entries(EXAMPLES)
+            .filter(([, config]) => config.category === selectedCategory)
+            .map(([key, config]) => ({
+            value: key,
+            label: key,
+            hint: config.description.slice(0, 80) +
+                (config.description.length > 80 ? "..." : ""),
+        }));
         exampleName = await p.select({
-            message: "Select an example:",
-            options,
+            message: `Select an example from ${selectedCategory}:`,
+            options: categoryExamples,
         });
         if (p.isCancel(exampleName)) {
             p.cancel("Operation cancelled.");

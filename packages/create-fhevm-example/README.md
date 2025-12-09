@@ -13,9 +13,10 @@ npx create-fhevm-example
 This will launch an interactive CLI that guides you through:
 
 1. Choosing between a single example or category project
-2. Selecting the specific example or category
-3. Setting the project name and output directory
-4. Optionally installing dependencies and running tests
+2. **For single examples**: First selecting a category, then choosing an example from that category
+3. **For category projects**: Selecting the category directly
+4. Setting the project name and output directory
+5. Optionally installing dependencies and running tests
 
 ### Direct Mode
 
