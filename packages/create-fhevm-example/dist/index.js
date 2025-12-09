@@ -250,8 +250,8 @@ async function runInteractiveMode() {
             grouped[config.category].push({
                 value: key,
                 label: `${icon} ${key}`,
-                hint: config.description.slice(0, 80) +
-                    (config.description.length > 80 ? "..." : ""),
+                hint: config.description.slice(0, 60) +
+                    (config.description.length > 60 ? "..." : ""),
             });
         }
         // Build options with category order
