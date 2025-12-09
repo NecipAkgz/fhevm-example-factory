@@ -3,9 +3,20 @@
  * create-fhevm-example - CLI for creating FHEVM example projects
  *
  * Usage:
- *   npx create-fhevm-example
- *   npx create-fhevm-example --example fhe-counter
- *   npx create-fhevm-example --category basic
+ *   npx create-fhevm-example                    # Interactive mode
+ *   npx create-fhevm-example --example <name>   # Create single example
+ *   npx create-fhevm-example --category <name>  # Create category project
+ *
+ * FILE STRUCTURE:
+ * ================
+ * 1. IMPORTS
+ * 2. CONSTANTS - Category icons, order, etc.
+ * 3. PROJECT BUILDERS - createSingleExample, createCategoryProject
+ * 4. PROMPT HELPERS - Category/example selection prompts
+ * 5. INSTALL & TEST - Build and test utilities
+ * 6. INTERACTIVE MODE - Main interactive flow
+ * 7. DIRECT MODE - CLI argument handling
+ * 8. MAIN ENTRY POINT
  */
 import * as p from "@clack/prompts";
 import pc from "picocolors";
@@ -15,121 +26,224 @@ import * as os from "os";
 import { EXAMPLES, CATEGORIES } from "./config.js";
 import { cloneTemplate, initSubmodule, copyDirectoryRecursive, getContractName, downloadFileFromGitHub, runCommand, extractTestResults, generateDeployScript, } from "./utils.js";
 // =============================================================================
-// Create Single Example
+// CONSTANTS
 // =============================================================================
+/**
+ * Icons for each example category (used in interactive prompts)
+ * Keys match the "category" field in EXAMPLES config
+ */
+const EXAMPLE_CATEGORY_ICONS = {
+    Basic: "📚",
+    "Basic - Encryption": "🔐",
+    "Basic - Decryption": "🔓",
+    "FHE Operations": "🔢",
+    Concepts: "💡",
+    OpenZeppelin: "🛡️",
+    Advanced: "🚀",
+};
+/**
+ * Icons for each category project (used in category selection)
+ * Keys match the keys in CATEGORIES config
+ */
+const CATEGORY_PROJECT_ICONS = {
+    basic: "📚",
+    concepts: "💡",
+    operations: "🔢",
+    openzeppelin: "🛡️",
+    advanced: "🚀",
+};
+/**
+ * Display order for example categories in the interactive prompt
+ */
+const CATEGORY_ORDER = [
+    "Basic",
+    "Basic - Encryption",
+    "Basic - Decryption",
+    "FHE Operations",
+    "Concepts",
+    "OpenZeppelin",
+    "Advanced",
+];
+// =============================================================================
+// PROJECT BUILDERS
+// =============================================================================
+/**
+ * Creates a single example project from the template
+ *
+ * Steps:
+ * 1. Copy template directory
+ * 2. Download contract and test files from GitHub
+ * 3. Update package.json and deploy scripts
+ * 4. Clean up template-specific files
+ */
 async function createSingleExample(exampleName, outputDir, tempRepoPath) {
     const example = EXAMPLES[exampleName];
     if (!example) {
         throw new Error(`Unknown example: ${exampleName}`);
     }
     const templateDir = path.join(tempRepoPath, "fhevm-hardhat-template");
-    // Copy template
-    copyDirectoryRecursive(templateDir, outputDir);
-    // Get contract name
     const contractName = getContractName(example.contract);
     if (!contractName) {
         throw new Error("Could not extract contract name");
     }
-    // Remove template contract
+    // Step 1: Copy template
+    copyDirectoryRecursive(templateDir, outputDir);
+    // Step 2: Remove template contract and download example contract
     const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
     if (fs.existsSync(templateContract)) {
         fs.unlinkSync(templateContract);
     }
-    // Download contract and test from GitHub
     await downloadFileFromGitHub(example.contract, path.join(outputDir, "contracts", `${contractName}.sol`));
-    // Remove .gitkeep from contracts
+    // Step 3: Clean up and download test file
     const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
     if (fs.existsSync(contractsGitkeep)) {
         fs.unlinkSync(contractsGitkeep);
     }
-    // Clear test directory
     const testDir = path.join(outputDir, "test");
     fs.readdirSync(testDir).forEach((file) => {
         if (file.endsWith(".ts") || file === ".gitkeep") {
             fs.unlinkSync(path.join(testDir, file));
         }
     });
-    // Download test file
     await downloadFileFromGitHub(example.test, path.join(outputDir, "test", path.basename(example.test)));
-    // Update deploy script
+    // Step 4: Update configuration files
     fs.writeFileSync(path.join(outputDir, "deploy", "deploy.ts"), generateDeployScript(contractName));
-    // Update package.json
     const packageJsonPath = path.join(outputDir, "package.json");
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
     packageJson.name = `fhevm-example-${exampleName}`;
     packageJson.description = example.description;
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    // Update hardhat.config.ts - remove FHECounter task import
+    // Step 5: Remove template-specific task
     const configPath = path.join(outputDir, "hardhat.config.ts");
     let configContent = fs.readFileSync(configPath, "utf-8");
     configContent = configContent.replace(/import "\.\/tasks\/FHECounter";\n?/g, "");
     fs.writeFileSync(configPath, configContent);
-    // Remove FHECounter task
     const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
     if (fs.existsSync(oldTaskFile)) {
         fs.unlinkSync(oldTaskFile);
     }
-    // Note: README.md from template is kept as-is
 }
-// =============================================================================
-// Create Category Project
-// =============================================================================
+/**
+ * Creates a category project with multiple examples
+ *
+ * Steps:
+ * 1. Copy template directory
+ * 2. Download all contracts and tests for the category
+ * 3. Update package.json
+ * 4. Clean up template-specific files
+ */
 async function createCategoryProject(categoryName, outputDir, tempRepoPath) {
     const category = CATEGORIES[categoryName];
     if (!category) {
         throw new Error(`Unknown category: ${categoryName}`);
     }
     const templateDir = path.join(tempRepoPath, "fhevm-hardhat-template");
-    // Copy template
+    // Step 1: Copy template
     copyDirectoryRecursive(templateDir, outputDir);
-    // Clear template files
+    // Step 2: Clear template files
     const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
     if (fs.existsSync(templateContract))
         fs.unlinkSync(templateContract);
-    // Remove .gitkeep from contracts
     const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
     if (fs.existsSync(contractsGitkeep))
         fs.unlinkSync(contractsGitkeep);
-    // Clear test directory
     const testDir = path.join(outputDir, "test");
     fs.readdirSync(testDir).forEach((file) => {
         if (file.endsWith(".ts") || file === ".gitkeep") {
             fs.unlinkSync(path.join(testDir, file));
         }
     });
-    // Download contracts and tests
-    const contractNames = [];
+    // Step 3: Download all contracts and tests
     for (const item of category.contracts) {
         const contractName = getContractName(item.sol);
         if (contractName) {
-            contractNames.push(contractName);
             await downloadFileFromGitHub(item.sol, path.join(outputDir, "contracts", `${contractName}.sol`));
         }
         if (item.test) {
             await downloadFileFromGitHub(item.test, path.join(outputDir, "test", path.basename(item.test)));
         }
     }
-    // Update hardhat.config.ts - remove FHECounter task import
+    // Step 4: Update configuration files
     const configPath = path.join(outputDir, "hardhat.config.ts");
     let configContent = fs.readFileSync(configPath, "utf-8");
     configContent = configContent.replace(/import "\.\/tasks\/FHECounter";\n?/g, "");
     fs.writeFileSync(configPath, configContent);
-    // Remove FHECounter task
     const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
     if (fs.existsSync(oldTaskFile)) {
         fs.unlinkSync(oldTaskFile);
     }
-    // Update package.json
     const packageJsonPath = path.join(outputDir, "package.json");
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
     packageJson.name = `fhevm-examples-${categoryName}`;
     packageJson.description = category.description;
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    // Note: README.md from template is kept as-is
 }
 // =============================================================================
-// Install and Test
+// PROMPT HELPERS
 // =============================================================================
+/**
+ * Counts how many examples exist in each category
+ */
+function countExamplesPerCategory() {
+    const counts = {};
+    for (const config of Object.values(EXAMPLES)) {
+        counts[config.category] = (counts[config.category] || 0) + 1;
+    }
+    return counts;
+}
+/**
+ * Prompts user to select a category
+ * Returns the selected category name
+ */
+async function promptSelectCategory() {
+    const categoryCounts = countExamplesPerCategory();
+    return p.select({
+        message: "Select a category:",
+        options: CATEGORY_ORDER.map((category) => ({
+            value: category,
+            label: `${EXAMPLE_CATEGORY_ICONS[category] || "📁"} ${category}`,
+            hint: `${categoryCounts[category] || 0} example${categoryCounts[category] !== 1 ? "s" : ""}`,
+        })),
+    });
+}
+/**
+ * Prompts user to select an example from a specific category
+ * Returns the selected example name
+ */
+async function promptSelectExampleFromCategory(category) {
+    const categoryExamples = Object.entries(EXAMPLES)
+        .filter(([, config]) => config.category === category)
+        .map(([key, config]) => ({
+        value: key,
+        label: key,
+        hint: config.description.slice(0, 80) +
+            (config.description.length > 80 ? "..." : ""),
+    }));
+    return p.select({
+        message: `Select an example from ${category}:`,
+        options: categoryExamples,
+    });
+}
+/**
+ * Prompts user to select a category project
+ * Returns the selected category key (lowercase)
+ */
+async function promptSelectCategoryProject() {
+    return p.select({
+        message: "Select a category:",
+        options: Object.entries(CATEGORIES).map(([key, config]) => ({
+            value: key,
+            label: `${CATEGORY_PROJECT_ICONS[key] || "📁"} ${config.name}`,
+            hint: `${config.contracts.length} contracts`,
+        })),
+    });
+}
+// =============================================================================
+// INSTALL & TEST
+// =============================================================================
+/**
+ * Runs npm install, compile, and test in the project directory
+ */
 async function runInstallAndTest(projectPath) {
     const steps = [
         {
@@ -158,12 +272,9 @@ async function runInstallAndTest(projectPath) {
             const output = await runCommand(step.cmd, step.args, projectPath);
             if (step.showOutput) {
                 const testResults = extractTestResults(output);
-                if (testResults) {
-                    s.stop(pc.green(`✓ ${step.name} - ${testResults}`));
-                }
-                else {
-                    s.stop(pc.green(`✓ ${step.name} completed`));
-                }
+                s.stop(testResults
+                    ? pc.green(`✓ ${step.name} - ${testResults}`)
+                    : pc.green(`✓ ${step.name} completed`));
             }
             else {
                 s.stop(pc.green(`✓ ${step.name} completed`));
@@ -179,9 +290,15 @@ async function runInstallAndTest(projectPath) {
     }
     p.log.success(pc.green("All steps completed successfully!"));
 }
+/**
+ * Shows quick start commands for the created project
+ */
 function showQuickStart(relativePath) {
     p.note(`${pc.dim("$")} cd ${relativePath}\n${pc.dim("$")} npm install\n${pc.dim("$")} npm run compile\n${pc.dim("$")} npm run test`, "🚀 Quick Start");
 }
+/**
+ * Asks user if they want to install and test, then runs or shows quick start
+ */
 async function askInstallAndTest(resolvedOutput, relativePath) {
     const shouldInstall = await p.confirm({
         message: "Install dependencies and run tests?",
@@ -200,11 +317,16 @@ async function askInstallAndTest(resolvedOutput, relativePath) {
     }
 }
 // =============================================================================
-// Interactive Mode
+// INTERACTIVE MODE
 // =============================================================================
+/**
+ * Main interactive mode flow
+ * Guides user through project creation with prompts
+ */
 async function runInteractiveMode() {
     console.clear();
     p.intro(pc.bgCyan(pc.black(" 🔐 Create FHEVM Example ")));
+    // Step 1: Choose mode (single example or category)
     const mode = await p.select({
         message: "What would you like to create?",
         options: [
@@ -227,58 +349,15 @@ async function runInteractiveMode() {
     let exampleName = "";
     let categoryName = "";
     let projectName = "";
+    // Step 2: Select based on mode
     if (mode === "single") {
-        // Category icons for visual organization
-        const categoryIcons = {
-            Basic: "📚",
-            "Basic - Encryption": "🔐",
-            "Basic - Decryption": "🔓",
-            "FHE Operations": "🔢",
-            Concepts: "💡",
-            OpenZeppelin: "🛡️",
-            Advanced: "🚀",
-        };
-        // Step 1: Select Category
-        const categoryOrder = [
-            "Basic",
-            "Basic - Encryption",
-            "Basic - Decryption",
-            "FHE Operations",
-            "Concepts",
-            "OpenZeppelin",
-            "Advanced",
-        ];
-        // Count examples per category
-        const categoryCounts = {};
-        for (const config of Object.values(EXAMPLES)) {
-            categoryCounts[config.category] =
-                (categoryCounts[config.category] || 0) + 1;
-        }
-        const selectedCategory = await p.select({
-            message: "Select a category:",
-            options: categoryOrder.map((category) => ({
-                value: category,
-                label: `${categoryIcons[category] || "📁"} ${category}`,
-                hint: `${categoryCounts[category] || 0} example${categoryCounts[category] !== 1 ? "s" : ""}`,
-            })),
-        });
+        // Single example: first select category, then example
+        const selectedCategory = await promptSelectCategory();
         if (p.isCancel(selectedCategory)) {
             p.cancel("Operation cancelled.");
             process.exit(0);
         }
-        // Step 2: Select Example from Category
-        const categoryExamples = Object.entries(EXAMPLES)
-            .filter(([, config]) => config.category === selectedCategory)
-            .map(([key, config]) => ({
-            value: key,
-            label: key,
-            hint: config.description.slice(0, 80) +
-                (config.description.length > 80 ? "..." : ""),
-        }));
-        exampleName = await p.select({
-            message: `Select an example from ${selectedCategory}:`,
-            options: categoryExamples,
-        });
+        exampleName = await promptSelectExampleFromCategory(selectedCategory);
         if (p.isCancel(exampleName)) {
             p.cancel("Operation cancelled.");
             process.exit(0);
@@ -290,22 +369,8 @@ async function runInteractiveMode() {
         });
     }
     else {
-        // Category icons for visual organization
-        const categoryIcons = {
-            basic: "📚",
-            concepts: "💡",
-            operations: "🔢",
-            openzeppelin: "🛡️",
-            advanced: "🚀",
-        };
-        categoryName = await p.select({
-            message: "Select a category:",
-            options: Object.entries(CATEGORIES).map(([key, config]) => ({
-                value: key,
-                label: `${categoryIcons[key] || "📁"} ${config.name}`,
-                hint: `${config.contracts.length} contracts`,
-            })),
-        });
+        // Category project: select category directly
+        categoryName = await promptSelectCategoryProject();
         if (p.isCancel(categoryName)) {
             p.cancel("Operation cancelled.");
             process.exit(0);
@@ -320,6 +385,7 @@ async function runInteractiveMode() {
         p.cancel("Operation cancelled.");
         process.exit(0);
     }
+    // Step 3: Output directory
     const outputDir = await p.text({
         message: "Output directory:",
         placeholder: `./${projectName}`,
@@ -334,7 +400,7 @@ async function runInteractiveMode() {
         p.log.error(`Directory already exists: ${resolvedOutput}`);
         process.exit(1);
     }
-    // Clone repository to temp directory
+    // Step 4: Create project
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
     const s = p.spinner();
     try {
@@ -369,7 +435,6 @@ async function runInteractiveMode() {
         process.exit(1);
     }
     finally {
-        // Cleanup temp directory
         if (fs.existsSync(tempDir)) {
             fs.rmSync(tempDir, { recursive: true, force: true });
         }
@@ -377,8 +442,11 @@ async function runInteractiveMode() {
     p.outro(pc.green("🎉 Happy coding with FHEVM!"));
 }
 // =============================================================================
-// Direct Mode (CLI Arguments)
+// DIRECT MODE (CLI Arguments)
 // =============================================================================
+/**
+ * Shows help information for CLI usage
+ */
 function showHelp() {
     console.log(`
 ${pc.cyan("create-fhevm-example")}
@@ -408,25 +476,35 @@ ${pc.yellow("Available categories:")}
   ${Object.keys(CATEGORIES).join(", ")}
 `);
 }
-async function runDirectMode(args) {
-    const parsedArgs = {};
+/**
+ * Parses CLI arguments into a key-value object
+ */
+function parseArgs(args) {
+    const parsed = {};
     for (let i = 0; i < args.length; i++) {
         const arg = args[i];
         if (arg.startsWith("--")) {
             const key = arg.slice(2);
             const nextArg = args[i + 1];
             if (nextArg && !nextArg.startsWith("--")) {
-                parsedArgs[key] = nextArg;
+                parsed[key] = nextArg;
                 i++;
             }
             else {
-                parsedArgs[key] = true;
+                parsed[key] = true;
             }
         }
         else if (arg === "-h") {
-            parsedArgs["help"] = true;
+            parsed["help"] = true;
         }
     }
+    return parsed;
+}
+/**
+ * Handles direct mode (CLI with arguments, non-interactive)
+ */
+async function runDirectMode(args) {
+    const parsedArgs = parseArgs(args);
     if (parsedArgs["help"]) {
         showHelp();
         return;
@@ -435,7 +513,7 @@ async function runDirectMode(args) {
     const categoryName = parsedArgs["category"];
     const outputDir = parsedArgs["output"];
     const shouldInstall = parsedArgs["install"] === true;
-    const shouldTest = parsedArgs["test"] === true;
+    // Validation
     if (!exampleName && !categoryName) {
         console.error(pc.red("Error: Either --example or --category is required"));
         showHelp();
@@ -464,7 +542,7 @@ async function runDirectMode(args) {
         console.error(pc.red(`Error: Directory already exists: ${resolved}`));
         process.exit(1);
     }
-    // Clone repository to temp directory
+    // Create project
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
     try {
         console.log(pc.cyan(`Creating ${mode}: ${name}`));
@@ -493,14 +571,13 @@ async function runDirectMode(args) {
         process.exit(1);
     }
     finally {
-        // Cleanup temp directory
         if (fs.existsSync(tempDir)) {
             fs.rmSync(tempDir, { recursive: true, force: true });
         }
     }
 }
 // =============================================================================
-// Main
+// MAIN ENTRY POINT
 // =============================================================================
 async function main() {
     const args = process.argv.slice(2);
