@@ -311,6 +311,7 @@ npm run create-docs-all            # All examples
 - `npm run create-category [name] [path]` - Generate category project
 - `npm run create-docs [name]` - Generate documentation
 - `npm run create-docs-all` - Generate all documentation
+- `npm run sync:config` - Sync config to NPM package
 - `npm run create-help` - Show help information
 
 ---

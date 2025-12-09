@@ -1,7 +1,11 @@
 /**
- * Shared configuration for FHEVM examples
+ * ⚠️ AUTO-GENERATED FILE - DO NOT EDIT MANUALLY ⚠️
  *
- * This configuration is used by the CLI to provide available examples and categories
+ * This file is auto-generated from scripts/shared/config.ts
+ * Run 'npm run sync:config' to update it.
+ *
+ * Source: scripts/shared/config.ts
+ * Generated: 2025-12-09T16:46:12.589Z
  */
 export interface ExampleConfig {
     /** Path to the Solidity contract file */
