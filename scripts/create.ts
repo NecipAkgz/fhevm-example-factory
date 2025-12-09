@@ -21,8 +21,6 @@ import {
   copyDirectoryRecursive,
   getTemplateDir,
   generateDeployScript,
-  generateExampleReadme,
-  generateCategoryReadme,
   generateGitBookMarkdown,
 } from "./shared/utils";
 
@@ -117,12 +115,6 @@ async function createSingleExample(
   if (fs.existsSync(oldTaskFile)) {
     fs.unlinkSync(oldTaskFile);
   }
-
-  // Generate README
-  fs.writeFileSync(
-    path.join(outputDir, "README.md"),
-    generateExampleReadme(exampleName, example.description, contractName)
-  );
 }
 
 // =============================================================================
@@ -205,12 +197,6 @@ async function createCategoryProject(
   packageJson.name = `fhevm-examples-${categoryName}`;
   packageJson.description = category.description;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-
-  // Generate README
-  fs.writeFileSync(
-    path.join(outputDir, "README.md"),
-    generateCategoryReadme(category.name, category.description, contractNames)
-  );
 }
 
 // =============================================================================

@@ -30,14 +30,6 @@ export declare function runCommand(cmd: string, args: string[], cwd: string): Pr
  */
 export declare function extractTestResults(output: string): string | null;
 /**
- * Generate README for single example project
- */
-export declare function generateExampleReadme(exampleName: string, description: string, contractName: string): string;
-/**
- * Generate README for category project
- */
-export declare function generateCategoryReadme(categoryName: string, description: string, contractNames: string[]): string;
-/**
  * Generate deploy script
  */
 export declare function generateDeployScript(contractName: string): string;

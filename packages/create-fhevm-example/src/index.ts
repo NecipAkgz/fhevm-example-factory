@@ -23,8 +23,6 @@ import {
   downloadFileFromGitHub,
   runCommand,
   extractTestResults,
-  generateExampleReadme,
-  generateCategoryReadme,
   generateDeployScript,
 } from "./utils.js";
 
@@ -114,11 +112,7 @@ async function createSingleExample(
     fs.unlinkSync(oldTaskFile);
   }
 
-  // Generate README
-  fs.writeFileSync(
-    path.join(outputDir, "README.md"),
-    generateExampleReadme(exampleName, example.description, contractName)
-  );
+  // Note: README.md from template is kept as-is
 }
 
 // =============================================================================
@@ -199,11 +193,7 @@ async function createCategoryProject(
   packageJson.description = category.description;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
-  // Generate README
-  fs.writeFileSync(
-    path.join(outputDir, "README.md"),
-    generateCategoryReadme(category.name, category.description, contractNames)
-  );
+  // Note: README.md from template is kept as-is
 }
 
 // =============================================================================

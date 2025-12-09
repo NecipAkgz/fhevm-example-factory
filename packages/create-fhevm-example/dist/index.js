@@ -13,7 +13,7 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 import { EXAMPLES, CATEGORIES } from "./config.js";
-import { cloneTemplate, initSubmodule, copyDirectoryRecursive, getContractName, downloadFileFromGitHub, runCommand, extractTestResults, generateExampleReadme, generateCategoryReadme, generateDeployScript, } from "./utils.js";
+import { cloneTemplate, initSubmodule, copyDirectoryRecursive, getContractName, downloadFileFromGitHub, runCommand, extractTestResults, generateDeployScript, } from "./utils.js";
 // =============================================================================
 // Create Single Example
 // =============================================================================
@@ -69,8 +69,7 @@ async function createSingleExample(exampleName, outputDir, tempRepoPath) {
     if (fs.existsSync(oldTaskFile)) {
         fs.unlinkSync(oldTaskFile);
     }
-    // Generate README
-    fs.writeFileSync(path.join(outputDir, "README.md"), generateExampleReadme(exampleName, example.description, contractName));
+    // Note: README.md from template is kept as-is
 }
 // =============================================================================
 // Create Category Project
@@ -126,8 +125,7 @@ async function createCategoryProject(categoryName, outputDir, tempRepoPath) {
     packageJson.name = `fhevm-examples-${categoryName}`;
     packageJson.description = category.description;
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    // Generate README
-    fs.writeFileSync(path.join(outputDir, "README.md"), generateCategoryReadme(category.name, category.description, contractNames));
+    // Note: README.md from template is kept as-is
 }
 // =============================================================================
 // Install and Test
