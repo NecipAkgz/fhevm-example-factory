@@ -268,29 +268,44 @@ npm run create-docs-all            # All examples
 
 ---
 
-## 🛠️ Development Workflow
+## 🛠️  Creating a New Example Flow
 
-### Creating a New Example
+1. **Create Folder** (if new category)
 
-1. **Write Contract** in `contracts/<category>/YourExample.sol`
+   ```bash
+   mkdir -p contracts/your-category
+   mkdir -p test/your-category
+   ```
 
-   - Include detailed comments explaining FHE concepts
-   - Document both correct usage and common pitfalls
+   > 💡 **Convention-Based Categories**: Folder name becomes category name
+   > - `contracts/gaming/` → "Gaming" category
+   > - `contracts/defi-lending/` → "Defi Lending" category
 
-2. **Write Tests** in `test/<category>/YourExample.ts`
+2. **Write Contract** in `contracts/<category>/YourExample.sol`
+
+   ```solidity
+   /**
+    * @notice Your contract description here - this becomes the example description!
+    *
+    * @dev Technical details...
+    */
+   contract YourExample {
+     // Implementation
+   }
+   ```
+
+   > ⚠️ **Required**: `@notice` tag is mandatory for auto-discovery
+
+3. **Write Tests** in `test/<category>/YourExample.ts`
 
    - Include success and failure cases
    - Use descriptive test names
 
-3. **Update Configuration** in `scripts/shared/config.ts`
-
-   - Add to `EXAMPLES` object
-   - Add to relevant `CATEGORIES` if applicable
-
-4. **Generate Documentation**
+4. **Generate Configuration** (Auto-Discovery)
 
    ```bash
-   npm run create-docs your-example
+   npm run generate:config  # Scans contracts, extracts @notice tags
+   npm run sync:config      # Syncs to NPM package
    ```
 
 5. **Test Standalone Repository**
@@ -311,6 +326,7 @@ npm run create-docs-all            # All examples
 - `npm run create-category [name] [path]` - Generate category project
 - `npm run create-docs [name]` - Generate documentation
 - `npm run create-docs-all` - Generate all documentation
+- `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run sync:config` - Sync config to NPM package
 - `npm run create-help` - Show help information
 

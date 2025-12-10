@@ -93,13 +93,21 @@ export const REPO_BRANCH = "main";
 
 To add a new example to the CLI:
 
-1. **Edit the source config** in the main repository:
-   ```bash
-   # Edit scripts/shared/config.ts
-   # Add your example to EXAMPLES and CATEGORIES
+1. **Create contract with `@notice` tag** in the main repository:
+   ```solidity
+   /**
+    * @notice Your example description - auto-discovered!
+    */
+   contract YourExample { }
    ```
 
-2. **Publish**:
+2. **Generate config** (auto-discovery):
+   ```bash
+   npm run generate:config  # Scans contracts, extracts @notice
+   npm run sync:config      # Syncs to this package
+   ```
+
+3. **Publish**:
    ```bash
    npm version patch  # Increments version
    npm publish        # Auto-runs: sync:config → build → publish

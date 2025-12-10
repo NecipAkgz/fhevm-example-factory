@@ -5,7 +5,7 @@
  * Run 'npm run sync:config' to update it.
  *
  * Source: scripts/shared/config.ts
- * Generated: 2025-12-09T16:46:12.589Z
+ * Generated: 2025-12-10T01:09:04.521Z
  */
 // =============================================================================
 // GitHub Repository Configuration
@@ -17,6 +17,20 @@ export const TEMPLATE_SUBMODULE_PATH = "fhevm-hardhat-template";
 // Example Configurations
 // =============================================================================
 export const EXAMPLES = {
+    "blind-auction": {
+        "contract": "contracts/advanced/BlindAuction.sol",
+        "test": "test/advanced/BlindAuction.ts",
+        "description": "Blind Auction with encrypted bids - only the winning price is revealed",
+        "category": "Advanced",
+        "title": "Blind Auction"
+    },
+    "hidden-voting": {
+        "contract": "contracts/advanced/HiddenVoting.sol",
+        "test": "test/advanced/HiddenVoting.ts",
+        "description": "Hidden Voting with encrypted ballots and homomorphic tallying",
+        "category": "Advanced",
+        "title": "Hidden Voting"
+    },
     "fhe-counter": {
         "contract": "contracts/basic/FHECounter.sol",
         "test": "test/basic/FHECounter.ts",
@@ -24,75 +38,75 @@ export const EXAMPLES = {
         "category": "Basic",
         "title": "FHE Counter"
     },
-    "encrypt-single-value": {
-        "contract": "contracts/basic/encrypt/EncryptSingleValue.sol",
-        "test": "test/basic/encrypt/EncryptSingleValue.ts",
-        "description": "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
-        "category": "Basic - Encryption",
-        "title": "Encrypt Single Value"
+    "public-decrypt-multiple-values": {
+        "contract": "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
+        "test": "test/basic/decryption/PublicDecryptMultipleValues.ts",
+        "description": "Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption",
+        "category": "Basic - Decryption",
+        "title": "Public Decrypt Multiple Values"
+    },
+    "public-decrypt-single-value": {
+        "contract": "contracts/basic/decryption/PublicDecryptSingleValue.sol",
+        "test": "test/basic/decryption/PublicDecryptSingleValue.ts",
+        "description": "Implements a simple Heads or Tails game demonstrating public, permissionless decryption",
+        "category": "Basic - Decryption",
+        "title": "Public Decrypt Single Value"
+    },
+    "user-decrypt-multiple-values": {
+        "contract": "contracts/basic/decryption/UserDecryptMultipleValues.sol",
+        "test": "test/basic/decryption/UserDecryptMultipleValues.ts",
+        "description": "Demonstrates user decryption of multiple encrypted values",
+        "category": "Basic - Decryption",
+        "title": "User Decrypt Multiple Values"
+    },
+    "user-decrypt-single-value": {
+        "contract": "contracts/basic/decryption/UserDecryptSingleValue.sol",
+        "test": "test/basic/decryption/UserDecryptSingleValue.ts",
+        "description": "Demonstrates the FHE decryption mechanism and highlights common pitfalls",
+        "category": "Basic - Decryption",
+        "title": "User Decrypt Single Value"
     },
     "encrypt-multiple-values": {
-        "contract": "contracts/basic/encrypt/EncryptMultipleValues.sol",
-        "test": "test/basic/encrypt/EncryptMultipleValues.ts",
+        "contract": "contracts/basic/encryption/EncryptMultipleValues.sol",
+        "test": "test/basic/encryption/EncryptMultipleValues.ts",
         "description": "Encrypting and handling multiple values in a single transaction efficiently.",
         "category": "Basic - Encryption",
         "title": "Encrypt Multiple Values"
     },
-    "user-decrypt-single-value": {
-        "contract": "contracts/basic/decrypt/UserDecryptSingleValue.sol",
-        "test": "test/basic/decrypt/UserDecryptSingleValue.ts",
-        "description": "FHE user decryption mechanism for single values, with common pitfalls and correct implementation patterns.",
-        "category": "Basic - Decryption",
-        "title": "User Decrypt Single Value"
-    },
-    "user-decrypt-multiple-values": {
-        "contract": "contracts/basic/decrypt/UserDecryptMultipleValues.sol",
-        "test": "test/basic/decrypt/UserDecryptMultipleValues.ts",
-        "description": "Decrypting multiple encrypted values for a user in a single operation.",
-        "category": "Basic - Decryption",
-        "title": "User Decrypt Multiple Values"
-    },
-    "public-decrypt-single-value": {
-        "contract": "contracts/basic/decrypt/PublicDecryptSingleValue.sol",
-        "test": "test/basic/decrypt/PublicDecryptSingleValue.ts",
-        "description": "Publicly decrypting a single encrypted value on-chain for transparent results.",
-        "category": "Basic - Decryption",
-        "title": "Public Decrypt Single Value"
-    },
-    "public-decrypt-multiple-values": {
-        "contract": "contracts/basic/decrypt/PublicDecryptMultipleValues.sol",
-        "test": "test/basic/decrypt/PublicDecryptMultipleValues.ts",
-        "description": "Publicly decrypting multiple encrypted values in a single transaction for batch transparency.",
-        "category": "Basic - Decryption",
-        "title": "Public Decrypt Multiple Values"
+    "encrypt-single-value": {
+        "contract": "contracts/basic/encryption/EncryptSingleValue.sol",
+        "test": "test/basic/encryption/EncryptSingleValue.ts",
+        "description": "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
+        "category": "Basic - Encryption",
+        "title": "Encrypt Single Value"
     },
     "fhe-add": {
         "contract": "contracts/basic/fhe-operations/FHEAdd.sol",
         "test": "test/basic/fhe-operations/FHEAdd.ts",
-        "description": "Addition operations on encrypted values using FHE.add() for homomorphic computation.",
-        "category": "FHE Operations",
-        "title": "FHE Add Operation"
-    },
-    "fhe-if-then-else": {
-        "contract": "contracts/basic/fhe-operations/FHEIfThenElse.sol",
-        "test": "test/basic/fhe-operations/FHEIfThenElse.ts",
-        "description": "Conditional operations on encrypted values using FHE.select() for encrypted branching logic.",
-        "category": "FHE Operations",
-        "title": "FHE If-Then-Else"
+        "description": "Simple example: adding two encrypted values (a + b)",
+        "category": "Basic - FHE Operations",
+        "title": "FHE Add"
     },
     "fhe-arithmetic": {
         "contract": "contracts/basic/fhe-operations/FHEArithmetic.sol",
         "test": "test/basic/fhe-operations/FHEArithmetic.ts",
-        "description": "Comprehensive example demonstrating all FHE arithmetic operations: add, sub, mul, div, rem, min, max.",
-        "category": "FHE Operations",
-        "title": "FHE Arithmetic Operations"
+        "description": "Demonstrates all FHE arithmetic operations on encrypted integers",
+        "category": "Basic - FHE Operations",
+        "title": "FHE Arithmetic"
     },
     "fhe-comparison": {
         "contract": "contracts/basic/fhe-operations/FHEComparison.sol",
         "test": "test/basic/fhe-operations/FHEComparison.ts",
-        "description": "Demonstrates all FHE comparison operations: eq, ne, gt, lt, ge, le, and the select function for encrypted conditionals.",
-        "category": "FHE Operations",
-        "title": "FHE Comparison Operations"
+        "description": "Demonstrates all FHE comparison operations on encrypted integers",
+        "category": "Basic - FHE Operations",
+        "title": "FHE Comparison"
+    },
+    "fhe-if-then-else": {
+        "contract": "contracts/basic/fhe-operations/FHEIfThenElse.sol",
+        "test": "test/basic/fhe-operations/FHEIfThenElse.ts",
+        "description": "Demonstrates conditional logic: max(a, b) using encrypted comparison",
+        "category": "Basic - FHE Operations",
+        "title": "FHE If Then Else"
     },
     "fhe-access-control": {
         "contract": "contracts/concepts/FHEAccessControl.sol",
@@ -101,148 +115,130 @@ export const EXAMPLES = {
         "category": "Concepts",
         "title": "FHE Access Control"
     },
-    "fhe-input-proof": {
-        "contract": "contracts/concepts/FHEInputProof.sol",
-        "test": "test/concepts/FHEInputProof.ts",
-        "description": "Explains input proof validation in FHEVM: what proofs are, why they are needed, and how to use them correctly with single and batched inputs.",
+    "fhe-anti-patterns": {
+        "contract": "contracts/concepts/FHEAntiPatterns.sol",
+        "test": "test/concepts/FHEAntiPatterns.ts",
+        "description": "Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.",
         "category": "Concepts",
-        "title": "FHE Input Proofs"
+        "title": "FHE Anti Patterns"
     },
     "fhe-handles": {
         "contract": "contracts/concepts/FHEHandles.sol",
         "test": "test/concepts/FHEHandles.ts",
         "description": "Understanding FHE handles: creation, computation, immutability, and symbolic execution in mock mode.",
         "category": "Concepts",
-        "title": "FHE Handles & Lifecycle"
+        "title": "FHE Handles"
     },
-    "fhe-anti-patterns": {
-        "contract": "contracts/concepts/FHEAntiPatterns.sol",
-        "test": "test/concepts/FHEAntiPatterns.ts",
-        "description": "Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.",
+    "fhe-input-proof": {
+        "contract": "contracts/concepts/FHEInputProof.sol",
+        "test": "test/concepts/FHEInputProof.ts",
+        "description": "Explains input proof validation in FHEVM: what proofs are, why they are needed, and how to use them correctly with single and batched inputs.",
         "category": "Concepts",
-        "title": "FHE Anti-Patterns"
+        "title": "FHE Input Proof"
     },
     "erc7984": {
         "contract": "contracts/openzeppelin/ERC7984.sol",
         "test": "test/openzeppelin/ERC7984.ts",
-        "description": "Confidential token (ERC7984) with mint/burn functionality using OpenZeppelin's library powered by ZAMA's FHEVM.",
-        "category": "OpenZeppelin",
-        "title": "ERC7984 Tutorial"
+        "description": "Confidential token using OpenZeppelin's ERC7984 standard",
+        "category": "Openzeppelin",
+        "title": "ERC7984"
     },
     "erc7984-erc20-wrapper": {
         "contract": "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
         "test": "test/openzeppelin/ERC7984ERC20Wrapper.ts",
-        "description": "Wrapping standard ERC20 tokens into confidential ERC7984 tokens to enable privacy for any existing ERC20.",
-        "category": "OpenZeppelin",
-        "title": "ERC7984 to ERC20 Wrapper"
+        "description": "Wraps ERC20 tokens into confidential ERC7984 tokens",
+        "category": "Openzeppelin",
+        "title": "ERC7984 ERC20 Wrapper"
     },
     "swap-erc7984-to-erc20": {
         "contract": "contracts/openzeppelin/SwapERC7984ToERC20.sol",
         "test": "test/openzeppelin/SwapERC7984ToERC20.ts",
-        "description": "Swapping between confidential ERC7984 and ERC20 tokens using the new v0.9 decryption API (makePubliclyDecryptable + checkSignatures).",
-        "category": "OpenZeppelin",
-        "title": "Swap ERC7984 to ERC20"
+        "description": "Swap confidential ERC7984 tokens to regular ERC20 tokens",
+        "category": "Openzeppelin",
+        "title": "Swap ERC7984 To ERC20"
     },
     "swap-erc7984-to-erc7984": {
         "contract": "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
         "test": "test/openzeppelin/SwapERC7984ToERC7984.ts",
-        "description": "Fully confidential atomic swap between two ERC7984 tokens where both input and output amounts remain encrypted.",
-        "category": "OpenZeppelin",
-        "title": "Swap ERC7984 to ERC7984"
+        "description": "Fully confidential swap between two ERC7984 tokens",
+        "category": "Openzeppelin",
+        "title": "Swap ERC7984 To ERC7984"
     },
     "vesting-wallet": {
         "contract": "contracts/openzeppelin/VestingWallet.sol",
         "test": "test/openzeppelin/VestingWallet.ts",
-        "description": "Linear vesting wallet for ERC7984 tokens where vested amounts remain encrypted for privacy.",
-        "category": "OpenZeppelin",
+        "description": "Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!",
+        "category": "Openzeppelin",
         "title": "Vesting Wallet"
-    },
-    "blind-auction": {
-        "contract": "contracts/advanced/BlindAuction.sol",
-        "test": "test/advanced/BlindAuction.ts",
-        "description": "Encrypted blind auction where bids remain confidential. Uses FHE.gt() and FHE.select() to find the winner without revealing losing bids. Only the winning price is decrypted.",
-        "category": "Advanced",
-        "title": "Blind Auction"
-    },
-    "hidden-voting": {
-        "contract": "contracts/advanced/HiddenVoting.sol",
-        "test": "test/advanced/HiddenVoting.ts",
-        "description": "Encrypted voting mechanism with homomorphic tallying. Individual votes remain private forever while final counts are revealed using FHE.makePubliclyDecryptable().",
-        "category": "Advanced",
-        "title": "Hidden Voting"
     }
 };
 // =============================================================================
 // Category Configurations
 // =============================================================================
 export const CATEGORIES = {
+    "advanced": {
+        "name": "Advanced Examples",
+        "description": "Complex FHE applications: blind auctions, encrypted voting systems",
+        "contracts": [
+            {
+                "sol": "contracts/advanced/BlindAuction.sol",
+                "test": "test/advanced/BlindAuction.ts"
+            },
+            {
+                "sol": "contracts/advanced/HiddenVoting.sol",
+                "test": "test/advanced/HiddenVoting.ts"
+            }
+        ]
+    },
     "basic": {
-        "name": "Basic FHEVM Examples",
+        "name": "Basic Examples",
         "description": "Fundamental FHEVM operations including encryption, decryption, and basic FHE operations",
         "contracts": [
             {
                 "sol": "contracts/basic/FHECounter.sol",
                 "test": "test/basic/FHECounter.ts"
-            },
-            {
-                "sol": "contracts/basic/encrypt/EncryptSingleValue.sol",
-                "test": "test/basic/encrypt/EncryptSingleValue.ts"
-            },
-            {
-                "sol": "contracts/basic/encrypt/EncryptMultipleValues.sol",
-                "test": "test/basic/encrypt/EncryptMultipleValues.ts"
-            },
-            {
-                "sol": "contracts/basic/decrypt/UserDecryptSingleValue.sol",
-                "test": "test/basic/decrypt/UserDecryptSingleValue.ts"
-            },
-            {
-                "sol": "contracts/basic/decrypt/UserDecryptMultipleValues.sol",
-                "test": "test/basic/decrypt/UserDecryptMultipleValues.ts"
-            },
-            {
-                "sol": "contracts/basic/decrypt/PublicDecryptSingleValue.sol",
-                "test": "test/basic/decrypt/PublicDecryptSingleValue.ts"
-            },
-            {
-                "sol": "contracts/basic/decrypt/PublicDecryptMultipleValues.sol",
-                "test": "test/basic/decrypt/PublicDecryptMultipleValues.ts"
-            },
-            {
-                "sol": "contracts/basic/fhe-operations/FHEAdd.sol",
-                "test": "test/basic/fhe-operations/FHEAdd.ts"
-            },
-            {
-                "sol": "contracts/basic/fhe-operations/FHEIfThenElse.sol",
-                "test": "test/basic/fhe-operations/FHEIfThenElse.ts"
             }
         ]
     },
-    "concepts": {
-        "name": "Critical Concepts",
-        "description": "Access control, input proofs, handles, and anti-patterns",
+    "basicdecryption": {
+        "name": "Basic - Decryption Examples",
+        "description": "User and public decryption patterns for encrypted values",
         "contracts": [
             {
-                "sol": "contracts/concepts/FHEAccessControl.sol",
-                "test": "test/concepts/FHEAccessControl.ts"
+                "sol": "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
+                "test": "test/basic/decryption/PublicDecryptMultipleValues.ts"
             },
             {
-                "sol": "contracts/concepts/FHEInputProof.sol",
-                "test": "test/concepts/FHEInputProof.ts"
+                "sol": "contracts/basic/decryption/PublicDecryptSingleValue.sol",
+                "test": "test/basic/decryption/PublicDecryptSingleValue.ts"
             },
             {
-                "sol": "contracts/concepts/FHEHandles.sol",
-                "test": "test/concepts/FHEHandles.ts"
+                "sol": "contracts/basic/decryption/UserDecryptMultipleValues.sol",
+                "test": "test/basic/decryption/UserDecryptMultipleValues.ts"
             },
             {
-                "sol": "contracts/concepts/FHEAntiPatterns.sol",
-                "test": "test/concepts/FHEAntiPatterns.ts"
+                "sol": "contracts/basic/decryption/UserDecryptSingleValue.sol",
+                "test": "test/basic/decryption/UserDecryptSingleValue.ts"
             }
         ]
     },
-    "operations": {
-        "name": "FHE Operations",
-        "description": "Arithmetic, comparison, and conditional operations",
+    "basicencryption": {
+        "name": "Basic - Encryption Examples",
+        "description": "Encrypting values and handling encrypted inputs",
+        "contracts": [
+            {
+                "sol": "contracts/basic/encryption/EncryptMultipleValues.sol",
+                "test": "test/basic/encryption/EncryptMultipleValues.ts"
+            },
+            {
+                "sol": "contracts/basic/encryption/EncryptSingleValue.sol",
+                "test": "test/basic/encryption/EncryptSingleValue.ts"
+            }
+        ]
+    },
+    "basicfheoperations": {
+        "name": "Basic - FHE Operations Examples",
+        "description": "Basic - FHE Operations examples and implementations",
         "contracts": [
             {
                 "sol": "contracts/basic/fhe-operations/FHEAdd.sol",
@@ -262,8 +258,30 @@ export const CATEGORIES = {
             }
         ]
     },
+    "concepts": {
+        "name": "Concepts Examples",
+        "description": "Access control, input proofs, handles, and anti-patterns",
+        "contracts": [
+            {
+                "sol": "contracts/concepts/FHEAccessControl.sol",
+                "test": "test/concepts/FHEAccessControl.ts"
+            },
+            {
+                "sol": "contracts/concepts/FHEAntiPatterns.sol",
+                "test": "test/concepts/FHEAntiPatterns.ts"
+            },
+            {
+                "sol": "contracts/concepts/FHEHandles.sol",
+                "test": "test/concepts/FHEHandles.ts"
+            },
+            {
+                "sol": "contracts/concepts/FHEInputProof.sol",
+                "test": "test/concepts/FHEInputProof.ts"
+            }
+        ]
+    },
     "openzeppelin": {
-        "name": "OpenZeppelin Confidential Contracts",
+        "name": "Openzeppelin Examples",
         "description": "ERC7984 confidential token standard, wrappers, swaps, and vesting",
         "contracts": [
             {
@@ -285,20 +303,6 @@ export const CATEGORIES = {
             {
                 "sol": "contracts/openzeppelin/VestingWallet.sol",
                 "test": "test/openzeppelin/VestingWallet.ts"
-            }
-        ]
-    },
-    "advanced": {
-        "name": "Advanced Examples",
-        "description": "Complex FHE applications: blind auctions, encrypted voting systems",
-        "contracts": [
-            {
-                "sol": "contracts/advanced/BlindAuction.sol",
-                "test": "test/advanced/BlindAuction.ts"
-            },
-            {
-                "sol": "contracts/advanced/HiddenVoting.sol",
-                "test": "test/advanced/HiddenVoting.ts"
             }
         ]
     }

@@ -10,6 +10,7 @@
     "create-docs-all": "npx ts-node scripts/create.ts docs --all",
     "create help": "npx ts-node scripts/create.ts help",
     "test-all": "npx ts-node scripts/maintenance.ts test-all",
+    "generate:config": "npx ts-node scripts/generate-config.ts",
     "sync:config": "npx ts-node scripts/sync-config.ts",
     "postinstall": "git submodule update --init --recursive"
   },

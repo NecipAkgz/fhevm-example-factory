@@ -29,29 +29,9 @@ import { cloneTemplate, initSubmodule, copyDirectoryRecursive, getContractName, 
 // CONSTANTS
 // =============================================================================
 /**
- * Icons for each example category (used in interactive prompts)
- * Keys match the "category" field in EXAMPLES config
+ * Simple folder icon for all categories
  */
-const EXAMPLE_CATEGORY_ICONS = {
-    Basic: "📚",
-    "Basic - Encryption": "🔐",
-    "Basic - Decryption": "🔓",
-    "FHE Operations": "🔢",
-    Concepts: "💡",
-    OpenZeppelin: "🛡️",
-    Advanced: "🚀",
-};
-/**
- * Icons for each category project (used in category selection)
- * Keys match the keys in CATEGORIES config
- */
-const CATEGORY_PROJECT_ICONS = {
-    basic: "📚",
-    concepts: "💡",
-    operations: "🔢",
-    openzeppelin: "🛡️",
-    advanced: "🚀",
-};
+const CATEGORY_ICON = "📁";
 /**
  * Display order for example categories in the interactive prompt
  */
@@ -201,7 +181,7 @@ async function promptSelectCategory() {
         message: "Select a category:",
         options: CATEGORY_ORDER.map((category) => ({
             value: category,
-            label: `${EXAMPLE_CATEGORY_ICONS[category] || "📁"} ${category}`,
+            label: `${CATEGORY_ICON} ${category}`,
             hint: `${categoryCounts[category] || 0} example${categoryCounts[category] !== 1 ? "s" : ""}`,
         })),
     });
@@ -233,7 +213,7 @@ async function promptSelectCategoryProject() {
         message: "Select a category:",
         options: Object.entries(CATEGORIES).map(([key, config]) => ({
             value: key,
-            label: `${CATEGORY_PROJECT_ICONS[key] || "📁"} ${config.name}`,
+            label: `${CATEGORY_ICON} ${config.name}`,
             hint: `${config.contracts.length} contracts`,
         })),
     });

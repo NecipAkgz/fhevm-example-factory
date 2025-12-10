@@ -5,7 +5,7 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates FHE handle lifecycle: creation, computation, and storage
+ * @notice Understanding FHE handles: creation, computation, immutability, and symbolic execution in mock mode.
  *
  * @dev Handle = uint256 pointer to encrypted data stored by FHE coprocessor.
  *      Types: euint8/16/32/64/128/256, ebool, eaddress, ebytes64/128/256

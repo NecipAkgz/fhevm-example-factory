@@ -10,7 +10,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Common FHE mistakes and their correct alternatives - Educational reference
+ * @notice Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.
  *
  * @dev This contract demonstrates 9 critical anti-patterns in FHE development:
  *      1. Branching on encrypted values (causes decryption!)
