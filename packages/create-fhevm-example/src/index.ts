@@ -91,6 +91,12 @@ async function createSingleExample(
   // Step 1: Copy template
   copyDirectoryRecursive(templateDir, outputDir);
 
+  // Clean up .git and initialize fresh repository
+  const gitDir = path.join(outputDir, ".git");
+  if (fs.existsSync(gitDir)) {
+    fs.rmSync(gitDir, { recursive: true, force: true });
+  }
+
   // Step 2: Remove template contract and download example contract
   const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
   if (fs.existsSync(templateContract)) {
@@ -145,6 +151,13 @@ async function createSingleExample(
   if (fs.existsSync(oldTaskFile)) {
     fs.unlinkSync(oldTaskFile);
   }
+
+  // Initialize git repository
+  try {
+    await runCommand("git", ["init"], outputDir);
+  } catch (error) {
+    // Git init is optional, silently continue if it fails
+  }
 }
 
 /**
@@ -170,6 +183,12 @@ async function createCategoryProject(
 
   // Step 1: Copy template
   copyDirectoryRecursive(templateDir, outputDir);
+
+  // Clean up .git and initialize fresh repository
+  const gitDir = path.join(outputDir, ".git");
+  if (fs.existsSync(gitDir)) {
+    fs.rmSync(gitDir, { recursive: true, force: true });
+  }
 
   // Step 2: Clear template files
   const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
@@ -221,6 +240,13 @@ async function createCategoryProject(
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   packageJson.name = `fhevm-examples-${categoryName}`;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+  // Initialize git repository
+  try {
+    await runCommand("git", ["init"], outputDir);
+  } catch (error) {
+    // Git init is optional, silently continue if it fails
+  }
 }
 
 // =============================================================================
