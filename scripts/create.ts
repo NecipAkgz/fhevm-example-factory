@@ -223,7 +223,6 @@ async function createCategoryProject(
   const packageJsonPath = path.join(outputDir, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   packageJson.name = `fhevm-examples-${categoryName}`;
-  packageJson.description = category.description;
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 }
 

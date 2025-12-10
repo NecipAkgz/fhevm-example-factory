@@ -269,33 +269,8 @@ function generateCategoriesConfig(contracts: ContractInfo[]): string {
         )
         .join(",\n");
 
-      // Generate description based on category name
-      let description = "";
-
-      // Predefined descriptions for known categories
-      const categoryDescriptions: Record<string, string> = {
-        Basic:
-          "Fundamental FHEVM operations including encryption, decryption, and basic FHE operations",
-        "Basic - Encryption": "Encrypting values and handling encrypted inputs",
-        "Basic - Decryption":
-          "User and public decryption patterns for encrypted values",
-        "Basic - Fhe-Operations":
-          "Arithmetic, comparison, and conditional operations",
-        Concepts: "Access control, input proofs, handles, and anti-patterns",
-        Openzeppelin:
-          "ERC7984 confidential token standard, wrappers, swaps, and vesting",
-        Advanced:
-          "Complex FHE applications: blind auctions, encrypted voting systems",
-      };
-
-      description =
-        categoryDescriptions[category] ||
-        `${category} examples and implementations`;
-
       return `  ${categoryKey}: {
     name: "${category} Examples",
-    description:
-      "${description}",
     contracts: [
 ${contracts}
     ],
@@ -347,8 +322,6 @@ export interface ExampleConfig {
 export interface CategoryConfig {
   /** Display name */
   name: string;
-  /** Description of the category */
-  description: string;
   /** List of contracts in this category */
   contracts: Array<{ sol: string; test?: string }>;
 }
@@ -433,7 +406,6 @@ function main() {
   fs.writeFileSync(OUTPUT_FILE, configContent);
 
   console.log(`✅ Config generated: ${path.relative(ROOT_DIR, OUTPUT_FILE)}`);
-  console.log(`\n💡 Next: npm run sync:config`);
 }
 
 main();

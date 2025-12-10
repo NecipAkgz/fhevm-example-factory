@@ -1,6 +1,6 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Create FHEVM example projects with a single command",
   "type": "module",
   "bin": {
@@ -12,8 +12,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
-    "sync:config": "cd ../.. && npm run sync:config",
-    "prepublishOnly": "npm run sync:config && npm run build"
+    "update:config": "npx ts-node --esm scripts/update-config.ts",
+    "prepublishOnly": "npm run update:config && npm run build"
   },
   "keywords": [
     "fhevm",
@@ -42,6 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.8",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }
 }

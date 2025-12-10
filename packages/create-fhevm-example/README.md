@@ -76,15 +76,14 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 
 ### Configuration
 
-The CLI uses a configuration file that defines all available examples and categories. This file is **auto-generated** from the main repository.
+The CLI uses a configuration file that defines all available examples and categories. This file is **auto-generated** by scanning the monorepo's contracts directory.
 
-**Source of Truth**: [`scripts/shared/config.ts`](https://github.com/NecipAkgz/fhevm-example-factory/blob/main/scripts/shared/config.ts)
 **Generated File**: `src/config.ts` (do not edit manually)
 
 To customize the repository URL or branch:
 
 ```typescript
-// In src/config.ts (after sync)
+// In src/config.ts
 export const REPO_URL = "https://github.com/YourUsername/your-repo";
 export const REPO_BRANCH = "main";
 ```
@@ -101,20 +100,20 @@ To add a new example to the CLI:
    contract YourExample { }
    ```
 
-2. **Generate config** (auto-discovery):
+2. **Update package config** (from monorepo):
    ```bash
-   npm run generate:config  # Scans contracts, extracts @notice
-   npm run sync:config      # Syncs to this package
+   cd packages/create-fhevm-example
+   npm run update:config  # Scans ../../contracts, generates src/config.ts
    ```
 
 3. **Publish**:
    ```bash
    npm version patch  # Increments version
-   npm publish        # Auto-runs: sync:config → build → publish
+   npm publish        # Auto-runs: update:config → build → publish
    ```
 
    The `prepublishOnly` hook automatically:
-   - Syncs config from `scripts/shared/config.ts` to `src/config.ts`
+   - Updates config by scanning monorepo contracts (if available)
    - Builds TypeScript to `dist/`
    - Publishes to NPM
 
@@ -141,8 +140,8 @@ npm unlink -g create-fhevm-example
 
 - `npm run build` - Compile TypeScript
 - `npm run dev` - Watch mode
-- `npm run sync:config` - Sync config from main repo
-- `npm run prepublishOnly` - Auto-runs sync + build before publish
+- `npm run update:config` - Update config from monorepo contracts
+- `npm run prepublishOnly` - Auto-runs update:config + build before publish
 
 ---
 

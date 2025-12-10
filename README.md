@@ -304,7 +304,6 @@ npm run create:docs                # All examples
 
    ```bash
    npm run generate:config  # Scans contracts, extracts @notice tags
-   npm run sync:config      # Syncs to NPM package
    ```
 
 5. **Test Standalone Repository**
@@ -325,7 +324,6 @@ npm run create:docs                # All examples
 - `npm run create:category [name] [path]` - Generate category project
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
-- `npm run sync:config` - Sync config to NPM package
 - `npm run test:all` - Test all examples
 - `npm run create:help` - Show help information
 
@@ -387,8 +385,7 @@ Contributions are welcome! When adding examples:
 3. ✅ Add `@notice` tag to contract for auto-discovery
 4. ✅ Demonstrate both correct and incorrect usage
 5. ✅ Run `npm run generate:config` to auto-generate configuration
-6. ✅ Run `npm run sync:config` to sync to NPM package
-7. ✅ Test generated standalone repository
-8. ✅ Verify documentation renders correctly
+6. ✅ Test generated standalone repository
+7. ✅ Verify documentation renders correctly
 
 ---
