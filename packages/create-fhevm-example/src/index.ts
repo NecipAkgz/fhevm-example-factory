@@ -53,7 +53,7 @@ const CATEGORY_ORDER = [
   "Basic",
   "Basic - Encryption",
   "Basic - Decryption",
-  "FHE Operations",
+  "Basic - FHE Operations",
   "Concepts",
   "Openzeppelin",
   "Advanced",
