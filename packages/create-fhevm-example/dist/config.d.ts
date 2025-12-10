@@ -11,6 +11,10 @@ export interface ExampleConfig {
     contract: string;
     /** Path to the TypeScript test file */
     test: string;
+    /** Optional additional contract dependencies */
+    dependencies?: string[];
+    /** Optional npm packages to install */
+    npmDependencies?: Record<string, string>;
     /** Full description for documentation */
     description: string;
     /** Category for grouping */

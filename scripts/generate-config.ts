@@ -330,6 +330,10 @@ export interface ExampleConfig {
   test: string;
   /** Optional path to test fixture file */
   testFixture?: string;
+  /** Optional additional contract dependencies */
+  dependencies?: string[];
+  /** Optional npm packages to install */
+  npmDependencies?: Record<string, string>;
   /** Full description for documentation */
   description: string;
   /** Category for grouping */

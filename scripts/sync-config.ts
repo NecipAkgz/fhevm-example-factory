@@ -42,6 +42,10 @@ function generateConfigContent(): string {
     simpleExamples[key] = {
       contract: config.contract,
       test: config.test,
+      ...(config.dependencies && { dependencies: config.dependencies }),
+      ...(config.npmDependencies && {
+        npmDependencies: config.npmDependencies,
+      }),
       description: config.description,
       category: config.category,
       title: config.title,
@@ -66,6 +70,10 @@ export interface ExampleConfig {
   contract: string;
   /** Path to the TypeScript test file */
   test: string;
+  /** Optional additional contract dependencies */
+  dependencies?: string[];
+  /** Optional npm packages to install */
+  npmDependencies?: Record<string, string>;
   /** Full description for documentation */
   description: string;
   /** Category for grouping */

@@ -385,9 +385,11 @@ Contributions are welcome! When adding examples:
 
 1. ✅ Follow existing patterns and structure
 2. ✅ Include comprehensive inline comments
-3. ✅ Demonstrate both correct and incorrect usage
-4. ✅ Update `scripts/shared/config.ts`
-5. ✅ Test generated standalone repository
-6. ✅ Verify documentation renders correctly
+3. ✅ Add `@notice` tag to contract for auto-discovery
+4. ✅ Demonstrate both correct and incorrect usage
+5. ✅ Run `npm run generate:config` to auto-generate configuration
+6. ✅ Run `npm run sync:config` to sync to NPM package
+7. ✅ Test generated standalone repository
+8. ✅ Verify documentation renders correctly
 
 ---

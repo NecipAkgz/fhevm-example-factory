@@ -16,6 +16,10 @@ export interface ExampleConfig {
   test: string;
   /** Optional path to test fixture file */
   testFixture?: string;
+  /** Optional additional contract dependencies */
+  dependencies?: string[];
+  /** Optional npm packages to install */
+  npmDependencies?: Record<string, string>;
   /** Full description for documentation */
   description: string;
   /** Category for grouping */
@@ -88,8 +92,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "user-decrypt-multiple-values": {
     contract: "contracts/basic/decryption/UserDecryptMultipleValues.sol",
     test: "test/basic/decryption/UserDecryptMultipleValues.ts",
-    description:
-      "Demonstrates user decryption of multiple encrypted values",
+    description: "Demonstrates user decryption of multiple encrypted values",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/user-decrypt-multiple-values.md",
     title: "User Decrypt Multiple Values",
@@ -124,8 +127,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "fhe-add": {
     contract: "contracts/basic/fhe-operations/FHEAdd.sol",
     test: "test/basic/fhe-operations/FHEAdd.ts",
-    description:
-      "Simple example: adding two encrypted values (a + b)",
+    description: "Simple example: adding two encrypted values (a + b)",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-add.md",
     title: "FHE Add",
@@ -193,11 +195,14 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/concepts/fhe-input-proof.md",
     title: "FHE Input Proof",
   },
-  "erc7984": {
+  erc7984: {
     contract: "contracts/openzeppelin/ERC7984.sol",
     test: "test/openzeppelin/ERC7984.ts",
-    description:
-      "Confidential token using OpenZeppelin's ERC7984 standard",
+    npmDependencies: {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0",
+    },
+    description: "Confidential token using OpenZeppelin's ERC7984 standard",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/erc7984.md",
     title: "ERC7984",
@@ -205,8 +210,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "erc7984-erc20-wrapper": {
     contract: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
     test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
-    description:
-      "Wraps ERC20 tokens into confidential ERC7984 tokens",
+    dependencies: [
+      "contracts/openzeppelin/ERC7984.sol",
+      "contracts/openzeppelin/mocks/ERC20Mock.sol",
+    ],
+    npmDependencies: {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0",
+    },
+    description: "Wraps ERC20 tokens into confidential ERC7984 tokens",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
     title: "ERC7984 ERC20 Wrapper",
@@ -214,8 +226,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "swap-erc7984-to-erc20": {
     contract: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
     test: "test/openzeppelin/SwapERC7984ToERC20.ts",
-    description:
-      "Swap confidential ERC7984 tokens to regular ERC20 tokens",
+    dependencies: [
+      "contracts/openzeppelin/ERC7984.sol",
+      "contracts/openzeppelin/mocks/ERC20Mock.sol",
+    ],
+    npmDependencies: {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0",
+    },
+    description: "Swap confidential ERC7984 tokens to regular ERC20 tokens",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
     title: "Swap ERC7984 To ERC20",
@@ -223,8 +242,12 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "swap-erc7984-to-erc7984": {
     contract: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
     test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
-    description:
-      "Fully confidential swap between two ERC7984 tokens",
+    dependencies: ["contracts/openzeppelin/ERC7984.sol"],
+    npmDependencies: {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0",
+    },
+    description: "Fully confidential swap between two ERC7984 tokens",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 To ERC7984",
@@ -232,12 +255,17 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "vesting-wallet": {
     contract: "contracts/openzeppelin/VestingWallet.sol",
     test: "test/openzeppelin/VestingWallet.ts",
+    dependencies: ["contracts/openzeppelin/ERC7984.sol"],
+    npmDependencies: {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0",
+    },
     description:
       "Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet",
-  }
+  },
 };
 
 // =============================================================================
@@ -257,7 +285,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/advanced/HiddenVoting.sol",
         test: "test/advanced/HiddenVoting.ts",
-      }
+      },
     ],
   },
   basic: {
@@ -268,13 +296,12 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/FHECounter.sol",
         test: "test/basic/FHECounter.ts",
-      }
+      },
     ],
   },
   basicdecryption: {
     name: "Basic - Decryption Examples",
-    description:
-      "User and public decryption patterns for encrypted values",
+    description: "User and public decryption patterns for encrypted values",
     contracts: [
       {
         sol: "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
@@ -291,13 +318,12 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/decryption/UserDecryptSingleValue.sol",
         test: "test/basic/decryption/UserDecryptSingleValue.ts",
-      }
+      },
     ],
   },
   basicencryption: {
     name: "Basic - Encryption Examples",
-    description:
-      "Encrypting values and handling encrypted inputs",
+    description: "Encrypting values and handling encrypted inputs",
     contracts: [
       {
         sol: "contracts/basic/encryption/EncryptMultipleValues.sol",
@@ -306,13 +332,12 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/encryption/EncryptSingleValue.sol",
         test: "test/basic/encryption/EncryptSingleValue.ts",
-      }
+      },
     ],
   },
   basicfheoperations: {
     name: "Basic - FHE Operations Examples",
-    description:
-      "Basic - FHE Operations examples and implementations",
+    description: "Basic - FHE Operations examples and implementations",
     contracts: [
       {
         sol: "contracts/basic/fhe-operations/FHEAdd.sol",
@@ -329,13 +354,12 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
         test: "test/basic/fhe-operations/FHEIfThenElse.ts",
-      }
+      },
     ],
   },
   concepts: {
     name: "Concepts Examples",
-    description:
-      "Access control, input proofs, handles, and anti-patterns",
+    description: "Access control, input proofs, handles, and anti-patterns",
     contracts: [
       {
         sol: "contracts/concepts/FHEAccessControl.sol",
@@ -352,7 +376,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/concepts/FHEInputProof.sol",
         test: "test/concepts/FHEInputProof.ts",
-      }
+      },
     ],
   },
   openzeppelin: {
@@ -379,9 +403,9 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/openzeppelin/VestingWallet.sol",
         test: "test/openzeppelin/VestingWallet.ts",
-      }
+      },
     ],
-  }
+  },
 };
 
 // =============================================================================

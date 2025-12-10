@@ -16,6 +16,10 @@ export interface ExampleConfig {
   contract: string;
   /** Path to the TypeScript test file */
   test: string;
+  /** Optional additional contract dependencies */
+  dependencies?: string[];
+  /** Optional npm packages to install */
+  npmDependencies?: Record<string, string>;
   /** Full description for documentation */
   description: string;
   /** Category for grouping */
@@ -168,6 +172,10 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "erc7984": {
     "contract": "contracts/openzeppelin/ERC7984.sol",
     "test": "test/openzeppelin/ERC7984.ts",
+    "npmDependencies": {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
+    },
     "description": "Confidential token using OpenZeppelin's ERC7984 standard",
     "category": "Openzeppelin",
     "title": "ERC7984"
@@ -175,6 +183,14 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "erc7984-erc20-wrapper": {
     "contract": "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
     "test": "test/openzeppelin/ERC7984ERC20Wrapper.ts",
+    "dependencies": [
+      "contracts/openzeppelin/ERC7984.sol",
+      "contracts/openzeppelin/mocks/ERC20Mock.sol"
+    ],
+    "npmDependencies": {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
+    },
     "description": "Wraps ERC20 tokens into confidential ERC7984 tokens",
     "category": "Openzeppelin",
     "title": "ERC7984 ERC20 Wrapper"
@@ -182,6 +198,14 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "swap-erc7984-to-erc20": {
     "contract": "contracts/openzeppelin/SwapERC7984ToERC20.sol",
     "test": "test/openzeppelin/SwapERC7984ToERC20.ts",
+    "dependencies": [
+      "contracts/openzeppelin/ERC7984.sol",
+      "contracts/openzeppelin/mocks/ERC20Mock.sol"
+    ],
+    "npmDependencies": {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
+    },
     "description": "Swap confidential ERC7984 tokens to regular ERC20 tokens",
     "category": "Openzeppelin",
     "title": "Swap ERC7984 To ERC20"
@@ -189,6 +213,13 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "swap-erc7984-to-erc7984": {
     "contract": "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
     "test": "test/openzeppelin/SwapERC7984ToERC7984.ts",
+    "dependencies": [
+      "contracts/openzeppelin/ERC7984.sol"
+    ],
+    "npmDependencies": {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
+    },
     "description": "Fully confidential swap between two ERC7984 tokens",
     "category": "Openzeppelin",
     "title": "Swap ERC7984 To ERC7984"
@@ -196,6 +227,13 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
   "vesting-wallet": {
     "contract": "contracts/openzeppelin/VestingWallet.sol",
     "test": "test/openzeppelin/VestingWallet.ts",
+    "dependencies": [
+      "contracts/openzeppelin/ERC7984.sol"
+    ],
+    "npmDependencies": {
+      "@openzeppelin/contracts": "^5.0.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
+    },
     "description": "Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!",
     "category": "Openzeppelin",
     "title": "Vesting Wallet"

@@ -1,6 +1,6 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Create FHEVM example projects with a single command",
   "type": "module",
   "bin": {
