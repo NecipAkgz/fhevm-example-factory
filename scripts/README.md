@@ -38,13 +38,12 @@ A modern, interactive CLI built with `@clack/prompts` that provides a beautiful 
 
 ## Available Commands
 
-| Command                                   | Description                                        |
-| ----------------------------------------- | -------------------------------------------------- |
-| `npm run create`                          | Interactive mode with guided prompts               |
-| `npm run create-example <name> [output]`  | Generate a single example project                  |
-| `npm run create-category <name> [output]` | Generate a category project with multiple examples |
-| `npm run create-docs <example>`           | Generate GitBook documentation for one example     |
-| `npm run create-docs-all`                 | Generate documentation for all examples            |
+| Command                                 | Description                                        |
+| --------------------------------------- | -------------------------------------------------- |
+| `npm run create`                        | Interactive CLI wizard                             |
+| `npm run create:example <name> [output]`  | Generate a single example project                  |
+| `npm run create:category <name> [output]` | Generate a category project with multiple examples |
+| `npm run create:docs [example]`         | Generate docs (all or specific)                    |
 | `npm run create-help`                     | Show help with all options                         |
 
 ## Usage Examples
@@ -95,7 +94,7 @@ npm run create
 
 ```bash
 # Generate fhe-counter example
-npm run create-example fhe-counter ./output/fhe-counter-example
+npm run create:example fhe-counter ./output/fhe-counter-example
 
 # Navigate to generated example
 cd output/fhe-counter-example
@@ -236,53 +235,48 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
 };
 ```
 
-## Development Workflow
+## Adding a New Example
 
-### Adding a New Example
+1. **Create Folder** (if new category)
 
-1. **Write the contract** in `contracts/<category>/`
+   ```bash
+   mkdir -p contracts/your-category
+   mkdir -p test/your-category
+   ```
+
+   > 💡 **Convention-Based Categories**: Folder name becomes category name
+   > - `contracts/gaming/` → "Gaming" category
+   > - `contracts/defi-lending/` → "Defi Lending" category
+
+2. **Write Contract** in `contracts/<category>/YourExample.sol`
 
    ```solidity
-   // contracts/basic/MyExample.sol
-   contract MyExample is SepoliaConfig {
-       // Implementation with detailed comments
+   /**
+    * @notice Your contract description here - this becomes the example description!
+    */
+   contract YourExample {
+     // Implementation
    }
    ```
 
-2. **Write comprehensive tests** in `test/<category>/`
+   > ⚠️ **Required**: `@notice` tag is mandatory for auto-discovery
 
-   ```typescript
-   // test/basic/MyExample.ts
-   describe("MyExample", function () {
-     // Tests with explanatory comments
-     // Include both success and failure cases
-   });
-   ```
+3. **Write Tests** in `test/<category>/YourExample.ts`
 
-3. **Update configuration** in `scripts/shared/config.ts`
+   - Include success and failure cases
+   - Use descriptive test names
 
-   ```typescript
-   // Add to EXAMPLES object:
-   "my-new-example": {
-     contract: "contracts/basic/MyExample.sol",
-     test: "test/basic/MyExample.ts",
-     description: "What this example demonstrates.",
-     category: "Basic",
-     docsOutput: "docs/fhe-my-new-example.md",
-     title: "My New Example",
-   },
-   ```
-
-4. **Test the generation**
+4. **Generate Configuration** (Auto-Discovery)
 
    ```bash
-   npm run create-example my-new-example ./test-output
+   npm run generate:config  # Scans contracts, extracts @notice tags
+   npm run sync:config      # Syncs to NPM package
+   ```
+
+5. **Test Standalone Repository**
+   ```bash
+   npm run create:example your-example ./test-output
    cd test-output && npm install && npm run compile && npm run test
-   ```
-
-5. **Generate documentation**
-   ```bash
-   npm run create-docs my-new-example
    ```
 
 ### Testing Generated Examples
@@ -307,7 +301,7 @@ When updating `@fhevm/solidity` or other dependencies:
 
 ```bash
 # Quick regeneration of all docs
-npm run create-docs-all
+npm run create:docs
 ```
 
 ## Troubleshooting
@@ -338,11 +332,13 @@ npm run create-docs-all
 
 When adding new examples:
 
-1. Ensure contracts include detailed comments explaining FHE concepts
-2. Tests should demonstrate both correct usage and common pitfalls
-3. Use ✅/❌ markers to highlight good vs bad patterns
-4. Update configuration in `shared/config.ts`
-5. Test the generated standalone repository
-6. Verify documentation renders correctly in GitBook
+1. ✅ Follow existing patterns and structure
+2. ✅ Include comprehensive inline comments
+3. ✅ Add `@notice` tag to contract for auto-discovery
+4. ✅ Demonstrate both correct and incorrect usage
+5. ✅ Run `npm run generate:config` to auto-generate configuration
+6. ✅ Run `npm run sync:config` to sync to NPM package
+7. ✅ Test generated standalone repository
+8. ✅ Verify documentation renders correctly
 
 ---

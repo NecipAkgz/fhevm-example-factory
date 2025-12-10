@@ -728,22 +728,21 @@ ${pc.cyan("FHEVM Example Factory")}
 
 ${pc.yellow("Usage:")}
   npm run create                               ${pc.dim("# Interactive mode")}
-  npm run create-example <name> [output]       ${pc.dim(
+  npm run create:example <name> [output]       ${pc.dim(
     "# Create single example"
   )}
-  npm run create-category <name> [output]      ${pc.dim(
+  npm run create:category <name> [output]      ${pc.dim(
     "# Create category project"
   )}
-  npm run create-docs <example>                ${pc.dim(
-    "# Generate single doc"
+  npm run create:docs [example]                ${pc.dim(
+    "# Generate docs (all or specific)"
   )}
-  npm run create-docs-all                      ${pc.dim("# Generate all docs")}
 
 ${pc.yellow("Examples:")}
-  ${pc.green("npm run create-example fhe-counter ./my-project")}
-  ${pc.green("npm run create-category basic ./basic-examples")}
-  ${pc.green("npm run create-docs fhe-counter")}
-  ${pc.green("npm run create-docs-all")}
+  ${pc.green("npm run create:example fhe-counter ./my-project")}
+  ${pc.green("npm run create:category basic ./basic-examples")}
+  ${pc.green("npm run create:docs fhe-counter")}
+  ${pc.green("npm run create:docs")}
 
 ${pc.yellow("Available examples:")}
   ${Object.keys(EXAMPLES).join(", ")}
@@ -820,16 +819,15 @@ async function runDirectMode(args: string[]): Promise<void> {
 
     case "docs": {
       const [target] = rest;
+
+      // No argument = generate all docs
       if (!target) {
-        console.error(pc.red("Error: Example name or --all required"));
-        console.log("Usage: npm run create docs <example|--all>");
-        process.exit(1);
-      }
-      if (target === "--all") {
         console.log(pc.cyan("Generating all documentation..."));
         const count = await generateDocumentation("all");
         console.log(pc.green(`✓ Generated ${count} documentation files`));
-      } else {
+      }
+      // Specific example name
+      else {
         if (!EXAMPLES[target]) {
           console.error(pc.red(`Error: Unknown example "${target}"`));
           console.log("Available:", Object.keys(EXAMPLES).join(", "));

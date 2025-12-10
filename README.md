@@ -82,19 +82,18 @@ For advanced users who prefer CLI arguments:
 
 ```bash
 # 🟢 Generate a Single Example
-npm run create-example [name] [path]
-npm run create-example fhe-counter ./my-fhe-counter
+npm run create:example [name] [path]
+npm run create:example fhe-counter ./my-fhe-counter
 
 # 📦 Generate a Category Bundle
-npm run create-category [name] [path]
-npm run create-category basic ./my-basic-examples
+npm run create:category [name] [path]
+npm run create:category basic ./my-basic-examples
 
 # 📚 Generate Documentation
-npm run create-docs [name]
-npm run create-docs-all
+npm run create:docs [example]  # No arg = all docs, with name = specific doc
 
 # ❓ Show Help
-npm run create help
+npm run create:help
 ```
 
 ---
@@ -211,7 +210,7 @@ Generate entire category projects with multiple related examples:
 - **`advanced`** (2 examples) - Blind auction, encrypted voting
 
 ```bash
-npm run create-category basic ./my-basic-project
+npm run create:category basic ./my-basic-project
 ```
 
 ---
@@ -234,7 +233,7 @@ Creates a production-ready Hardhat environment tailored for a single example. It
 - 📝 **Customizes** the README with project-specific details
 
 ```bash
-npm run create-example fhe-counter ./my-counter
+npm run create:example fhe-counter ./my-counter
 ```
 
 ### 2. Category Bundle Generator (`create-category`)
@@ -248,7 +247,7 @@ Generates a unified workspace containing all examples from a specific category (
 - 🚀 **Orchestrates** deployment for multiple artifacts
 
 ```bash
-npm run create-category openzeppelin ./my-oz-examples
+npm run create:category openzeppelin ./my-oz-examples
 ```
 
 ### 3. Documentation Engine (`create-docs`)
@@ -262,8 +261,8 @@ Automatically builds GitBook-ready markdown files directly from your source code
 - 📑 **Updates** the documentation index (`SUMMARY.md`)
 
 ```bash
-npm run create-docs fhe-counter    # Single example
-npm run create-docs-all            # All examples
+npm run create:docs fhe-counter    # Single example
+npm run create:docs                # All examples
 ```
 
 ---
@@ -310,7 +309,7 @@ npm run create-docs-all            # All examples
 
 5. **Test Standalone Repository**
    ```bash
-   npm run create-example your-example ./test-output
+   npm run create:example your-example ./test-output
    cd test-output
    npm install && npm run compile && npm run test
    ```
@@ -322,13 +321,13 @@ npm run create-docs-all            # All examples
 > 📖 See [scripts/README.md](scripts/README.md) for detailed usage and examples.
 
 - `npm run create` - Interactive CLI
-- `npm run create-example [name] [path]` - Generate single example
-- `npm run create-category [name] [path]` - Generate category project
-- `npm run create-docs [name]` - Generate documentation
-- `npm run create-docs-all` - Generate all documentation
+- `npm run create:example [name] [path]` - Generate single example
+- `npm run create:category [name] [path]` - Generate category project
+- `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run sync:config` - Sync config to NPM package
-- `npm run create-help` - Show help information
+- `npm run test:all` - Test all examples
+- `npm run create:help` - Show help information
 
 ---
 
@@ -340,10 +339,10 @@ Generate standalone projects from examples, then compile and run tests to verify
 
 ```bash
 # Interactive mode - select with space, confirm with enter
-npm run test-all
+npm run test:all
 
 # Direct mode - test specific examples
-npm run test-all fhe-counter,fhe-add
+npm run test:all fhe-counter,fhe-add
 ```
 
 ### Updating FHEVM Dependencies
@@ -359,12 +358,12 @@ When `@fhevm/solidity` or related packages release new versions:
 2. **Test all examples for compatibility:**
 
    ```bash
-   npm run test-all
+   npm run test:all
    ```
 
 3. **Regenerate documentation if APIs changed:**
    ```bash
-   npm run create-docs-all
+   npm run create:docs
    ```
 
 ---

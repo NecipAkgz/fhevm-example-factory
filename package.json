@@ -4,12 +4,11 @@
   "description": "Tooling for generating standalone FHEVM example repositories and documentation",
   "scripts": {
     "create": "npx ts-node scripts/create.ts",
-    "create-example": "npx ts-node scripts/create.ts example",
-    "create-category": "npx ts-node scripts/create.ts category",
-    "create-docs": "npx ts-node scripts/create.ts docs",
-    "create-docs-all": "npx ts-node scripts/create.ts docs --all",
-    "create help": "npx ts-node scripts/create.ts help",
-    "test-all": "npx ts-node scripts/maintenance.ts test-all",
+    "create:example": "npx ts-node scripts/create.ts example",
+    "create:category": "npx ts-node scripts/create.ts category",
+    "create:docs": "npx ts-node scripts/create.ts docs",
+    "create:help": "npx ts-node scripts/create.ts help",
+    "test:all": "npx ts-node scripts/maintenance.ts test-all",
     "generate:config": "npx ts-node scripts/generate-config.ts",
     "sync:config": "npx ts-node scripts/sync-config.ts",
     "postinstall": "git submodule update --init --recursive"
