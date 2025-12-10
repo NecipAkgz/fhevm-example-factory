@@ -5,7 +5,6 @@
  * Run 'npm run sync:config' to update it.
  *
  * Source: scripts/shared/config.ts
- * Generated: 2025-12-10T01:09:04.521Z
  */
 export interface ExampleConfig {
     /** Path to the Solidity contract file */

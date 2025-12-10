@@ -55,7 +55,6 @@ function generateConfigContent(): string {
  * Run 'npm run sync:config' to update it.
  *
  * Source: scripts/shared/config.ts
- * Generated: ${new Date().toISOString()}
  */
 
 // =============================================================================
