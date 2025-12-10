@@ -332,16 +332,6 @@ npm run create-docs-all            # All examples
 
 ---
 
-## 🔗 Resources
-
-- 📖 [FHEVM Documentation](https://docs.zama.org/protocol)
-- 📚 [Protocol Examples](https://docs.zama.org/protocol/examples)
-- 🔧 [Hardhat Template](https://github.com/zama-ai/fhevm-hardhat-template)
-- 🌐 [Live dApps](https://github.com/zama-ai/dapps)
-- 🏛️ [OpenZeppelin Confidential](https://github.com/OpenZeppelin/openzeppelin-confidential-contracts)
-
----
-
 ## 🔄 Maintenance
 
 ### 🧪 Test Examples
@@ -376,6 +366,16 @@ When `@fhevm/solidity` or related packages release new versions:
    ```bash
    npm run create-docs-all
    ```
+
+---
+
+## 🔗 Resources
+
+- 📖 [FHEVM Documentation](https://docs.zama.org/protocol)
+- 📚 [Protocol Examples](https://docs.zama.org/protocol/examples)
+- 🔧 [Hardhat Template](https://github.com/zama-ai/fhevm-hardhat-template)
+- 🌐 [Live dApps](https://github.com/zama-ai/dapps)
+- 🏛️ [OpenZeppelin Confidential](https://github.com/OpenZeppelin/openzeppelin-confidential-contracts)
 
 ---
 

@@ -1,4 +1,4 @@
-This example demonstrates the FHE user decryption mechanism and highlights common pitfalls developers may encounter.
+Demonstrates the FHE decryption mechanism and highlights common pitfalls
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:

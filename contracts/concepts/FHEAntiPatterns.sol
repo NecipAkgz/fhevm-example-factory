@@ -122,7 +122,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
      * @dev This pattern doesn't even compile - encrypted bools can't be used in require
      */
     // function wrongRequire() external {
-    //     ebool hasEnough = FHE.gte(_secretBalance, FHE.asEuint32(100));
+    //     ebool hasEnough = FHE.ge(_secretBalance, FHE.asEuint32(100));
     //     // ❌ COMPILE ERROR: require expects bool, not ebool
     //     // require(hasEnough, "Insufficient balance");
     // }
@@ -133,7 +133,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
      */
     function correctValidation() external returns (ebool) {
         // ✅ Return encrypted boolean for client to check
-        ebool hasEnough = FHE.gte(_secretBalance, FHE.asEuint32(100));
+        ebool hasEnough = FHE.ge(_secretBalance, FHE.asEuint32(100));
 
         FHE.allowThis(hasEnough);
         FHE.allow(hasEnough, msg.sender);

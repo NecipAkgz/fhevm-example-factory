@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 
-describe("ConfidentialToken", function () {
+describe("ERC7984Example", function () {
   let token: any;
   let owner: any;
   let recipient: any;
@@ -14,7 +14,7 @@ describe("ConfidentialToken", function () {
     [owner, recipient, other] = await ethers.getSigners();
 
     // Deploy ERC7984 contract
-    token = await ethers.deployContract("ConfidentialToken", [
+    token = await ethers.deployContract("ERC7984Example", [
       owner.address,
       INITIAL_AMOUNT,
       "Confidential Token",

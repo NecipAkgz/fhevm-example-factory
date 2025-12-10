@@ -1,4 +1,4 @@
-This example demonstrates the FHE encryption mechanism and highlights a common pitfall developers may encounter.
+FHE encryption mechanism with single values, including common pitfalls and best practices for developers.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -21,7 +21,7 @@ import {FHE, externalEuint32, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates receiving and storing a single encrypted value
+ * @notice FHE encryption mechanism with single values, including common pitfalls and best practices for developers.
  *
  * @dev Shows the complete flow: receiving encrypted input from user, validating proof,
  *      storing the encrypted value, and granting permissions for decryption.

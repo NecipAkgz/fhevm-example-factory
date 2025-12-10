@@ -147,16 +147,27 @@ function findTestFile(contractPath: string): string | null {
 }
 
 /**
- * Get docs output path
+ * Get docs output path based on contract path
+ * Converts to kebab-case for markdown standards
+ * Examples:
+ *   contracts/openzeppelin/ERC7984.sol → docs/openzeppelin/erc7984.md
+ *   contracts/basic/FHECounter.sol → docs/basic/fhe-counter.md
+ *   contracts/advanced/BlindAuction.sol → docs/advanced/blind-auction.md
  */
-function getDocsOutput(exampleName: string, category: string): string {
-  if (category === "OpenZeppelin") {
-    return `docs/openzeppelin/${exampleName}.md`;
-  } else if (category === "Advanced") {
-    return `docs/advanced/${exampleName}.md`;
-  } else {
-    return `docs/fhe-${exampleName}.md`;
-  }
+function getDocsOutput(contractPath: string): string {
+  // Remove "contracts/" prefix and ".sol" extension
+  const relativePath = contractPath
+    .replace(/^contracts\//, "")
+    .replace(/\.sol$/, "");
+
+  // Convert to kebab-case
+  const kebabPath = relativePath
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/([0-9])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+
+  return `docs/${kebabPath}.md`;
 }
 
 /**
@@ -199,7 +210,7 @@ function scanContracts(): ContractInfo[] {
           description,
           category,
           title: contractNameToTitle(contractName),
-          docsOutput: getDocsOutput(exampleName, category),
+          docsOutput: getDocsOutput(`contracts/${relativePath}`),
         });
       }
     }

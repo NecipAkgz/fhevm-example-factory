@@ -1,4 +1,4 @@
-This example shows how to publicly decrypt multiple encrypted values in a single transaction.
+Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:

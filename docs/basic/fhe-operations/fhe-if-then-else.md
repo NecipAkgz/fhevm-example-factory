@@ -1,4 +1,4 @@
-This example demonstrates how to perform addition operations on encrypted values.
+Demonstrates conditional logic: max(a, b) using encrypted comparison
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -11,58 +11,60 @@ This ensures Hardhat can compile and test your contracts as expected.
 
 {% tabs %}
 
-{% tab title="FHEAdd.sol" %}
+{% tab title="FHEIfThenElse.sol" %}
 
 ```solidity
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.24;
 
-import {FHE, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
+import {FHE, ebool, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Simple example: adding two encrypted values (a + b)
+ * @notice Demonstrates conditional logic: max(a, b) using encrypted comparison
  *
- * @dev Demonstrates the most basic FHE operation and permission flow.
+ * @dev Shows how to use FHE.select() for encrypted if-then-else logic.
  */
-contract FHEAdd is ZamaEthereumConfig {
+contract FHEIfThenElse is ZamaEthereumConfig {
     euint8 private _a;
     euint8 private _b;
-    euint8 private _result;
+    euint8 private _max;
 
     constructor() {}
 
-    /// @notice Set the first operand (encrypted)
+    /// @notice Sets the first operand (encrypted)
     function setA(externalEuint8 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
-        // Only contract needs permission to use this for computation
         FHE.allowThis(_a);
     }
 
-    /// @notice Set the second operand (encrypted)
+    /// @notice Sets the second operand (encrypted)
     function setB(externalEuint8 inputB, bytes calldata inputProof) external {
         _b = FHE.fromExternal(inputB, inputProof);
         FHE.allowThis(_b);
     }
 
-    /// @notice Compute a + b on encrypted values
-    /// @dev The contract computes on ciphertexts - it never sees actual values!
-    function computeAPlusB() external {
-        // 🔐 Addition on encrypted values
-        // Neither the contract nor anyone else knows what a, b, or result are
-        _result = FHE.add(_a, _b);
+    /// @notice Compute max(a, b) without revealing which is larger
+    /// @dev Uses FHE.select() - the encrypted "if-then-else"
+    function computeMax() external {
+        // 🔍 Compare encrypted values - result is encrypted boolean!
+        // We don't know if a >= b, only the encrypted result
+        ebool aIsGreaterOrEqual = FHE.ge(_a, _b);
 
-        // 📋 PERMISSION FLOW:
-        // During this function, contract has "ephemeral" permission on _result
-        // When function ends, ephemeral permission is revoked
-        // We need PERMANENT permissions for future access:
-        FHE.allowThis(_result); // Contract can use result later
-        FHE.allow(_result, msg.sender); // Caller can decrypt result
+        // 🔀 FHE.select(condition, ifTrue, ifFalse)
+        // - BOTH branches are evaluated (no short-circuit)
+        // - Result is encrypted - no one knows which was selected
+        // - This is how you do "if-else" on encrypted values!
+        _max = FHE.select(aIsGreaterOrEqual, _a, _b);
+
+        // Grant permissions for decryption
+        FHE.allowThis(_max);
+        FHE.allow(_max, msg.sender);
     }
 
     /// @notice Returns the encrypted result
     function result() public view returns (euint8) {
-        return _result;
+        return _max;
     }
 }
 
@@ -70,7 +72,7 @@ contract FHEAdd is ZamaEthereumConfig {
 
 {% endtab %}
 
-{% tab title="FHEAdd.ts" %}
+{% tab title="FHEIfThenElse.ts" %}
 
 ```typescript
 import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
@@ -79,24 +81,24 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEAdd, FHEAdd__factory } from "../../../types";
+import { FHEIfThenElse, FHEIfThenElse__factory } from "../../../types";
 import type { Signers } from "../../types";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("FHEAdd")) as FHEAdd__factory;
-  const fheAdd = (await factory.deploy()) as FHEAdd;
-  const fheAdd_address = await fheAdd.getAddress();
+  const factory = (await ethers.getContractFactory("FHEIfThenElse")) as FHEIfThenElse__factory;
+  const fheIfThenElse = (await factory.deploy()) as FHEIfThenElse;
+  const fheIfThenElse_address = await fheIfThenElse.getAddress();
 
-  return { fheAdd, fheAdd_address };
+  return { fheIfThenElse, fheIfThenElse_address };
 }
 
 /**
  * This trivial example demonstrates the FHE encryption mechanism
  * and highlights a common pitfall developers may encounter.
  */
-describe("FHEAdd", function () {
-  let contract: FHEAdd;
+describe("FHEIfThenElse", function () {
+  let contract: FHEIfThenElse;
   let contractAddress: string;
   let signers: Signers;
   let bob: HardhatEthersSigner;
@@ -115,16 +117,16 @@ describe("FHEAdd", function () {
   beforeEach(async function () {
     // Deploy a new contract each time we run a new test
     const deployment = await deployFixture();
-    contractAddress = deployment.fheAdd_address;
-    contract = deployment.fheAdd;
+    contractAddress = deployment.fheIfThenElse_address;
+    contract = deployment.fheIfThenElse;
   });
 
-  it("a + b should succeed", async function () {
+  it("a >= b ? a : b should succeed", async function () {
     const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
     let tx;
 
-    // Let's compute 80 + 123 = 203
+    // Let's compute `a >= b ? a : b`
     const a = 80;
     const b = 123;
 
@@ -140,19 +142,19 @@ describe("FHEAdd", function () {
 
     // Why Bob has FHE permissions to execute the operation in this case ?
     // See `computeAPlusB()` in `FHEAdd.sol` for a detailed answer
-    tx = await contract.connect(bob).computeAPlusB();
+    tx = await contract.connect(bob).computeMax();
     await tx.wait();
 
-    const encryptedAplusB = await contract.result();
+    const encryptedMax = await contract.result();
 
-    const clearAplusB = await fhevm.userDecryptEuint(
+    const clearMax = await fhevm.userDecryptEuint(
       FhevmType.euint8, // Specify the encrypted type
-      encryptedAplusB,
+      encryptedMax,
       contractAddress, // The contract address
       bob, // The user wallet
     );
 
-    expect(clearAplusB).to.equal(a + b);
+    expect(clearMax).to.equal(a >= b ? a : b);
   });
 });
 

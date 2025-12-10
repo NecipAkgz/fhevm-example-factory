@@ -146,6 +146,25 @@ async function createTempExample(
 
     fs.copyFileSync(contractSource, contractDest);
 
+    // Copy dependency contracts if specified
+    if (example.dependencies && example.dependencies.length > 0) {
+      for (const depPath of example.dependencies) {
+        const depSource = path.join(rootDir, depPath);
+        if (fs.existsSync(depSource)) {
+          // Extract contract name from file content
+          const contractName = getContractName(depSource);
+          if (contractName) {
+            const depDest = path.join(
+              tempDir,
+              "contracts",
+              `${contractName}.sol`
+            );
+            fs.copyFileSync(depSource, depDest);
+          }
+        }
+      }
+    }
+
     // Copy test
     const testSource = path.join(rootDir, example.test);
     const testDest = path.join(tempDir, "test", path.basename(example.test));
@@ -177,6 +196,27 @@ async function createTempExample(
     const taskFile = path.join(tempDir, "tasks", "FHECounter.ts");
     if (fs.existsSync(taskFile)) {
       fs.unlinkSync(taskFile);
+    }
+
+    // Add npm dependencies if specified
+    if (
+      example.npmDependencies &&
+      Object.keys(example.npmDependencies).length > 0
+    ) {
+      const packageJsonPath = path.join(tempDir, "package.json");
+      if (fs.existsSync(packageJsonPath)) {
+        const packageJson = JSON.parse(
+          fs.readFileSync(packageJsonPath, "utf-8")
+        );
+        packageJson.dependencies = {
+          ...packageJson.dependencies,
+          ...example.npmDependencies,
+        };
+        fs.writeFileSync(
+          packageJsonPath,
+          JSON.stringify(packageJson, null, 2) + "\n"
+        );
+      }
     }
 
     return true;

@@ -27,7 +27,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates input proof validation - how users securely submit encrypted data
+ * @notice Explains input proof validation in FHEVM: what proofs are, why they are needed, and how to use them correctly with single and batched inputs.
  *
  * @dev Why proofs? They ensure:
  *      1. Ciphertext is valid (not garbage data)

@@ -1,4 +1,4 @@
-This example demonstrates how to create a linear vesting wallet for ERC7984 tokens using OpenZeppelin's smart contract library powered by ZAMA's FHEVM. Vested amounts remain encrypted for privacy.
+Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -199,7 +199,7 @@ describe("VestingWallet", function () {
     const startTime = currentTime + 60;
 
     // Deploy vesting wallet
-    vestingWallet = await ethers.deployContract("VestingWallet", [
+    vestingWallet = await ethers.deployContract("VestingWalletExample", [
       beneficiary.address,
       startTime,
       VESTING_DURATION,
@@ -213,11 +213,9 @@ describe("VestingWallet", function () {
 
     await token
       .connect(owner)
-      ["confidentialTransfer(address,bytes32,bytes)"](
-        await vestingWallet.getAddress(),
-        encryptedInput.handles[0],
-        encryptedInput.inputProof
-      );
+      [
+        "confidentialTransfer(address,bytes32,bytes)"
+      ](await vestingWallet.getAddress(), encryptedInput.handles[0], encryptedInput.inputProof);
   });
 
   describe("Initialization", function () {
@@ -232,20 +230,17 @@ describe("VestingWallet", function () {
 
   describe("Vesting Schedule", function () {
     it("should not release tokens before vesting starts", async function () {
-      await expect(
-        vestingWallet.connect(beneficiary).release(await token.getAddress())
-      ).to.not.be.reverted;
+      await expect(vestingWallet.connect(beneficiary).release(await token.getAddress())).to.not.be.reverted;
     });
 
     it("should release after vesting ends", async function () {
       const endTime = await vestingWallet.end();
       await time.increaseTo(endTime + BigInt(100));
 
-      await expect(
-        vestingWallet.connect(beneficiary).release(await token.getAddress())
-      )
-        .to.emit(vestingWallet, "VestingWalletConfidentialTokenReleased")
-        .withArgs(await token.getAddress(), expect.anything());
+      await expect(vestingWallet.connect(beneficiary).release(await token.getAddress())).to.emit(
+        vestingWallet,
+        "VestingWalletConfidentialTokenReleased",
+      );
     });
 
     it("should release partial tokens at midpoint", async function () {
@@ -254,9 +249,7 @@ describe("VestingWallet", function () {
 
       await time.increaseTo(midpoint);
 
-      await expect(
-        vestingWallet.connect(beneficiary).release(await token.getAddress())
-      ).to.not.be.reverted;
+      await expect(vestingWallet.connect(beneficiary).release(await token.getAddress())).to.not.be.reverted;
     });
   });
 });

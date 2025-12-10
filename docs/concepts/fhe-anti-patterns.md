@@ -26,7 +26,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Common FHE mistakes and their correct alternatives - Educational reference
+ * @notice Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.
  *
  * @dev This contract demonstrates 9 critical anti-patterns in FHE development:
  *      1. Branching on encrypted values (causes decryption!)
@@ -138,7 +138,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
      * @dev This pattern doesn't even compile - encrypted bools can't be used in require
      */
     // function wrongRequire() external {
-    //     ebool hasEnough = FHE.gte(_secretBalance, FHE.asEuint32(100));
+    //     ebool hasEnough = FHE.ge(_secretBalance, FHE.asEuint32(100));
     //     // ❌ COMPILE ERROR: require expects bool, not ebool
     //     // require(hasEnough, "Insufficient balance");
     // }
@@ -149,7 +149,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
      */
     function correctValidation() external returns (ebool) {
         // ✅ Return encrypted boolean for client to check
-        ebool hasEnough = FHE.gte(_secretBalance, FHE.asEuint32(100));
+        ebool hasEnough = FHE.ge(_secretBalance, FHE.asEuint32(100));
 
         FHE.allowThis(hasEnough);
         FHE.allow(hasEnough, msg.sender);

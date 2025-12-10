@@ -1,4 +1,4 @@
-This example demonstrates how to publicly decrypt a single encrypted value on-chain.
+Implements a simple Heads or Tails game demonstrating public, permissionless decryption
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:

@@ -1,4 +1,4 @@
-This example demonstrates how to build a confidential counter using FHEVM, in comparison to a simple counter.
+Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -21,7 +21,7 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Simple encrypted counter - the "Hello World" of FHEVM
+ * @notice Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.
  *
  * @dev Demonstrates basic FHE operations: encryption, computation, and permission management.
  *      Shows how to work with encrypted values without ever revealing the underlying data.

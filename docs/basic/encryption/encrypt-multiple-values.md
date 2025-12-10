@@ -1,4 +1,4 @@
-This example shows how to encrypt and handle multiple values in a single transaction.
+Encrypting and handling multiple values in a single transaction efficiently.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -29,7 +29,7 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates encrypting multiple values of different types
+ * @notice Encrypting and handling multiple values in a single transaction efficiently.
  *
  * @dev Supported encrypted types:
  *   - euint8/16/32/64/128/256: encrypted integers
@@ -94,7 +94,6 @@ contract EncryptMultipleValues is ZamaEthereumConfig {
 {% tab title="EncryptMultipleValues.ts" %}
 
 ```typescript
-//TODO;
 import { EncryptMultipleValues, EncryptMultipleValues__factory } from "../../../types";
 import type { Signers } from "../../types";
 import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
@@ -190,6 +189,7 @@ describe("EncryptMultipleValues", function () {
     expect(clearAddress).to.equal(signers.owner.address);
   });
 });
+
 ```
 
 {% endtab %}

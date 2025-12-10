@@ -21,7 +21,7 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * Demonstrates FHE access control - the most critical concept in FHEVM
+ * @notice Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient. Includes common mistakes and correct implementations.
  *
  * @dev Key functions:
  *      FHE.allow(handle, address) - permanent permission

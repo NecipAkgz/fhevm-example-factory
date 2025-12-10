@@ -1,4 +1,4 @@
-Demonstrates all FHE comparison operations: eq, ne, gt, lt, ge, le, and the select function for encrypted conditionals.
+Demonstrates all FHE comparison operations on encrypted integers
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:

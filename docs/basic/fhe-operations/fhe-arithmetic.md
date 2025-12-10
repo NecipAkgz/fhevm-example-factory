@@ -1,4 +1,4 @@
-Comprehensive example demonstrating all FHE arithmetic operations: add, sub, mul, div, rem, min, max.
+Demonstrates all FHE arithmetic operations on encrypted integers
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:

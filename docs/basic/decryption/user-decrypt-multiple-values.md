@@ -1,4 +1,4 @@
-This example shows how to decrypt multiple encrypted values for a user.
+Demonstrates user decryption of multiple encrypted values
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:

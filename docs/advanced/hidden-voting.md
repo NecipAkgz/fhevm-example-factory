@@ -1,4 +1,4 @@
-Encrypted voting mechanism with homomorphic tallying. Individual votes remain private forever while final counts are revealed using FHE.makePubliclyDecryptable().
+Hidden Voting with encrypted ballots and homomorphic tallying
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -381,7 +381,7 @@ describe("HiddenVoting", function () {
 
   describe("Close Voting", function () {
     beforeEach(async function () {
-      voting = await deployVoting(2); // 2 seconds
+      voting = await deployVoting(10); // 10 seconds
 
       // Cast some votes
       const enc1 = await fhevm
@@ -404,8 +404,8 @@ describe("HiddenVoting", function () {
     });
 
     it("should allow owner to close after time passes", async function () {
-      await new Promise((resolve) => setTimeout(resolve, 2500));
-      await hre.network.provider.send("evm_increaseTime", [3]);
+      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 
       await expect(voting.connect(owner).closeVoting()).to.not.be.reverted;
@@ -413,7 +413,7 @@ describe("HiddenVoting", function () {
     });
 
     it("should not allow non-owner to close", async function () {
-      await hre.network.provider.send("evm_increaseTime", [3]);
+      await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 
       await expect(voting.connect(voter1).closeVoting()).to.be.revertedWith(
@@ -430,7 +430,7 @@ describe("HiddenVoting", function () {
       }
 
       // Deploy with short duration
-      voting = await ethers.deployContract("HiddenVoting", [PROPOSAL, 2]);
+      voting = await ethers.deployContract("HiddenVoting", [PROPOSAL, 10]);
 
       // Cast votes: 2 Yes, 1 No
       const enc1 = await fhevm
@@ -452,8 +452,8 @@ describe("HiddenVoting", function () {
       await voting.connect(voter3).vote(enc3.handles[0], enc3.inputProof);
 
       // Wait and close voting
-      await new Promise((resolve) => setTimeout(resolve, 2500));
-      await hre.network.provider.send("evm_increaseTime", [3]);
+      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 
       await voting.connect(owner).closeVoting();
@@ -489,7 +489,7 @@ describe("HiddenVoting", function () {
         this.skip();
       }
 
-      voting = await ethers.deployContract("HiddenVoting", [PROPOSAL, 2]);
+      voting = await ethers.deployContract("HiddenVoting", [PROPOSAL, 10]);
 
       // All vote No
       for (const voter of [voter1, voter2, voter3]) {
@@ -500,8 +500,8 @@ describe("HiddenVoting", function () {
         await voting.connect(voter).vote(enc.handles[0], enc.inputProof);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 2500));
-      await hre.network.provider.send("evm_increaseTime", [3]);
+      await new Promise((resolve) => setTimeout(resolve, 11000));
+      await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 
       await voting.connect(owner).closeVoting();

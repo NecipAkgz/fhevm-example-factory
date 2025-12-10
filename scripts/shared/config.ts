@@ -64,7 +64,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.",
     category: "Basic",
-    docsOutput: "docs/fhe-fhe-counter.md",
+    docsOutput: "docs/basic/fhe-counter.md",
     title: "FHE Counter",
   },
   "public-decrypt-multiple-values": {
@@ -73,7 +73,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption",
     category: "Basic - Decryption",
-    docsOutput: "docs/fhe-public-decrypt-multiple-values.md",
+    docsOutput: "docs/basic/decryption/public-decrypt-multiple-values.md",
     title: "Public Decrypt Multiple Values",
   },
   "public-decrypt-single-value": {
@@ -82,7 +82,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Implements a simple Heads or Tails game demonstrating public, permissionless decryption",
     category: "Basic - Decryption",
-    docsOutput: "docs/fhe-public-decrypt-single-value.md",
+    docsOutput: "docs/basic/decryption/public-decrypt-single-value.md",
     title: "Public Decrypt Single Value",
   },
   "user-decrypt-multiple-values": {
@@ -91,7 +91,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Demonstrates user decryption of multiple encrypted values",
     category: "Basic - Decryption",
-    docsOutput: "docs/fhe-user-decrypt-multiple-values.md",
+    docsOutput: "docs/basic/decryption/user-decrypt-multiple-values.md",
     title: "User Decrypt Multiple Values",
   },
   "user-decrypt-single-value": {
@@ -100,7 +100,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Demonstrates the FHE decryption mechanism and highlights common pitfalls",
     category: "Basic - Decryption",
-    docsOutput: "docs/fhe-user-decrypt-single-value.md",
+    docsOutput: "docs/basic/decryption/user-decrypt-single-value.md",
     title: "User Decrypt Single Value",
   },
   "encrypt-multiple-values": {
@@ -109,7 +109,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Encrypting and handling multiple values in a single transaction efficiently.",
     category: "Basic - Encryption",
-    docsOutput: "docs/fhe-encrypt-multiple-values.md",
+    docsOutput: "docs/basic/encryption/encrypt-multiple-values.md",
     title: "Encrypt Multiple Values",
   },
   "encrypt-single-value": {
@@ -118,7 +118,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
     category: "Basic - Encryption",
-    docsOutput: "docs/fhe-encrypt-single-value.md",
+    docsOutput: "docs/basic/encryption/encrypt-single-value.md",
     title: "Encrypt Single Value",
   },
   "fhe-add": {
@@ -127,7 +127,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Simple example: adding two encrypted values (a + b)",
     category: "Basic - FHE Operations",
-    docsOutput: "docs/fhe-fhe-add.md",
+    docsOutput: "docs/basic/fhe-operations/fhe-add.md",
     title: "FHE Add",
   },
   "fhe-arithmetic": {
@@ -136,7 +136,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Demonstrates all FHE arithmetic operations on encrypted integers",
     category: "Basic - FHE Operations",
-    docsOutput: "docs/fhe-fhe-arithmetic.md",
+    docsOutput: "docs/basic/fhe-operations/fhe-arithmetic.md",
     title: "FHE Arithmetic",
   },
   "fhe-comparison": {
@@ -145,7 +145,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Demonstrates all FHE comparison operations on encrypted integers",
     category: "Basic - FHE Operations",
-    docsOutput: "docs/fhe-fhe-comparison.md",
+    docsOutput: "docs/basic/fhe-operations/fhe-comparison.md",
     title: "FHE Comparison",
   },
   "fhe-if-then-else": {
@@ -154,7 +154,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Demonstrates conditional logic: max(a, b) using encrypted comparison",
     category: "Basic - FHE Operations",
-    docsOutput: "docs/fhe-fhe-if-then-else.md",
+    docsOutput: "docs/basic/fhe-operations/fhe-if-then-else.md",
     title: "FHE If Then Else",
   },
   "fhe-access-control": {
@@ -163,7 +163,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient. Includes common mistakes and correct implementations.",
     category: "Concepts",
-    docsOutput: "docs/fhe-fhe-access-control.md",
+    docsOutput: "docs/concepts/fhe-access-control.md",
     title: "FHE Access Control",
   },
   "fhe-anti-patterns": {
@@ -172,7 +172,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.",
     category: "Concepts",
-    docsOutput: "docs/fhe-fhe-anti-patterns.md",
+    docsOutput: "docs/concepts/fhe-anti-patterns.md",
     title: "FHE Anti Patterns",
   },
   "fhe-handles": {
@@ -181,7 +181,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Understanding FHE handles: creation, computation, immutability, and symbolic execution in mock mode.",
     category: "Concepts",
-    docsOutput: "docs/fhe-fhe-handles.md",
+    docsOutput: "docs/concepts/fhe-handles.md",
     title: "FHE Handles",
   },
   "fhe-input-proof": {
@@ -190,7 +190,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Explains input proof validation in FHEVM: what proofs are, why they are needed, and how to use them correctly with single and batched inputs.",
     category: "Concepts",
-    docsOutput: "docs/fhe-fhe-input-proof.md",
+    docsOutput: "docs/concepts/fhe-input-proof.md",
     title: "FHE Input Proof",
   },
   "erc7984": {
@@ -199,7 +199,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Confidential token using OpenZeppelin's ERC7984 standard",
     category: "Openzeppelin",
-    docsOutput: "docs/fhe-erc7984.md",
+    docsOutput: "docs/openzeppelin/erc7984.md",
     title: "ERC7984",
   },
   "erc7984-erc20-wrapper": {
@@ -208,7 +208,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Wraps ERC20 tokens into confidential ERC7984 tokens",
     category: "Openzeppelin",
-    docsOutput: "docs/fhe-erc7984-erc20-wrapper.md",
+    docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
     title: "ERC7984 ERC20 Wrapper",
   },
   "swap-erc7984-to-erc20": {
@@ -217,7 +217,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Swap confidential ERC7984 tokens to regular ERC20 tokens",
     category: "Openzeppelin",
-    docsOutput: "docs/fhe-swap-erc7984-to-erc20.md",
+    docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
     title: "Swap ERC7984 To ERC20",
   },
   "swap-erc7984-to-erc7984": {
@@ -226,7 +226,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Fully confidential swap between two ERC7984 tokens",
     category: "Openzeppelin",
-    docsOutput: "docs/fhe-swap-erc7984-to-erc7984.md",
+    docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 To ERC7984",
   },
   "vesting-wallet": {
@@ -235,7 +235,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     description:
       "Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!",
     category: "Openzeppelin",
-    docsOutput: "docs/fhe-vesting-wallet.md",
+    docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet",
   }
 };

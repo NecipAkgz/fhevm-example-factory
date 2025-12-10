@@ -1,4 +1,4 @@
-Encrypted blind auction where bids remain confidential. Uses FHE.gt() and FHE.select() to find the winner without revealing losing bids. Only the winning price is decrypted.
+Blind Auction with encrypted bids - only the winning price is revealed
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
