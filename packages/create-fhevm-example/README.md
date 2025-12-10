@@ -19,6 +19,10 @@ npx create-fhevm-example --example fhe-counter
 # Create category project
 npx create-fhevm-example --category basic
 
+# Add FHEVM example to existing Hardhat project
+npx create-fhevm-example --add
+npx create-fhevm-example --add --target ./my-existing-project
+
 # With options
 npx create-fhevm-example --example fhe-counter --output ./my-project --install
 ```
@@ -29,6 +33,8 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 |--------|-------------|
 | `--example <name>` | Create a single example project |
 | `--category <name>` | Create a category project |
+| `--add` | Add FHEVM to existing Hardhat project |
+| `--target <dir>` | Target directory for --add mode (default: current dir) |
 | `--output <dir>` | Output directory |
 | `--install` | Auto-install dependencies |
 | `--test` | Auto-run tests |
@@ -58,10 +64,19 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 
 ## What Gets Created
 
+### New Projects (--example / --category)
+
 - ✅ Hardhat configuration for FHEVM
 - ✅ Smart contracts and test files
 - ✅ Deployment scripts
 - ✅ All dependencies configured
+
+### Existing Projects (--add)
+
+- ✅ FHEVM dependencies added to `package.json`
+- ✅ FHEVM plugin imported in `hardhat.config.ts`
+- ✅ Example contract and test of your choice
+- ✅ Intelligent file conflict handling (skip/overwrite/rename)
 
 ## Requirements
 

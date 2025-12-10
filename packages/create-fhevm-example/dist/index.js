@@ -25,6 +25,7 @@ import * as path from "path";
 import * as os from "os";
 import { EXAMPLES, CATEGORIES } from "./config.js";
 import { cloneTemplate, initSubmodule, copyDirectoryRecursive, getContractName, downloadFileFromGitHub, runCommand, extractTestResults, generateDeployScript, } from "./utils.js";
+import { runAddMode } from "./add-mode.js";
 // =============================================================================
 // CONSTANTS
 // =============================================================================
@@ -468,6 +469,8 @@ ${pc.yellow("Usage:")}
 ${pc.yellow("Options:")}
   --example <name>     Create a single example project
   --category <name>    Create a category project
+  --add                Add FHEVM to existing Hardhat project
+  --target <dir>       Target directory for --add mode (default: current dir)
   --output <dir>       Output directory (default: ./<project-name>)
   --install            Auto-install dependencies
   --test               Auto-run tests (requires --install)
@@ -476,6 +479,8 @@ ${pc.yellow("Options:")}
 ${pc.yellow("Examples:")}
   ${pc.green("npx create-fhevm-example --example fhe-counter")}
   ${pc.green("npx create-fhevm-example --category basic --output ./my-project")}
+  ${pc.green("npx create-fhevm-example --add")}
+  ${pc.green("npx create-fhevm-example --add --target ./my-existing-project")}
   ${pc.green("npx create-fhevm-example --example fhe-counter --install --test")}
 
 ${pc.yellow("Available examples:")}
@@ -516,6 +521,12 @@ async function runDirectMode(args) {
     const parsedArgs = parseArgs(args);
     if (parsedArgs["help"]) {
         showHelp();
+        return;
+    }
+    // Handle --add mode
+    if (parsedArgs["add"]) {
+        const targetDir = parsedArgs["target"];
+        await runAddMode(targetDir);
         return;
     }
     const exampleName = parsedArgs["example"];

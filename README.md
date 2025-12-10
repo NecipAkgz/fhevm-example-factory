@@ -96,6 +96,27 @@ npm run create:docs [example]  # No arg = all docs, with name = specific doc
 npm run create:help
 ```
 
+### 4. Add FHEVM to Existing Project
+
+Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
+
+```bash
+# Using npx (recommended)
+npx create-fhevm-example --add
+
+# Or specify target directory
+npx create-fhevm-example --add --target ./my-existing-project
+```
+
+This will:
+- ✅ Detect your Hardhat project
+- ✅ Add FHEVM dependencies to `package.json`
+- ✅ Update `hardhat.config.ts` with FHEVM plugin
+- ✅ Add an example contract and test of your choice
+- ✅ Handle file conflicts intelligently (skip/overwrite/rename)
+
+> **Note:** The `--add` feature is available through `npx create-fhevm-example` only.
+
 ---
 
 ## 📂 Project Structure
@@ -326,6 +347,20 @@ npm run create:docs                # All examples
 - `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run test:all` - Test all examples
 - `npm run create:help` - Show help information
+
+### NPM Package Commands
+
+The `create-fhevm-example` package can be used via `npx` for additional features:
+
+```bash
+# Add FHEVM to existing Hardhat project
+npx create-fhevm-example --add
+npx create-fhevm-example --add --target ./my-project
+
+# Create new projects (alternative to npm run create)
+npx create-fhevm-example --example fhe-counter
+npx create-fhevm-example --category basic --output ./my-project
+```
 
 ---
 
