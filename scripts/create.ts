@@ -56,7 +56,7 @@ const CATEGORY_ORDER = [
   "Basic - Decryption",
   "FHE Operations",
   "Concepts",
-  "OpenZeppelin",
+  "Openzeppelin",
   "Advanced",
 ];
 
@@ -388,9 +388,16 @@ function countExamplesPerCategory(): Record<string, number> {
 async function promptSelectCategory(): Promise<string | symbol> {
   const categoryCounts = countExamplesPerCategory();
 
+  // Get all categories, prioritizing CATEGORY_ORDER, then alphabetically sorted others
+  const allCategories = Object.keys(categoryCounts);
+  const orderedCategories = [
+    ...CATEGORY_ORDER.filter((cat) => allCategories.includes(cat)),
+    ...allCategories.filter((cat) => !CATEGORY_ORDER.includes(cat)).sort(),
+  ];
+
   return p.select({
     message: "Select a category:",
-    options: CATEGORY_ORDER.map((category) => ({
+    options: orderedCategories.map((category) => ({
       value: category,
       label: `${CATEGORY_ICON} ${category}`,
       hint: `${categoryCounts[category] || 0} example${

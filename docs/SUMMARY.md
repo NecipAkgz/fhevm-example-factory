@@ -33,6 +33,7 @@
 
 - [Library Installation and Overview](openzeppelin/README.md)
 - [ERC7984 Standard](openzeppelin/erc7984.md)
+  - [ERC7984 Tutorial](openzeppelin/erc7984-tutorial.md)
   - [ERC7984 to ERC20 Wrapper](openzeppelin/erc7984-erc20-wrapper.md)
   - [Swap ERC7984 to ERC20](openzeppelin/swap-erc7984-to-erc20.md)
   - [Swap ERC7984 to ERC7984](openzeppelin/swap-erc7984-to-erc7984.md)
