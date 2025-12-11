@@ -69,6 +69,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/advanced/hidden-voting.md",
     title: "Hidden Voting"
   },
+  "private-kyc": {
+    contract: "contracts/advanced/PrivateKYC.sol",
+    test: "test/advanced/PrivateKYC.ts",
+    description:
+      "Private KYC - verify identity without revealing personal data!",
+    category: "Advanced",
+    docsOutput: "docs/advanced/private-kyc.md",
+    title: "Private KYC"
+  },
   "private-payroll": {
     contract: "contracts/advanced/PrivatePayroll.sol",
     test: "test/advanced/PrivatePayroll.ts",
@@ -338,6 +347,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/advanced/HiddenVoting.sol",
         test: "test/advanced/HiddenVoting.ts",
+      },
+      {
+        sol: "contracts/advanced/PrivateKYC.sol",
+        test: "test/advanced/PrivateKYC.ts",
       },
       {
         sol: "contracts/advanced/PrivatePayroll.sol",
