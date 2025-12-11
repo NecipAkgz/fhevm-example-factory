@@ -96,7 +96,7 @@ npm run create:docs [example]  # No arg = all docs, with name = specific doc
 npm run create:help
 ```
 
-### 4. Add FHEVM to Existing Project
+### 4. Add Example to Existing Project
 
 Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
 

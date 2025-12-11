@@ -85,7 +85,7 @@ import {
   UserDecryptSingleValue,
   UserDecryptSingleValue__factory,
 } from "../types";
-import type { Signers } from "../types";
+import type { Signers } from "./types";
 import {
   FhevmType,
   HardhatFhevmRuntimeEnvironment,
