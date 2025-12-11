@@ -114,6 +114,27 @@ async function createSingleExample(
     path.join(outputDir, "contracts", `${contractName}.sol`)
   );
 
+  // Copy contract dependencies (e.g. mock contracts)
+  if (example.dependencies) {
+    for (const depPath of example.dependencies) {
+      const depFullPath = path.join(rootDir, depPath);
+      if (fs.existsSync(depFullPath)) {
+        // Use the path from config to preserve directory structure
+        // Remove 'contracts/' prefix to get relative path for output
+        const relativePath = depPath.replace(/^contracts\//, "");
+        const depDestPath = path.join(outputDir, "contracts", relativePath);
+        const depDestDir = path.dirname(depDestPath);
+
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(depDestDir)) {
+          fs.mkdirSync(depDestDir, { recursive: true });
+        }
+
+        fs.copyFileSync(depFullPath, depDestPath);
+      }
+    }
+  }
+
   const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
   if (fs.existsSync(contractsGitkeep)) {
     fs.unlinkSync(contractsGitkeep);
@@ -140,6 +161,15 @@ async function createSingleExample(
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   packageJson.name = `fhevm-example-${exampleName}`;
   packageJson.description = example.description;
+
+  // Add npm dependencies if specified in config
+  if (example.npmDependencies) {
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
+    Object.assign(packageJson.dependencies, example.npmDependencies);
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   // Step 4: Clean up template-specific files
@@ -216,6 +246,8 @@ async function createCategoryProject(
   });
 
   // Step 3: Copy all contracts and tests for the category
+  const allDependencies = new Set<string>();
+
   for (const item of category.contracts) {
     const solPath = path.join(rootDir, item.sol);
     if (fs.existsSync(solPath)) {
@@ -234,6 +266,32 @@ async function createCategoryProject(
           testPath,
           path.join(outputDir, "test", path.basename(item.test))
         );
+      }
+    }
+
+    // Collect dependencies for this example
+    for (const [exampleName, exampleConfig] of Object.entries(EXAMPLES)) {
+      if (exampleConfig.contract === item.sol && exampleConfig.dependencies) {
+        exampleConfig.dependencies.forEach((dep) => allDependencies.add(dep));
+      }
+    }
+  }
+
+  // Copy all collected dependencies
+  if (allDependencies.size > 0) {
+    for (const depPath of allDependencies) {
+      const depFullPath = path.join(rootDir, depPath);
+      if (fs.existsSync(depFullPath)) {
+        // Use the path from config to preserve directory structure
+        const relativePath = depPath.replace(/^contracts\//, "");
+        const depDestPath = path.join(outputDir, "contracts", relativePath);
+        const depDestDir = path.dirname(depDestPath);
+
+        if (!fs.existsSync(depDestDir)) {
+          fs.mkdirSync(depDestDir, { recursive: true });
+        }
+
+        fs.copyFileSync(depFullPath, depDestPath);
       }
     }
   }
@@ -268,6 +326,26 @@ export interface Signers {
   const packageJsonPath = path.join(outputDir, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   packageJson.name = `fhevm-examples-${categoryName}`;
+
+  // Collect npm dependencies from all examples in this category
+  const categoryDeps: Record<string, string> = {};
+  for (const [exampleName, exampleConfig] of Object.entries(EXAMPLES)) {
+    // Find examples that match any contract in this category
+    if (category.contracts.some((c) => c.sol === exampleConfig.contract)) {
+      if (exampleConfig.npmDependencies) {
+        Object.assign(categoryDeps, exampleConfig.npmDependencies);
+      }
+    }
+  }
+
+  // Add collected dependencies to package.json
+  if (Object.keys(categoryDeps).length > 0) {
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
+    Object.assign(packageJson.dependencies, categoryDeps);
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   // Initialize git repository

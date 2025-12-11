@@ -26,6 +26,8 @@ interface ContractInfo {
   category: string;
   title: string;
   docsOutput: string;
+  npmDependencies?: Record<string, string>;
+  dependencies?: string[];
 }
 
 /**
@@ -44,6 +46,27 @@ function extractNotice(contractPath: string): string | null {
   }
 
   return null;
+}
+
+/**
+ * Read existing config to preserve manual npmDependencies and dependencies
+ */
+function readExistingConfig(): Record<string, any> {
+  try {
+    if (!fs.existsSync(OUTPUT_FILE)) {
+      return {};
+    }
+
+    // Import the existing config module
+    // Clear require cache first to get fresh data
+    delete require.cache[require.resolve(OUTPUT_FILE)];
+
+    const config = require(OUTPUT_FILE);
+    return config.EXAMPLES || {};
+  } catch (error) {
+    console.warn("⚠️  Could not read existing config, starting fresh");
+    return {};
+  }
 }
 
 /**
@@ -176,6 +199,9 @@ function getDocsOutput(contractPath: string): string {
 function scanContracts(): ContractInfo[] {
   const contracts: ContractInfo[] = [];
 
+  // Read existing config to preserve manual dependencies
+  const existingConfig = readExistingConfig();
+
   function scan(dir: string) {
     const items = fs.readdirSync(dir);
 
@@ -203,7 +229,7 @@ function scanContracts(): ContractInfo[] {
           return;
         }
 
-        contracts.push({
+        const contractInfo: ContractInfo = {
           name: exampleName,
           contractPath: `contracts/${relativePath}`,
           testPath,
@@ -211,7 +237,20 @@ function scanContracts(): ContractInfo[] {
           category,
           title: contractNameToTitle(contractName),
           docsOutput: getDocsOutput(`contracts/${relativePath}`),
-        });
+        };
+
+        // Preserve manual npmDependencies from existing config
+        const existingExample = existingConfig[exampleName];
+        if (existingExample?.npmDependencies) {
+          contractInfo.npmDependencies = existingExample.npmDependencies;
+        }
+
+        // Preserve manual dependencies from existing config
+        if (existingExample?.dependencies) {
+          contractInfo.dependencies = existingExample.dependencies;
+        }
+
+        contracts.push(contractInfo);
       }
     }
   }
@@ -225,14 +264,29 @@ function scanContracts(): ContractInfo[] {
  */
 function generateExamplesConfig(contracts: ContractInfo[]): string {
   const entries = contracts.map((c) => {
+    const npmDepsField = c.npmDependencies
+      ? `\n    npmDependencies: ${JSON.stringify(
+          c.npmDependencies,
+          null,
+          2
+        ).replace(/\n/g, "\n    ")},`
+      : "";
+
+    const depsField = c.dependencies
+      ? `\n    dependencies: ${JSON.stringify(c.dependencies, null, 2).replace(
+          /\n/g,
+          "\n    "
+        )},`
+      : "";
+
     return `  "${c.name}": {
     contract: "${c.contractPath}",
-    test: "${c.testPath}",
+    test: "${c.testPath}",${npmDepsField}${depsField}
     description:
       "${c.description}",
     category: "${c.category}",
     docsOutput: "${c.docsOutput}",
-    title: "${c.title}",
+    title: "${c.title}"
   }`;
   });
 
