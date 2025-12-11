@@ -1,6 +1,9 @@
-import { EncryptSingleValue, EncryptSingleValue__factory } from "../../../types";
-import type { Signers } from "../../types";
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import { EncryptSingleValue, EncryptSingleValue__factory } from "../types";
+import type { Signers } from "./types";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -8,7 +11,9 @@ import * as hre from "hardhat";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("EncryptSingleValue")) as EncryptSingleValue__factory;
+  const factory = (await ethers.getContractFactory(
+    "EncryptSingleValue"
+  )) as EncryptSingleValue__factory;
   const encryptSingleValue = (await factory.deploy()) as EncryptSingleValue;
   const encryptSingleValue_address = await encryptSingleValue.getAddress();
 
@@ -51,7 +56,10 @@ describe("EncryptSingleValue", function () {
     // Values are encrypted locally and bound to a specific contract/user pair.
     // This grants the bound contract FHE permissions to receive and process the encrypted value,
     // but only when it is sent by the bound user.
-    const input = fhevm.createEncryptedInput(contractAddress, signers.alice.address);
+    const input = fhevm.createEncryptedInput(
+      contractAddress,
+      signers.alice.address
+    );
 
     // Add a uint32 value to the list of values to encrypt locally.
     input.add32(123456);
@@ -69,7 +77,9 @@ describe("EncryptSingleValue", function () {
 
     // Now `signers.alice.address` can send the encrypted value and its associated zero-knowledge proof
     // to the smart contract deployed at `contractAddress`.
-    const tx = await contract.connect(signers.alice).initialize(inputEuint32, inputProof);
+    const tx = await contract
+      .connect(signers.alice)
+      .initialize(inputEuint32, inputProof);
     await tx.wait();
 
     // Let's try to decrypt it to check that everything is ok!
@@ -79,7 +89,7 @@ describe("EncryptSingleValue", function () {
       FhevmType.euint32, // Specify the encrypted type
       encryptedUint32,
       contractAddress, // The contract address
-      signers.alice, // The user wallet
+      signers.alice // The user wallet
     );
 
     expect(clearUint32).to.equal(123456);
@@ -89,7 +99,10 @@ describe("EncryptSingleValue", function () {
   it("encryption should fail", async function () {
     const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
-    const enc = await fhevm.createEncryptedInput(contractAddress, signers.alice.address).add32(123456).encrypt();
+    const enc = await fhevm
+      .createEncryptedInput(contractAddress, signers.alice.address)
+      .add32(123456)
+      .encrypt();
 
     const inputEuint32 = enc.handles[0];
     const inputProof = enc.inputProof;

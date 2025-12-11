@@ -189,12 +189,14 @@ import { ethers as EthersT } from "ethers";
 import { ethers, fhevm } from "hardhat";
 import * as hre from "hardhat";
 
-import { HighestDieRoll, HighestDieRoll__factory } from "../../../typechain-types";
-import { Signers } from "../signers";
+import { HighestDieRoll, HighestDieRoll__factory } from "../types";
+import { Signers } from "./types";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("HighestDieRoll")) as HighestDieRoll__factory;
+  const factory = (await ethers.getContractFactory(
+    "HighestDieRoll"
+  )) as HighestDieRoll__factory;
   const highestDiceRoll = (await factory.deploy()) as HighestDieRoll;
   const highestDiceRoll_address = await highestDiceRoll.getAddress();
 
@@ -215,7 +217,11 @@ describe("HighestDieRoll", function () {
     }
 
     const ethSigners: HardhatEthersSigner[] = await ethers.getSigners();
-    signers = { owner: ethSigners[0], alice: ethSigners[1], bob: ethSigners[2] };
+    signers = {
+      owner: ethSigners[0],
+      alice: ethSigners[1],
+      bob: ethSigners[2],
+    };
 
     playerA = signers.alice;
     playerB = signers.bob;
@@ -233,7 +239,9 @@ describe("HighestDieRoll", function () {
    * WARNING: This function is for illustrative purposes only and is not production-ready
    * (it does not handle several events in same tx).
    */
-  function parseGameCreatedEvent(txReceipt: EthersT.ContractTransactionReceipt | null): {
+  function parseGameCreatedEvent(
+    txReceipt: EthersT.ContractTransactionReceipt | null
+  ): {
     txHash: `0x${string}`;
     gameId: number;
     playerA: `0x${string}`;
@@ -251,7 +259,9 @@ describe("HighestDieRoll", function () {
     }> = [];
 
     if (txReceipt) {
-      const logs = Array.isArray(txReceipt.logs) ? txReceipt.logs : [txReceipt.logs];
+      const logs = Array.isArray(txReceipt.logs)
+        ? txReceipt.logs
+        : [txReceipt.logs];
       for (let i = 0; i < logs.length; ++i) {
         const parsedLog = contract.interface.parseLog(logs[i]);
         if (!parsedLog || parsedLog.name !== "GameCreated") {
@@ -284,7 +294,9 @@ describe("HighestDieRoll", function () {
     console.log(``);
 
     // Starts a new Heads or Tails game. This will emit a `GameCreated` event
-    const tx = await contract.connect(signers.owner).highestDieRoll(playerA, playerB);
+    const tx = await contract
+      .connect(signers.owner)
+      .highestDieRoll(playerA, playerB);
 
     // Parse the `GameCreated` event
     const gameCreatedEvent = parseGameCreatedEvent(await tx.wait())!;
@@ -303,17 +315,23 @@ describe("HighestDieRoll", function () {
     const playerBDiceRoll = gameCreatedEvent.playerBEncryptedDiceRoll;
 
     // Call the Zama Relayer to compute the decryption
-    const publicDecryptResults = await fhevm.publicDecrypt([playerADiceRoll, playerBDiceRoll]);
+    const publicDecryptResults = await fhevm.publicDecrypt([
+      playerADiceRoll,
+      playerBDiceRoll,
+    ]);
 
     // The Relayer returns a `PublicDecryptResults` object containing:
     // - the ORDERED clear values (here we have only one single value)
     // - the ORDERED clear values in ABI-encoded form
     // - the KMS decryption proof associated with the ORDERED clear values in ABI-encoded form
-    const abiEncodedClearGameResult = publicDecryptResults.abiEncodedClearValues;
+    const abiEncodedClearGameResult =
+      publicDecryptResults.abiEncodedClearValues;
     const decryptionProof = publicDecryptResults.decryptionProof;
 
-    const clearValueA: ClearValueType = publicDecryptResults.clearValues[playerADiceRoll];
-    const clearValueB: ClearValueType = publicDecryptResults.clearValues[playerBDiceRoll];
+    const clearValueA: ClearValueType =
+      publicDecryptResults.clearValues[playerADiceRoll];
+    const clearValueB: ClearValueType =
+      publicDecryptResults.clearValues[playerBDiceRoll];
 
     expect(typeof clearValueA).to.eq("bigint");
     expect(typeof clearValueB).to.eq("bigint");
@@ -333,13 +351,21 @@ describe("HighestDieRoll", function () {
 
     // Let's forward the `PublicDecryptResults` content to the on-chain contract whose job
     // will simply be to verify the proof and store the final winner of the game
-    await contract.recordAndVerifyWinner(gameId, abiEncodedClearGameResult, decryptionProof);
+    await contract.recordAndVerifyWinner(
+      gameId,
+      abiEncodedClearGameResult,
+      decryptionProof
+    );
 
     const isRevealed = await contract.isGameRevealed(gameId);
     const winner = await contract.getWinner(gameId);
 
     expect(isRevealed).to.eq(true);
-    expect(winner === playerA.address || winner === playerB.address || winner === EthersT.ZeroAddress).to.eq(true);
+    expect(
+      winner === playerA.address ||
+        winner === playerB.address ||
+        winner === EthersT.ZeroAddress
+    ).to.eq(true);
 
     expect(isDraw).to.eq(winner === EthersT.ZeroAddress);
     expect(playerAWon).to.eq(winner === playerA.address);
@@ -363,34 +389,54 @@ describe("HighestDieRoll", function () {
     // internally verifies the proof (e.g., checks a signature against a newly computed hash).
     // This intentional failure is expected to revert with the `KMSInvalidSigner` error,
     // confirming the proof's order dependency.
-    const tx = await contract.connect(signers.owner).highestDieRoll(playerA, playerB);
+    const tx = await contract
+      .connect(signers.owner)
+      .highestDieRoll(playerA, playerB);
     const gameCreatedEvent = parseGameCreatedEvent(await tx.wait())!;
     const gameId = gameCreatedEvent.gameId;
     const playerADiceRoll = gameCreatedEvent.playerAEncryptedDiceRoll;
     const playerBDiceRoll = gameCreatedEvent.playerBEncryptedDiceRoll;
     // Call `fhevm.publicDecrypt` using order (A, B)
-    const publicDecryptResults = await fhevm.publicDecrypt([playerADiceRoll, playerBDiceRoll]);
-    const clearValueA: ClearValueType = publicDecryptResults.clearValues[playerADiceRoll];
-    const clearValueB: ClearValueType = publicDecryptResults.clearValues[playerBDiceRoll];
+    const publicDecryptResults = await fhevm.publicDecrypt([
+      playerADiceRoll,
+      playerBDiceRoll,
+    ]);
+    const clearValueA: ClearValueType =
+      publicDecryptResults.clearValues[playerADiceRoll];
+    const clearValueB: ClearValueType =
+      publicDecryptResults.clearValues[playerBDiceRoll];
     const decryptionProof = publicDecryptResults.decryptionProof;
     expect(typeof clearValueA).to.eq("bigint");
     expect(typeof clearValueB).to.eq("bigint");
-    expect(ethers.AbiCoder.defaultAbiCoder().encode(["uint256", "uint256"], [clearValueA, clearValueB])).to.eq(
-      publicDecryptResults.abiEncodedClearValues,
-    );
-    const wrongOrderBAInsteadOfABAbiEncodedValues = ethers.AbiCoder.defaultAbiCoder().encode(
-      ["uint256", "uint256"],
-      [clearValueB, clearValueA],
-    );
+    expect(
+      ethers.AbiCoder.defaultAbiCoder().encode(
+        ["uint256", "uint256"],
+        [clearValueA, clearValueB]
+      )
+    ).to.eq(publicDecryptResults.abiEncodedClearValues);
+    const wrongOrderBAInsteadOfABAbiEncodedValues =
+      ethers.AbiCoder.defaultAbiCoder().encode(
+        ["uint256", "uint256"],
+        [clearValueB, clearValueA]
+      );
     // ❌ Call `contract.recordAndVerifyWinner` using order (B, A)
     await expect(
-      contract.recordAndVerifyWinner(gameId, wrongOrderBAInsteadOfABAbiEncodedValues, decryptionProof),
+      contract.recordAndVerifyWinner(
+        gameId,
+        wrongOrderBAInsteadOfABAbiEncodedValues,
+        decryptionProof
+      )
     ).to.be.revertedWithCustomError(
-      { interface: new EthersT.Interface(["error KMSInvalidSigner(address invalidSigner)"]) },
-      "KMSInvalidSigner",
+      {
+        interface: new EthersT.Interface([
+          "error KMSInvalidSigner(address invalidSigner)",
+        ]),
+      },
+      "KMSInvalidSigner"
     );
   });
 });
+
 ```
 
 {% endtab %}

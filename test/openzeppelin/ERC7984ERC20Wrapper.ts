@@ -13,7 +13,11 @@ describe("ERC7984ERC20Wrapper", function () {
     [owner, user] = await ethers.getSigners();
 
     // Deploy mock ERC20
-    erc20Mock = await ethers.deployContract("ERC20Mock", ["Mock USDC", "USDC", 6]);
+    erc20Mock = await ethers.deployContract("ERC20Mock", [
+      "Mock USDC",
+      "USDC",
+      6,
+    ]);
 
     // Mint ERC20 to user
     await erc20Mock.mint(user.address, WRAP_AMOUNT * 2);
@@ -41,13 +45,18 @@ describe("ERC7984ERC20Wrapper", function () {
   describe("Wrapping", function () {
     it("should wrap ERC20 tokens", async function () {
       // Approve wrapper
-      await erc20Mock.connect(user).approve(await wrapper.getAddress(), WRAP_AMOUNT);
+      await erc20Mock
+        .connect(user)
+        .approve(await wrapper.getAddress(), WRAP_AMOUNT);
 
       // Wrap tokens
-      await expect(wrapper.connect(user).wrap(user.address, WRAP_AMOUNT)).to.not.be.reverted;
+      await expect(wrapper.connect(user).wrap(user.address, WRAP_AMOUNT)).to.not
+        .be.reverted;
 
       // Check ERC20 was transferred
-      expect(await erc20Mock.balanceOf(await wrapper.getAddress())).to.equal(WRAP_AMOUNT);
+      expect(await erc20Mock.balanceOf(await wrapper.getAddress())).to.equal(
+        WRAP_AMOUNT
+      );
 
       // Check confidential balance exists
       const balanceHandle = await wrapper.confidentialBalanceOf(user.address);
@@ -55,7 +64,8 @@ describe("ERC7984ERC20Wrapper", function () {
     });
 
     it("should fail wrapping without approval", async function () {
-      await expect(wrapper.connect(user).wrap(user.address, WRAP_AMOUNT)).to.be.reverted;
+      await expect(wrapper.connect(user).wrap(user.address, WRAP_AMOUNT)).to.be
+        .reverted;
     });
   });
 });

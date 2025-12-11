@@ -153,6 +153,19 @@ async function createSingleExample(
     fs.unlinkSync(oldTaskFile);
   }
 
+  // Step 6: Create test/types.ts for type safety
+  const typesContent = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+
+/**
+ * Common signers interface used across test files
+ */
+export interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
+`;
+  fs.writeFileSync(path.join(outputDir, "test", "types.ts"), typesContent);
+
   // Initialize git repository
   try {
     await runCommand("git", ["init"], outputDir);
@@ -236,6 +249,19 @@ async function createCategoryProject(
   if (fs.existsSync(oldTaskFile)) {
     fs.unlinkSync(oldTaskFile);
   }
+
+  // Step 5: Create test/types.ts for type safety
+  const typesContent = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+
+/**
+ * Common signers interface used across test files
+ */
+export interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
+`;
+  fs.writeFileSync(path.join(outputDir, "test", "types.ts"), typesContent);
 
   const packageJsonPath = path.join(outputDir, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));

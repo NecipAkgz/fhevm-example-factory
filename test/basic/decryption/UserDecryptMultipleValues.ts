@@ -1,5 +1,8 @@
-import { UserDecryptMultipleValues, UserDecryptMultipleValues__factory } from "../../../types";
-import type { Signers } from "../../types";
+import {
+  UserDecryptMultipleValues,
+  UserDecryptMultipleValues__factory,
+} from "../types";
+import type { Signers } from "./types";
 import { HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
 import { utils as fhevm_utils } from "@fhevm/mock-utils";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
@@ -10,9 +13,13 @@ import * as hre from "hardhat";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("UserDecryptMultipleValues")) as UserDecryptMultipleValues__factory;
-  const userDecryptMultipleValues = (await factory.deploy()) as UserDecryptMultipleValues;
-  const userDecryptMultipleValues_address = await userDecryptMultipleValues.getAddress();
+  const factory = (await ethers.getContractFactory(
+    "UserDecryptMultipleValues"
+  )) as UserDecryptMultipleValues__factory;
+  const userDecryptMultipleValues =
+    (await factory.deploy()) as UserDecryptMultipleValues;
+  const userDecryptMultipleValues_address =
+    await userDecryptMultipleValues.getAddress();
 
   return { userDecryptMultipleValues, userDecryptMultipleValues_address };
 }
@@ -45,7 +52,9 @@ describe("UserDecryptMultipleValues", function () {
 
   // ✅ Test should succeed
   it("user decryption should succeed", async function () {
-    const tx = await contract.connect(signers.alice).initialize(true, 123456, 78901234567);
+    const tx = await contract
+      .connect(signers.alice)
+      .initialize(true, 123456, 78901234567);
     await tx.wait();
 
     const encryptedBool = await contract.encryptedBool();
@@ -61,11 +70,19 @@ describe("UserDecryptMultipleValues", function () {
     const startTimestamp = fhevm_utils.timestampNow();
     const durationDays = 365;
 
-    const aliceEip712 = fhevm.createEIP712(aliceKeypair.publicKey, [contractAddress], startTimestamp, durationDays);
+    const aliceEip712 = fhevm.createEIP712(
+      aliceKeypair.publicKey,
+      [contractAddress],
+      startTimestamp,
+      durationDays
+    );
     const aliceSignature = await signers.alice.signTypedData(
       aliceEip712.domain,
-      { UserDecryptRequestVerification: aliceEip712.types.UserDecryptRequestVerification },
-      aliceEip712.message,
+      {
+        UserDecryptRequestVerification:
+          aliceEip712.types.UserDecryptRequestVerification,
+      },
+      aliceEip712.message
     );
 
     const decrytepResults: DecryptedResults = await fhevm.userDecrypt(
@@ -80,7 +97,7 @@ describe("UserDecryptMultipleValues", function () {
       [contractAddress],
       signers.alice.address,
       startTimestamp,
-      durationDays,
+      durationDays
     );
 
     expect(decrytepResults[encryptedBool]).to.equal(true);

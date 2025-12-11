@@ -1,14 +1,19 @@
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEHandles, FHEHandles__factory } from "../../../types";
-import type { Signers } from "../../types";
+import { FHEHandles, FHEHandles__factory } from "../types";
+import type { Signers } from "./types";
 
 async function deployFixture() {
-  const factory = (await ethers.getContractFactory("FHEHandles")) as FHEHandles__factory;
+  const factory = (await ethers.getContractFactory(
+    "FHEHandles"
+  )) as FHEHandles__factory;
   const contract = (await factory.deploy()) as FHEHandles;
   const contractAddress = await contract.getAddress();
   return { contract, contractAddress };
@@ -56,7 +61,7 @@ describe("FHEHandles", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(value);
     });
@@ -72,7 +77,7 @@ describe("FHEHandles", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(plaintextValue);
     });
@@ -96,7 +101,7 @@ describe("FHEHandles", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(initialValue + 10);
     });
@@ -113,7 +118,7 @@ describe("FHEHandles", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(109);
     });
@@ -138,7 +143,7 @@ describe("FHEHandles", function () {
         FhevmType.euint32,
         newEncrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
 
       // New value should be initialValue + 100

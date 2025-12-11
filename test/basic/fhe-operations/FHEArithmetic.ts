@@ -1,14 +1,19 @@
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEArithmetic, FHEArithmetic__factory } from "../../../types";
-import type { Signers } from "../../types";
+import { FHEArithmetic, FHEArithmetic__factory } from "../types";
+import type { Signers } from "./types";
 
 async function deployFixture() {
-  const factory = (await ethers.getContractFactory("FHEArithmetic")) as FHEArithmetic__factory;
+  const factory = (await ethers.getContractFactory(
+    "FHEArithmetic"
+  )) as FHEArithmetic__factory;
   const contract = (await factory.deploy()) as FHEArithmetic;
   const contractAddress = await contract.getAddress();
   return { contract, contractAddress };
@@ -45,11 +50,21 @@ describe("FHEArithmetic", function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       // Set encrypted values A and B
-      const inputA = await fhevm.createEncryptedInput(contractAddress, signers.alice.address).add32(valueA).encrypt();
-      await contract.connect(signers.alice).setA(inputA.handles[0], inputA.inputProof);
+      const inputA = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(valueA)
+        .encrypt();
+      await contract
+        .connect(signers.alice)
+        .setA(inputA.handles[0], inputA.inputProof);
 
-      const inputB = await fhevm.createEncryptedInput(contractAddress, signers.alice.address).add32(valueB).encrypt();
-      await contract.connect(signers.alice).setB(inputB.handles[0], inputB.inputProof);
+      const inputB = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(valueB)
+        .encrypt();
+      await contract
+        .connect(signers.alice)
+        .setB(inputB.handles[0], inputB.inputProof);
     });
 
     it("should compute addition correctly (100 + 25 = 125)", async function () {
@@ -60,7 +75,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(valueA + valueB);
     });
@@ -73,7 +88,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(valueA - valueB);
     });
@@ -86,7 +101,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(valueA * valueB);
     });
@@ -99,7 +114,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(Math.floor(valueA / valueB));
     });
@@ -112,7 +127,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(valueA % valueB);
     });
@@ -125,7 +140,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(Math.min(valueA, valueB));
     });
@@ -138,7 +153,7 @@ describe("FHEArithmetic", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(Math.max(valueA, valueB));
     });

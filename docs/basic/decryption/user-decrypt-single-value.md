@@ -81,9 +81,15 @@ contract UserDecryptSingleValue is ZamaEthereumConfig {
 {% tab title="UserDecryptSingleValue.ts" %}
 
 ```typescript
-import { UserDecryptSingleValue, UserDecryptSingleValue__factory } from "../../../types";
-import type { Signers } from "../../../types";
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  UserDecryptSingleValue,
+  UserDecryptSingleValue__factory,
+} from "../types";
+import type { Signers } from "../types";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -91,9 +97,13 @@ import * as hre from "hardhat";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("UserDecryptSingleValue")) as UserDecryptSingleValue__factory;
-  const userUserDecryptSingleValue = (await factory.deploy()) as UserDecryptSingleValue;
-  const userUserDecryptSingleValue_address = await userUserDecryptSingleValue.getAddress();
+  const factory = (await ethers.getContractFactory(
+    "UserDecryptSingleValue"
+  )) as UserDecryptSingleValue__factory;
+  const userUserDecryptSingleValue =
+    (await factory.deploy()) as UserDecryptSingleValue;
+  const userUserDecryptSingleValue_address =
+    await userUserDecryptSingleValue.getAddress();
 
   return { userUserDecryptSingleValue, userUserDecryptSingleValue_address };
 }
@@ -139,7 +149,7 @@ describe("UserDecryptSingleValue", function () {
       FhevmType.euint32, // Specify the encrypted type
       encryptedUint32,
       contractAddress, // The contract address
-      signers.alice, // The user wallet
+      signers.alice // The user wallet
     );
 
     expect(clearUint32).to.equal(123456 + 1);
@@ -147,16 +157,28 @@ describe("UserDecryptSingleValue", function () {
 
   // ❌ Test should fail
   it("user decryption should fail", async function () {
-    const tx = await contract.connect(signers.alice).initializeUint32Wrong(123456);
+    const tx = await contract
+      .connect(signers.alice)
+      .initializeUint32Wrong(123456);
     await tx.wait();
 
     const encryptedUint32 = await contract.encryptedUint32();
 
     await expect(
-      hre.fhevm.userDecryptEuint(FhevmType.euint32, encryptedUint32, contractAddress, signers.alice),
-    ).to.be.rejectedWith(new RegExp("^dapp contract (.+) is not authorized to user decrypt handle (.+)."));
+      hre.fhevm.userDecryptEuint(
+        FhevmType.euint32,
+        encryptedUint32,
+        contractAddress,
+        signers.alice
+      )
+    ).to.be.rejectedWith(
+      new RegExp(
+        "^dapp contract (.+) is not authorized to user decrypt handle (.+)."
+      )
+    );
   });
 });
+
 ```
 
 {% endtab %}

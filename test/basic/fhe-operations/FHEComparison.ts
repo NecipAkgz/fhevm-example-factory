@@ -1,14 +1,19 @@
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEComparison, FHEComparison__factory } from "../../../types";
-import type { Signers } from "../../types";
+import { FHEComparison, FHEComparison__factory } from "../types";
+import type { Signers } from "./types";
 
 async function deployFixture() {
-  const factory = (await ethers.getContractFactory("FHEComparison")) as FHEComparison__factory;
+  const factory = (await ethers.getContractFactory(
+    "FHEComparison"
+  )) as FHEComparison__factory;
   const contract = (await factory.deploy()) as FHEComparison;
   const contractAddress = await contract.getAddress();
   return { contract, contractAddress };
@@ -44,18 +49,32 @@ describe("FHEComparison", function () {
     beforeEach(async function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
-      const inputA = await fhevm.createEncryptedInput(contractAddress, signers.alice.address).add32(valueA).encrypt();
-      await contract.connect(signers.alice).setA(inputA.handles[0], inputA.inputProof);
+      const inputA = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(valueA)
+        .encrypt();
+      await contract
+        .connect(signers.alice)
+        .setA(inputA.handles[0], inputA.inputProof);
 
-      const inputB = await fhevm.createEncryptedInput(contractAddress, signers.alice.address).add32(valueB).encrypt();
-      await contract.connect(signers.alice).setB(inputB.handles[0], inputB.inputProof);
+      const inputB = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
+        .add32(valueB)
+        .encrypt();
+      await contract
+        .connect(signers.alice)
+        .setB(inputB.handles[0], inputB.inputProof);
     });
 
     it("should compute equality correctly (100 == 25 is false)", async function () {
       await contract.connect(signers.alice).computeEq();
       const encrypted = await contract.getBoolResult();
 
-      const decrypted = await hre.fhevm.userDecryptEbool(encrypted, contractAddress, signers.alice);
+      const decrypted = await hre.fhevm.userDecryptEbool(
+        encrypted,
+        contractAddress,
+        signers.alice
+      );
       expect(decrypted).to.equal(false);
     });
 
@@ -63,7 +82,11 @@ describe("FHEComparison", function () {
       await contract.connect(signers.alice).computeNe();
       const encrypted = await contract.getBoolResult();
 
-      const decrypted = await hre.fhevm.userDecryptEbool(encrypted, contractAddress, signers.alice);
+      const decrypted = await hre.fhevm.userDecryptEbool(
+        encrypted,
+        contractAddress,
+        signers.alice
+      );
       expect(decrypted).to.equal(true);
     });
 
@@ -71,7 +94,11 @@ describe("FHEComparison", function () {
       await contract.connect(signers.alice).computeGt();
       const encrypted = await contract.getBoolResult();
 
-      const decrypted = await hre.fhevm.userDecryptEbool(encrypted, contractAddress, signers.alice);
+      const decrypted = await hre.fhevm.userDecryptEbool(
+        encrypted,
+        contractAddress,
+        signers.alice
+      );
       expect(decrypted).to.equal(true);
     });
 
@@ -79,7 +106,11 @@ describe("FHEComparison", function () {
       await contract.connect(signers.alice).computeLt();
       const encrypted = await contract.getBoolResult();
 
-      const decrypted = await hre.fhevm.userDecryptEbool(encrypted, contractAddress, signers.alice);
+      const decrypted = await hre.fhevm.userDecryptEbool(
+        encrypted,
+        contractAddress,
+        signers.alice
+      );
       expect(decrypted).to.equal(false);
     });
 
@@ -87,7 +118,11 @@ describe("FHEComparison", function () {
       await contract.connect(signers.alice).computeGe();
       const encrypted = await contract.getBoolResult();
 
-      const decrypted = await hre.fhevm.userDecryptEbool(encrypted, contractAddress, signers.alice);
+      const decrypted = await hre.fhevm.userDecryptEbool(
+        encrypted,
+        contractAddress,
+        signers.alice
+      );
       expect(decrypted).to.equal(true);
     });
 
@@ -95,7 +130,11 @@ describe("FHEComparison", function () {
       await contract.connect(signers.alice).computeLe();
       const encrypted = await contract.getBoolResult();
 
-      const decrypted = await hre.fhevm.userDecryptEbool(encrypted, contractAddress, signers.alice);
+      const decrypted = await hre.fhevm.userDecryptEbool(
+        encrypted,
+        contractAddress,
+        signers.alice
+      );
       expect(decrypted).to.equal(false);
     });
 
@@ -107,7 +146,7 @@ describe("FHEComparison", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(valueA);
     });
@@ -120,7 +159,7 @@ describe("FHEComparison", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(valueB);
     });

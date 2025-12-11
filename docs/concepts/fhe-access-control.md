@@ -116,17 +116,22 @@ contract FHEAccessControl is ZamaEthereumConfig {
 {% tab title="FHEAccessControl.ts" %}
 
 ```typescript
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEAccessControl, FHEAccessControl__factory } from "../../../types";
-import type { Signers } from "../../types";
+import { FHEAccessControl, FHEAccessControl__factory } from "../types";
+import type { Signers } from "./types";
 
 async function deployFixture() {
-  const factory = (await ethers.getContractFactory("FHEAccessControl")) as FHEAccessControl__factory;
+  const factory = (await ethers.getContractFactory(
+    "FHEAccessControl"
+  )) as FHEAccessControl__factory;
   const contract = (await factory.deploy()) as FHEAccessControl;
   const contractAddress = await contract.getAddress();
   return { contract, contractAddress };
@@ -164,10 +169,13 @@ describe("FHEAccessControl", function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       // Store value with proper permissions
-      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+      const input = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
         .encrypt();
-      await contract.connect(signers.alice).storeWithFullAccess(input.handles[0], input.inputProof);
+      await contract
+        .connect(signers.alice)
+        .storeWithFullAccess(input.handles[0], input.inputProof);
 
       // Verify access was granted
       expect(await contract.hasAccess(signers.alice.address)).to.equal(true);
@@ -178,7 +186,7 @@ describe("FHEAccessControl", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(secretValue);
     });
@@ -187,10 +195,13 @@ describe("FHEAccessControl", function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       // Alice stores the value
-      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+      const input = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
         .encrypt();
-      await contract.connect(signers.alice).storeWithFullAccess(input.handles[0], input.inputProof);
+      await contract
+        .connect(signers.alice)
+        .storeWithFullAccess(input.handles[0], input.inputProof);
 
       // Alice grants access to Bob
       await contract.connect(signers.alice).grantAccess(bob.address);
@@ -201,7 +212,7 @@ describe("FHEAccessControl", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        bob,
+        bob
       );
       expect(decrypted).to.equal(secretValue);
     });
@@ -214,15 +225,23 @@ describe("FHEAccessControl", function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       // Store value WITHOUT allowThis (wrong pattern)
-      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+      const input = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
         .encrypt();
-      await contract.connect(signers.alice).storeWithoutAllowThis(input.handles[0], input.inputProof);
+      await contract
+        .connect(signers.alice)
+        .storeWithoutAllowThis(input.handles[0], input.inputProof);
 
       // Attempting to decrypt should fail
       const encrypted = await contract.getSecretValue();
       await expect(
-        fhevm.userDecryptEuint(FhevmType.euint32, encrypted, contractAddress, signers.alice)
+        fhevm.userDecryptEuint(
+          FhevmType.euint32,
+          encrypted,
+          contractAddress,
+          signers.alice
+        )
       ).to.be.rejected;
     });
 
@@ -230,15 +249,23 @@ describe("FHEAccessControl", function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       // Store value WITHOUT user allow (wrong pattern)
-      const input = await fhevm.createEncryptedInput(contractAddress, signers.alice.address)
+      const input = await fhevm
+        .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
         .encrypt();
-      await contract.connect(signers.alice).storeWithoutUserAllow(input.handles[0], input.inputProof);
+      await contract
+        .connect(signers.alice)
+        .storeWithoutUserAllow(input.handles[0], input.inputProof);
 
       // User (alice) cannot decrypt because no permission was granted
       const encrypted = await contract.getSecretValue();
       await expect(
-        fhevm.userDecryptEuint(FhevmType.euint32, encrypted, contractAddress, signers.alice)
+        fhevm.userDecryptEuint(
+          FhevmType.euint32,
+          encrypted,
+          contractAddress,
+          signers.alice
+        )
       ).to.be.rejected;
     });
   });

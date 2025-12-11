@@ -1,14 +1,19 @@
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEInputProof, FHEInputProof__factory } from "../../../types";
-import type { Signers } from "../../types";
+import { FHEInputProof, FHEInputProof__factory } from "../types";
+import type { Signers } from "./types";
 
 async function deployFixture() {
-  const factory = (await ethers.getContractFactory("FHEInputProof")) as FHEInputProof__factory;
+  const factory = (await ethers.getContractFactory(
+    "FHEInputProof"
+  )) as FHEInputProof__factory;
   const contract = (await factory.deploy()) as FHEInputProof;
   const contractAddress = await contract.getAddress();
   return { contract, contractAddress };
@@ -59,7 +64,7 @@ describe("FHEInputProof", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(secretValue);
     });
@@ -74,8 +79,8 @@ describe("FHEInputProof", function () {
       // Create batched encrypted input
       const encryptedInput = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
-        .add32(valueA)  // index 0 -> handles[0]
-        .add64(valueB)  // index 1 -> handles[1]
+        .add32(valueA) // index 0 -> handles[0]
+        .add64(valueB) // index 1 -> handles[1]
         .encrypt();
 
       // Submit both values with single proof
@@ -93,7 +98,7 @@ describe("FHEInputProof", function () {
         FhevmType.euint32,
         encryptedA,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decryptedA).to.equal(valueA);
 
@@ -102,7 +107,7 @@ describe("FHEInputProof", function () {
         FhevmType.euint64,
         encryptedB,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decryptedB).to.equal(valueB);
     });
@@ -138,7 +143,7 @@ describe("FHEInputProof", function () {
         FhevmType.euint32,
         encrypted,
         contractAddress,
-        signers.alice,
+        signers.alice
       );
       expect(decrypted).to.equal(initialValue + addendValue);
     });

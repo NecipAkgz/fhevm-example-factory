@@ -1,6 +1,12 @@
-import { EncryptMultipleValues, EncryptMultipleValues__factory } from "../../../types";
-import type { Signers } from "../../types";
-import { FhevmType, HardhatFhevmRuntimeEnvironment } from "@fhevm/hardhat-plugin";
+import {
+  EncryptMultipleValues,
+  EncryptMultipleValues__factory,
+} from "../types";
+import type { Signers } from "./types";
+import {
+  FhevmType,
+  HardhatFhevmRuntimeEnvironment,
+} from "@fhevm/hardhat-plugin";
 import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
@@ -8,9 +14,13 @@ import * as hre from "hardhat";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("EncryptMultipleValues")) as EncryptMultipleValues__factory;
-  const encryptMultipleValues = (await factory.deploy()) as EncryptMultipleValues;
-  const encryptMultipleValues_address = await encryptMultipleValues.getAddress();
+  const factory = (await ethers.getContractFactory(
+    "EncryptMultipleValues"
+  )) as EncryptMultipleValues__factory;
+  const encryptMultipleValues =
+    (await factory.deploy()) as EncryptMultipleValues;
+  const encryptMultipleValues_address =
+    await encryptMultipleValues.getAddress();
 
   return { encryptMultipleValues, encryptMultipleValues_address };
 }
@@ -47,7 +57,10 @@ describe("EncryptMultipleValues", function () {
     // to perform FHEVM input encryptions.
     const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
-    const input = fhevm.createEncryptedInput(contractAddress, signers.alice.address);
+    const input = fhevm.createEncryptedInput(
+      contractAddress,
+      signers.alice.address
+    );
 
     input.addBool(true);
     input.add32(123456);
@@ -62,7 +75,9 @@ describe("EncryptMultipleValues", function () {
 
     // Don't forget to call `connect(signers.alice)` to make sure
     // the Solidity `msg.sender` is `signers.alice.address`.
-    const tx = await contract.connect(signers.alice).initialize(inputEbool, inputEuint32, inputEaddress, inputProof);
+    const tx = await contract
+      .connect(signers.alice)
+      .initialize(inputEbool, inputEuint32, inputEaddress, inputProof);
     await tx.wait();
 
     const encryptedBool = await contract.encryptedBool();
@@ -72,20 +87,20 @@ describe("EncryptMultipleValues", function () {
     const clearBool = await fhevm.userDecryptEbool(
       encryptedBool,
       contractAddress, // The contract address
-      signers.alice, // The user wallet
+      signers.alice // The user wallet
     );
 
     const clearUint32 = await fhevm.userDecryptEuint(
       FhevmType.euint32, // Specify the encrypted type
       encryptedUint32,
       contractAddress, // The contract address
-      signers.alice, // The user wallet
+      signers.alice // The user wallet
     );
 
     const clearAddress = await fhevm.userDecryptEaddress(
       encryptedAddress,
       contractAddress, // The contract address
-      signers.alice, // The user wallet
+      signers.alice // The user wallet
     );
 
     expect(clearBool).to.equal(true);

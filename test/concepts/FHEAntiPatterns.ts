@@ -3,11 +3,13 @@ import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
-import { FHEAntiPatterns, FHEAntiPatterns__factory } from "../../../types";
-import type { Signers } from "../../types";
+import { FHEAntiPatterns, FHEAntiPatterns__factory } from "../types";
+import type { Signers } from "./types";
 
 async function deployFixture() {
-  const factory = (await ethers.getContractFactory("FHEAntiPatterns")) as FHEAntiPatterns__factory;
+  const factory = (await ethers.getContractFactory(
+    "FHEAntiPatterns"
+  )) as FHEAntiPatterns__factory;
   const contract = (await factory.deploy()) as FHEAntiPatterns;
   const contractAddress = await contract.getAddress();
   return { contract, contractAddress };
@@ -65,7 +67,7 @@ describe("FHEAntiPatterns", function () {
       const input = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(100) // balance
-        .add32(50)  // threshold
+        .add32(50) // threshold
         .encrypt();
 
       await contract
@@ -73,9 +75,8 @@ describe("FHEAntiPatterns", function () {
         .initialize(input.handles[0], input.handles[1], input.inputProof);
 
       // Execute correct conditional - should not revert
-      await expect(
-        contract.connect(signers.alice).correctConditional()
-      ).to.not.be.reverted;
+      await expect(contract.connect(signers.alice).correctConditional()).to.not
+        .be.reverted;
     });
   });
 
@@ -85,8 +86,8 @@ describe("FHEAntiPatterns", function () {
 
       const input = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
-        .add32(50)  // balance
-        .add32(25)  // threshold
+        .add32(50) // balance
+        .add32(25) // threshold
         .encrypt();
 
       await contract
@@ -94,9 +95,8 @@ describe("FHEAntiPatterns", function () {
         .initialize(input.handles[0], input.handles[1], input.inputProof);
 
       // correctCompute grants proper permissions
-      await expect(
-        contract.connect(signers.alice).correctCompute()
-      ).to.not.be.reverted;
+      await expect(contract.connect(signers.alice).correctCompute()).to.not.be
+        .reverted;
     });
   });
 

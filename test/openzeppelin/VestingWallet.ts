@@ -42,9 +42,11 @@ describe("VestingWallet", function () {
 
     await token
       .connect(owner)
-      [
-        "confidentialTransfer(address,bytes32,bytes)"
-      ](await vestingWallet.getAddress(), encryptedInput.handles[0], encryptedInput.inputProof);
+      ["confidentialTransfer(address,bytes32,bytes)"](
+        await vestingWallet.getAddress(),
+        encryptedInput.handles[0],
+        encryptedInput.inputProof
+      );
   });
 
   describe("Initialization", function () {
@@ -59,17 +61,18 @@ describe("VestingWallet", function () {
 
   describe("Vesting Schedule", function () {
     it("should not release tokens before vesting starts", async function () {
-      await expect(vestingWallet.connect(beneficiary).release(await token.getAddress())).to.not.be.reverted;
+      await expect(
+        vestingWallet.connect(beneficiary).release(await token.getAddress())
+      ).to.not.be.reverted;
     });
 
     it("should release after vesting ends", async function () {
       const endTime = await vestingWallet.end();
       await time.increaseTo(endTime + BigInt(100));
 
-      await expect(vestingWallet.connect(beneficiary).release(await token.getAddress())).to.emit(
-        vestingWallet,
-        "VestingWalletConfidentialTokenReleased",
-      );
+      await expect(
+        vestingWallet.connect(beneficiary).release(await token.getAddress())
+      ).to.emit(vestingWallet, "VestingWalletConfidentialTokenReleased");
     });
 
     it("should release partial tokens at midpoint", async function () {
@@ -78,7 +81,9 @@ describe("VestingWallet", function () {
 
       await time.increaseTo(midpoint);
 
-      await expect(vestingWallet.connect(beneficiary).release(await token.getAddress())).to.not.be.reverted;
+      await expect(
+        vestingWallet.connect(beneficiary).release(await token.getAddress())
+      ).to.not.be.reverted;
     });
   });
 });

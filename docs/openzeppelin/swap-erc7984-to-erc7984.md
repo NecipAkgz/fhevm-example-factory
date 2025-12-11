@@ -111,9 +111,11 @@ describe("SwapERC7984ToERC7984", function () {
 
     await tokenA
       .connect(owner)
-      [
-        "confidentialTransfer(address,bytes32,bytes)"
-      ](user.address, encryptedInputA.handles[0], encryptedInputA.inputProof);
+      ["confidentialTransfer(address,bytes32,bytes)"](
+        user.address,
+        encryptedInputA.handles[0],
+        encryptedInputA.inputProof
+      );
 
     // Transfer tokenB to swap contract
     const encryptedInputB = await fhevm
@@ -123,13 +125,17 @@ describe("SwapERC7984ToERC7984", function () {
 
     await tokenB
       .connect(owner)
-      [
-        "confidentialTransfer(address,bytes32,bytes)"
-      ](await swap.getAddress(), encryptedInputB.handles[0], encryptedInputB.inputProof);
+      ["confidentialTransfer(address,bytes32,bytes)"](
+        await swap.getAddress(),
+        encryptedInputB.handles[0],
+        encryptedInputB.inputProof
+      );
 
     // Set swap as operator for user's tokenA
     const maxTimestamp = Math.floor(Date.now() / 1000) + 3600;
-    await tokenA.connect(user).setOperator(await swap.getAddress(), maxTimestamp);
+    await tokenA
+      .connect(user)
+      .setOperator(await swap.getAddress(), maxTimestamp);
   });
 
   describe("Swap", function () {
@@ -146,8 +152,8 @@ describe("SwapERC7984ToERC7984", function () {
             await tokenA.getAddress(),
             await tokenB.getAddress(),
             encryptedInput.handles[0],
-            encryptedInput.inputProof,
-          ),
+            encryptedInput.inputProof
+          )
       ).to.not.be.reverted;
 
       // User should have tokenB balance
@@ -171,8 +177,8 @@ describe("SwapERC7984ToERC7984", function () {
             await tokenA.getAddress(),
             await tokenB.getAddress(),
             encryptedInput.handles[0],
-            encryptedInput.inputProof,
-          ),
+            encryptedInput.inputProof
+          )
       ).to.be.reverted;
     });
   });

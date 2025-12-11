@@ -4,12 +4,14 @@ import { ethers as EthersT } from "ethers";
 import { ethers, fhevm } from "hardhat";
 import * as hre from "hardhat";
 
-import { HeadsOrTails, HeadsOrTails__factory } from "../../../typechain-types";
-import { Signers } from "../signers";
+import { HeadsOrTails, HeadsOrTails__factory } from "../types";
+import { Signers } from "./types";
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default
-  const factory = (await ethers.getContractFactory("HeadsOrTails")) as HeadsOrTails__factory;
+  const factory = (await ethers.getContractFactory(
+    "HeadsOrTails"
+  )) as HeadsOrTails__factory;
   const headsOrTails = (await factory.deploy()) as HeadsOrTails;
   const headsOrTails_address = await headsOrTails.getAddress();
 
@@ -30,7 +32,11 @@ describe("HeadsOrTails", function () {
     }
 
     const ethSigners: HardhatEthersSigner[] = await ethers.getSigners();
-    signers = { owner: ethSigners[0], alice: ethSigners[1], bob: ethSigners[2] };
+    signers = {
+      owner: ethSigners[0],
+      alice: ethSigners[1],
+      bob: ethSigners[2],
+    };
 
     playerA = signers.alice;
     playerB = signers.bob;
@@ -48,7 +54,9 @@ describe("HeadsOrTails", function () {
    * WARNING: This function is for illustrative purposes only and is not production-ready
    * (it does not handle several events in same tx).
    */
-  function parseGameCreatedEvent(txReceipt: EthersT.ContractTransactionReceipt | null): {
+  function parseGameCreatedEvent(
+    txReceipt: EthersT.ContractTransactionReceipt | null
+  ): {
     txHash: `0x${string}`;
     gameId: number;
     headsPlayer: `0x${string}`;
@@ -64,7 +72,9 @@ describe("HeadsOrTails", function () {
     }> = [];
 
     if (txReceipt) {
-      const logs = Array.isArray(txReceipt.logs) ? txReceipt.logs : [txReceipt.logs];
+      const logs = Array.isArray(txReceipt.logs)
+        ? txReceipt.logs
+        : [txReceipt.logs];
       for (let i = 0; i < logs.length; ++i) {
         const parsedLog = contract.interface.parseLog(logs[i]);
         if (!parsedLog || parsedLog.name !== "GameCreated") {
@@ -96,7 +106,9 @@ describe("HeadsOrTails", function () {
     console.log(``);
 
     // Starts a new Heads or Tails game. This will emit a `GameCreated` event
-    const tx = await contract.connect(signers.owner).headsOrTails(playerA, playerB);
+    const tx = await contract
+      .connect(signers.owner)
+      .headsOrTails(playerA, playerB);
 
     // Parse the `GameCreated` event
     const gameCreatedEvent = parseGameCreatedEvent(await tx.wait());
@@ -120,16 +132,23 @@ describe("HeadsOrTails", function () {
     // - the ORDERED clear values (here we have only one single value)
     // - the ORDERED clear values in ABI-encoded form
     // - the KMS decryption proof associated with the ORDERED clear values in ABI-encoded form
-    const abiEncodedClearGameResult = publicDecryptResults.abiEncodedClearValues;
+    const abiEncodedClearGameResult =
+      publicDecryptResults.abiEncodedClearValues;
     const decryptionProof = publicDecryptResults.decryptionProof;
 
     // Let's forward the `PublicDecryptResults` content to the on-chain contract whose job
     // will simply be to verify the proof and declare the final winner of the game
-    await contract.recordAndVerifyWinner(gameId, abiEncodedClearGameResult, decryptionProof);
+    await contract.recordAndVerifyWinner(
+      gameId,
+      abiEncodedClearGameResult,
+      decryptionProof
+    );
 
     const winner = await contract.getWinner(gameId);
 
-    expect(winner === playerA.address || winner === playerB.address).to.eq(true);
+    expect(winner === playerA.address || winner === playerB.address).to.eq(
+      true
+    );
 
     console.log(``);
     if (winner === playerA.address) {
@@ -141,50 +160,68 @@ describe("HeadsOrTails", function () {
 
   // ❌ The test must fail if the decryption proof is invalid
   it("should fail when the decryption proof is invalid", async function () {
-    const tx = await contract.connect(signers.owner).headsOrTails(playerA, playerB);
+    const tx = await contract
+      .connect(signers.owner)
+      .headsOrTails(playerA, playerB);
     const gameCreatedEvent = parseGameCreatedEvent(await tx.wait());
 
-    const publicDecryptResults = await fhevm.publicDecrypt([gameCreatedEvent.encryptedHasHeadsWon]);
+    const publicDecryptResults = await fhevm.publicDecrypt([
+      gameCreatedEvent.encryptedHasHeadsWon,
+    ]);
     await expect(
       contract.recordAndVerifyWinner(
         gameCreatedEvent.gameId,
         publicDecryptResults.abiEncodedClearValues,
-        publicDecryptResults.decryptionProof + "dead",
-      ),
+        publicDecryptResults.decryptionProof + "dead"
+      )
     ).to.be.revertedWithCustomError(
-      { interface: new EthersT.Interface(["error KMSInvalidSigner(address invalidSigner)"]) },
-      "KMSInvalidSigner",
+      {
+        interface: new EthersT.Interface([
+          "error KMSInvalidSigner(address invalidSigner)",
+        ]),
+      },
+      "KMSInvalidSigner"
     );
   });
 
   // ❌ The test must fail if a malicious operator attempts to use a decryption proof
   // with a forged game result.
   it("should fail when using a decryption proof with a forged game result", async function () {
-    const tx = await contract.connect(signers.owner).headsOrTails(playerA, playerB);
+    const tx = await contract
+      .connect(signers.owner)
+      .headsOrTails(playerA, playerB);
     const gameCreatedEvent = parseGameCreatedEvent(await tx.wait());
 
-    const publicDecryptResults = await fhevm.publicDecrypt([gameCreatedEvent.encryptedHasHeadsWon]);
-    const clearHeadsHasWon = publicDecryptResults.clearValues[gameCreatedEvent.encryptedHasHeadsWon];
+    const publicDecryptResults = await fhevm.publicDecrypt([
+      gameCreatedEvent.encryptedHasHeadsWon,
+    ]);
+    const clearHeadsHasWon =
+      publicDecryptResults.clearValues[gameCreatedEvent.encryptedHasHeadsWon];
 
     // The clear value is also ABI-encoded
     const decodedHeadsHasWon = EthersT.AbiCoder.defaultAbiCoder().decode(
       ["bool"],
-      publicDecryptResults.abiEncodedClearValues,
+      publicDecryptResults.abiEncodedClearValues
     )[0];
     expect(decodedHeadsHasWon).to.eq(clearHeadsHasWon);
 
     // Let's try to forge the game result
-    const forgedABIEncodedClearValues = EthersT.AbiCoder.defaultAbiCoder().encode(["bool"], [!clearHeadsHasWon]);
+    const forgedABIEncodedClearValues =
+      EthersT.AbiCoder.defaultAbiCoder().encode(["bool"], [!clearHeadsHasWon]);
 
     await expect(
       contract.recordAndVerifyWinner(
         gameCreatedEvent.gameId,
         forgedABIEncodedClearValues,
-        publicDecryptResults.decryptionProof,
-      ),
+        publicDecryptResults.decryptionProof
+      )
     ).to.be.revertedWithCustomError(
-      { interface: new EthersT.Interface(["error KMSInvalidSigner(address invalidSigner)"]) },
-      "KMSInvalidSigner",
+      {
+        interface: new EthersT.Interface([
+          "error KMSInvalidSigner(address invalidSigner)",
+        ]),
+      },
+      "KMSInvalidSigner"
     );
   });
 
@@ -193,25 +230,35 @@ describe("HeadsOrTails", function () {
   // with the result of Game2
   it("should fail when using the result of a different game", async function () {
     // Game 1
-    const tx1 = await contract.connect(signers.owner).headsOrTails(playerA, playerB);
+    const tx1 = await contract
+      .connect(signers.owner)
+      .headsOrTails(playerA, playerB);
     const gameCreatedEvent1 = parseGameCreatedEvent(await tx1.wait());
 
     // Game 2
-    const tx2 = await contract.connect(signers.owner).headsOrTails(playerA, playerB);
+    const tx2 = await contract
+      .connect(signers.owner)
+      .headsOrTails(playerA, playerB);
     const gameCreatedEvent2 = parseGameCreatedEvent(await tx2.wait());
 
     // Let's try to forge the Game1's winner using the result of Game2
-    const publicDecryptResults2 = await fhevm.publicDecrypt([gameCreatedEvent2.encryptedHasHeadsWon]);
+    const publicDecryptResults2 = await fhevm.publicDecrypt([
+      gameCreatedEvent2.encryptedHasHeadsWon,
+    ]);
 
     await expect(
       contract.recordAndVerifyWinner(
         gameCreatedEvent1.gameId,
         publicDecryptResults2.abiEncodedClearValues,
-        publicDecryptResults2.decryptionProof,
-      ),
+        publicDecryptResults2.decryptionProof
+      )
     ).to.be.revertedWithCustomError(
-      { interface: new EthersT.Interface(["error KMSInvalidSigner(address invalidSigner)"]) },
-      "KMSInvalidSigner",
+      {
+        interface: new EthersT.Interface([
+          "error KMSInvalidSigner(address invalidSigner)",
+        ]),
+      },
+      "KMSInvalidSigner"
     );
   });
 });
