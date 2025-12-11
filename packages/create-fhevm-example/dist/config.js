@@ -136,6 +136,10 @@ export const EXAMPLES = {
     "erc7984": {
         "contract": "contracts/openzeppelin/ERC7984.sol",
         "test": "test/openzeppelin/ERC7984.ts",
+        "npmDependencies": {
+            "@openzeppelin/contracts": "^5.4.0",
+            "@openzeppelin/confidential-contracts": "^0.3.0"
+        },
         "description": "Confidential token using OpenZeppelin's ERC7984 standard",
         "category": "Openzeppelin",
         "title": "ERC7984"
@@ -143,6 +147,13 @@ export const EXAMPLES = {
     "erc7984-erc20-wrapper": {
         "contract": "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
         "test": "test/openzeppelin/ERC7984ERC20Wrapper.ts",
+        "npmDependencies": {
+            "@openzeppelin/contracts": "^5.4.0",
+            "@openzeppelin/confidential-contracts": "^0.3.0"
+        },
+        "dependencies": [
+            "contracts/openzeppelin/mocks/ERC20Mock.sol"
+        ],
         "description": "Wraps ERC20 tokens into confidential ERC7984 tokens",
         "category": "Openzeppelin",
         "title": "ERC7984 ERC20 Wrapper"
@@ -150,6 +161,14 @@ export const EXAMPLES = {
     "swap-erc7984-to-erc20": {
         "contract": "contracts/openzeppelin/SwapERC7984ToERC20.sol",
         "test": "test/openzeppelin/SwapERC7984ToERC20.ts",
+        "npmDependencies": {
+            "@openzeppelin/contracts": "^5.4.0",
+            "@openzeppelin/confidential-contracts": "^0.3.0"
+        },
+        "dependencies": [
+            "contracts/openzeppelin/mocks/ERC20Mock.sol",
+            "contracts/openzeppelin/ERC7984.sol"
+        ],
         "description": "Swap confidential ERC7984 tokens to regular ERC20 tokens",
         "category": "Openzeppelin",
         "title": "Swap ERC7984 To ERC20"
@@ -157,6 +176,12 @@ export const EXAMPLES = {
     "swap-erc7984-to-erc7984": {
         "contract": "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
         "test": "test/openzeppelin/SwapERC7984ToERC7984.ts",
+        "npmDependencies": {
+            "@openzeppelin/confidential-contracts": "^0.3.0"
+        },
+        "dependencies": [
+            "contracts/openzeppelin/ERC7984.sol"
+        ],
         "description": "Fully confidential swap between two ERC7984 tokens",
         "category": "Openzeppelin",
         "title": "Swap ERC7984 To ERC7984"
@@ -164,6 +189,13 @@ export const EXAMPLES = {
     "vesting-wallet": {
         "contract": "contracts/openzeppelin/VestingWallet.sol",
         "test": "test/openzeppelin/VestingWallet.ts",
+        "npmDependencies": {
+            "@openzeppelin/contracts": "^5.4.0",
+            "@openzeppelin/confidential-contracts": "^0.3.0"
+        },
+        "dependencies": [
+            "contracts/openzeppelin/ERC7984.sol"
+        ],
         "description": "Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!",
         "category": "Openzeppelin",
         "title": "Vesting Wallet"

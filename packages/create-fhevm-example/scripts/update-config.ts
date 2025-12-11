@@ -30,6 +30,8 @@ interface ContractInfo {
   description: string;
   category: string;
   title: string;
+  npmDependencies?: Record<string, string>;
+  dependencies?: string[];
 }
 
 // =============================================================================
@@ -82,12 +84,54 @@ function findTestFile(contractPath: string): string | null {
     : null;
 }
 
+/**
+ * Read dependencies from main config to preserve manual values
+ */
+async function readMainConfigDependencies(): Promise<Record<string, any>> {
+  try {
+    const mainConfigPath = path.join(MONOREPO_ROOT, "scripts/shared/config.ts");
+    if (!fs.existsSync(mainConfigPath)) {
+      return {};
+    }
+
+    // Use dynamic import to load the TypeScript config
+    const config = await import(mainConfigPath);
+    const mainExamples = config.EXAMPLES || {};
+
+    const result: Record<string, any> = {};
+
+    for (const [name, exampleConfig] of Object.entries(mainExamples)) {
+      const deps: any = {};
+      const cfg = exampleConfig as any;
+
+      if (cfg.npmDependencies) {
+        deps.npmDependencies = cfg.npmDependencies;
+      }
+      if (cfg.dependencies) {
+        deps.dependencies = cfg.dependencies;
+      }
+
+      if (Object.keys(deps).length > 0) {
+        result[name] = deps;
+      }
+    }
+
+    return result;
+  } catch (error) {
+    console.warn("⚠️  Could not read main config dependencies:", error);
+    return {};
+  }
+}
+
 // =============================================================================
 // Contract Scanning
 // =============================================================================
 
-function scanContracts(): ContractInfo[] {
+async function scanContracts(): Promise<ContractInfo[]> {
   const contracts: ContractInfo[] = [];
+
+  // Read dependencies from main config
+  const mainDeps = await readMainConfigDependencies();
 
   function scan(dir: string) {
     const items = fs.readdirSync(dir);
@@ -114,14 +158,25 @@ function scanContracts(): ContractInfo[] {
           return;
         }
 
-        contracts.push({
+        const contractInfo: ContractInfo = {
           name: exampleName,
           contractPath: `contracts/${relativePath}`,
           testPath,
           description,
           category,
           title: contractNameToTitle(contractName),
-        });
+        };
+
+        // Preserve dependencies from main config
+        const deps = mainDeps[exampleName];
+        if (deps?.npmDependencies) {
+          contractInfo.npmDependencies = deps.npmDependencies;
+        }
+        if (deps?.dependencies) {
+          contractInfo.dependencies = deps.dependencies;
+        }
+
+        contracts.push(contractInfo);
       }
     }
   }
@@ -136,9 +191,25 @@ function scanContracts(): ContractInfo[] {
 
 function generateExamplesConfig(contracts: ContractInfo[]): string {
   const entries = contracts.map((c) => {
+    const npmDepsField = c.npmDependencies
+      ? `\n    "npmDependencies": ${JSON.stringify(
+          c.npmDependencies,
+          null,
+          2
+        ).replace(/\n/g, "\n    ")},`
+      : "";
+
+    const depsField = c.dependencies
+      ? `\n    "dependencies": ${JSON.stringify(
+          c.dependencies,
+          null,
+          2
+        ).replace(/\n/g, "\n    ")},`
+      : "";
+
     return `  "${c.name}": {
     "contract": "${c.contractPath}",
-    "test": "${c.testPath}",
+    "test": "${c.testPath}",${npmDepsField}${depsField}
     "description": "${c.description}",
     "category": "${c.category}",
     "title": "${c.title}"
@@ -249,7 +320,7 @@ ${generateCategoriesConfig(contracts)}
 // Main
 // =============================================================================
 
-function main(): void {
+async function main(): Promise<void> {
   console.log("🔍 Checking for monorepo contracts directory...\n");
 
   if (!fs.existsSync(CONTRACTS_DIR)) {
@@ -262,7 +333,7 @@ function main(): void {
 
   console.log("✅ Monorepo detected. Scanning contracts...\n");
 
-  const contracts = scanContracts();
+  const contracts = await scanContracts();
   console.log(`📊 Found ${contracts.length} contracts\n`);
 
   const categoryCount: Record<string, number> = {};
