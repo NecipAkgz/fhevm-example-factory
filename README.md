@@ -327,6 +327,26 @@ npm run create:docs                # All examples
    npm run generate:config  # Scans contracts, extracts @notice tags
    ```
 
+   > 📝 **Note**: If your example requires external dependencies (e.g., OpenZeppelin contracts or mock files), manually add them to `scripts/shared/config.ts`:
+   >
+   > ```typescript
+   > "your-example": {
+   >   contract: "contracts/your-category/YourExample.sol",
+   >   test: "test/your-category/YourExample.ts",
+   >   npmDependencies: {
+   >     "@openzeppelin/contracts": "^5.4.0"  // NPM packages
+   >   },
+   >   dependencies: [
+   >     "contracts/mocks/SomeMock.sol"       // Contract files
+   >   ],
+   >   // ... other fields
+   > }
+   > ```
+   >
+   > These dependencies will be:
+   > - ✅ Preserved when running `npm run generate:config`
+   > - ✅ Automatically copied/installed when creating standalone projects
+
 5. **Test Standalone Repository**
    ```bash
    npm run create:example your-example ./test-output

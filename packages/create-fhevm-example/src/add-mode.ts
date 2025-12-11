@@ -216,6 +216,62 @@ export async function addExampleFiles(
     await downloadFileFromGitHub(example.test, testDest);
     p.log.success(`Added: ${testFileName}`);
   }
+
+  // Handle contract dependencies
+  if (example.dependencies) {
+    p.log.message("");
+    p.log.message(pc.bold("Downloading contract dependencies..."));
+
+    for (const depPath of example.dependencies) {
+      const relativePath = depPath.replace(/^contracts\//, "");
+      const depDestPath = path.join(targetDir, "contracts", relativePath);
+      const depDestDir = path.dirname(depDestPath);
+      const depName = path.basename(depPath);
+
+      // Create directory if needed
+      if (!fs.existsSync(depDestDir)) {
+        fs.mkdirSync(depDestDir, { recursive: true });
+      }
+
+      if (fs.existsSync(depDestPath)) {
+        p.log.info(`Skipped (exists): ${depName}`);
+      } else {
+        await downloadFileFromGitHub(depPath, depDestPath);
+        p.log.success(`Added: ${depName}`);
+      }
+    }
+  }
+
+  // Handle npm dependencies
+  if (example.npmDependencies) {
+    p.log.message("");
+    p.log.message(pc.bold("Adding npm dependencies to package.json..."));
+
+    const packageJsonPath = path.join(targetDir, "package.json");
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
+
+    let added = false;
+    for (const [pkg, version] of Object.entries(example.npmDependencies)) {
+      if (!packageJson.dependencies[pkg]) {
+        packageJson.dependencies[pkg] = version;
+        p.log.success(`Added: ${pkg}@${version}`);
+        added = true;
+      } else {
+        p.log.info(`Skipped (exists): ${pkg}`);
+      }
+    }
+
+    if (added) {
+      fs.writeFileSync(
+        packageJsonPath,
+        JSON.stringify(packageJson, null, 2) + "\n"
+      );
+    }
+  }
 }
 
 // =============================================================================

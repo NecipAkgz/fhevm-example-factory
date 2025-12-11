@@ -127,6 +127,24 @@ async function createSingleExample(
     path.join(outputDir, "test", path.basename(example.test))
   );
 
+  // Step 3.5: Download contract dependencies if specified
+  if (example.dependencies) {
+    for (const depPath of example.dependencies) {
+      const depName = path.basename(depPath);
+      // Preserve directory structure from config
+      const relativePath = depPath.replace(/^contracts\//, "");
+      const depDestPath = path.join(outputDir, "contracts", relativePath);
+      const depDestDir = path.dirname(depDestPath);
+
+      // Create directory if needed
+      if (!fs.existsSync(depDestDir)) {
+        fs.mkdirSync(depDestDir, { recursive: true });
+      }
+
+      await downloadFileFromGitHub(depPath, depDestPath);
+    }
+  }
+
   // Step 4: Update configuration files
   fs.writeFileSync(
     path.join(outputDir, "deploy", "deploy.ts"),
@@ -137,6 +155,15 @@ async function createSingleExample(
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   packageJson.name = `fhevm-example-${exampleName}`;
   packageJson.description = example.description;
+
+  // Add npm dependencies if specified in config
+  if (example.npmDependencies) {
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
+    Object.assign(packageJson.dependencies, example.npmDependencies);
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   // Step 5: Remove template-specific task
@@ -236,6 +263,40 @@ async function createCategoryProject(
     }
   }
 
+  // Step 3.5: Download all dependencies from examples in this category
+  const allDependencies = new Set<string>();
+  const allNpmDependencies: Record<string, string> = {};
+
+  // Collect dependencies from all examples in this category
+  for (const [exampleName, exampleConfig] of Object.entries(EXAMPLES)) {
+    if (exampleConfig.category === category.name.replace(" Examples", "")) {
+      // Collect contract dependencies
+      if (exampleConfig.dependencies) {
+        for (const dep of exampleConfig.dependencies) {
+          allDependencies.add(dep);
+        }
+      }
+
+      // Collect npm dependencies
+      if (exampleConfig.npmDependencies) {
+        Object.assign(allNpmDependencies, exampleConfig.npmDependencies);
+      }
+    }
+  }
+
+  // Download all collected dependencies
+  for (const depPath of allDependencies) {
+    const relativePath = depPath.replace(/^contracts\//, "");
+    const depDestPath = path.join(outputDir, "contracts", relativePath);
+    const depDestDir = path.dirname(depDestPath);
+
+    if (!fs.existsSync(depDestDir)) {
+      fs.mkdirSync(depDestDir, { recursive: true });
+    }
+
+    await downloadFileFromGitHub(depPath, depDestPath);
+  }
+
   // Step 4: Update configuration files
   const configPath = path.join(outputDir, "hardhat.config.ts");
   let configContent = fs.readFileSync(configPath, "utf-8");
@@ -266,6 +327,15 @@ export interface Signers {
   const packageJsonPath = path.join(outputDir, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
   packageJson.name = `fhevm-examples-${categoryName}`;
+
+  // Add aggregated npm dependencies
+  if (Object.keys(allNpmDependencies).length > 0) {
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
+    Object.assign(packageJson.dependencies, allNpmDependencies);
+  }
+
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 
   // Initialize git repository
