@@ -222,6 +222,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/gaming/encrypted-lottery.md",
     title: "Encrypted Lottery"
   },
+  "encrypted-poker": {
+    contract: "contracts/gaming/EncryptedPoker.sol",
+    test: "test/gaming/EncryptedPoker.ts",
+    description:
+      "Encrypted Poker - Texas Hold'em with hidden hole cards!",
+    category: "Gaming",
+    docsOutput: "docs/gaming/encrypted-poker.md",
+    title: "Encrypted Poker"
+  },
   "rock-paper-scissors": {
     contract: "contracts/gaming/RockPaperScissors.sol",
     test: "test/gaming/RockPaperScissors.ts",
@@ -427,6 +436,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/gaming/EncryptedLottery.sol",
         test: "test/gaming/EncryptedLottery.ts",
+      },
+      {
+        sol: "contracts/gaming/EncryptedPoker.sol",
+        test: "test/gaming/EncryptedPoker.ts",
       },
       {
         sol: "contracts/gaming/RockPaperScissors.sol",
