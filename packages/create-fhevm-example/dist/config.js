@@ -21,12 +21,33 @@ export const EXAMPLES = {
         "category": "Advanced",
         "title": "Blind Auction"
     },
+    "encrypted-escrow": {
+        "contract": "contracts/advanced/EncryptedEscrow.sol",
+        "test": "test/advanced/EncryptedEscrow.ts",
+        "description": "Encrypted Escrow service - amounts hidden until release!",
+        "category": "Advanced",
+        "title": "Encrypted Escrow"
+    },
     "hidden-voting": {
         "contract": "contracts/advanced/HiddenVoting.sol",
         "test": "test/advanced/HiddenVoting.ts",
         "description": "Hidden Voting with encrypted ballots and homomorphic tallying",
         "category": "Advanced",
         "title": "Hidden Voting"
+    },
+    "private-kyc": {
+        "contract": "contracts/advanced/PrivateKYC.sol",
+        "test": "test/advanced/PrivateKYC.ts",
+        "description": "Private KYC - verify identity without revealing personal data!",
+        "category": "Advanced",
+        "title": "Private KYC"
+    },
+    "private-payroll": {
+        "contract": "contracts/advanced/PrivatePayroll.sol",
+        "test": "test/advanced/PrivatePayroll.ts",
+        "description": "Private Payroll system - salaries stay encrypted, only employees see their own!",
+        "category": "Advanced",
+        "title": "Private Payroll"
     },
     "fhe-counter": {
         "contract": "contracts/basic/FHECounter.sol",
@@ -133,6 +154,27 @@ export const EXAMPLES = {
         "category": "Concepts",
         "title": "FHE Input Proof"
     },
+    "encrypted-lottery": {
+        "contract": "contracts/gaming/EncryptedLottery.sol",
+        "test": "test/gaming/EncryptedLottery.ts",
+        "description": "Encrypted Lottery with private ticket numbers - fair and verifiable!",
+        "category": "Gaming",
+        "title": "Encrypted Lottery"
+    },
+    "encrypted-poker": {
+        "contract": "contracts/gaming/EncryptedPoker.sol",
+        "test": "test/gaming/EncryptedPoker.ts",
+        "description": "Encrypted Poker - Texas Hold'em with hidden hole cards!",
+        "category": "Gaming",
+        "title": "Encrypted Poker"
+    },
+    "rock-paper-scissors": {
+        "contract": "contracts/gaming/RockPaperScissors.sol",
+        "test": "test/gaming/RockPaperScissors.ts",
+        "description": "Rock-Paper-Scissors game with encrypted moves - fair play guaranteed!",
+        "category": "Gaming",
+        "title": "Rock Paper Scissors"
+    },
     "erc7984": {
         "contract": "contracts/openzeppelin/ERC7984.sol",
         "test": "test/openzeppelin/ERC7984.ts",
@@ -213,8 +255,20 @@ export const CATEGORIES = {
                 "test": "test/advanced/BlindAuction.ts"
             },
             {
+                "sol": "contracts/advanced/EncryptedEscrow.sol",
+                "test": "test/advanced/EncryptedEscrow.ts"
+            },
+            {
                 "sol": "contracts/advanced/HiddenVoting.sol",
                 "test": "test/advanced/HiddenVoting.ts"
+            },
+            {
+                "sol": "contracts/advanced/PrivateKYC.sol",
+                "test": "test/advanced/PrivateKYC.ts"
+            },
+            {
+                "sol": "contracts/advanced/PrivatePayroll.sol",
+                "test": "test/advanced/PrivatePayroll.ts"
             }
         ]
     },
@@ -300,6 +354,23 @@ export const CATEGORIES = {
             {
                 "sol": "contracts/concepts/FHEInputProof.sol",
                 "test": "test/concepts/FHEInputProof.ts"
+            }
+        ]
+    },
+    "gaming": {
+        "name": "Gaming Examples",
+        "contracts": [
+            {
+                "sol": "contracts/gaming/EncryptedLottery.sol",
+                "test": "test/gaming/EncryptedLottery.ts"
+            },
+            {
+                "sol": "contracts/gaming/EncryptedPoker.sol",
+                "test": "test/gaming/EncryptedPoker.ts"
+            },
+            {
+                "sol": "contracts/gaming/RockPaperScissors.sol",
+                "test": "test/gaming/RockPaperScissors.ts"
             }
         ]
     },

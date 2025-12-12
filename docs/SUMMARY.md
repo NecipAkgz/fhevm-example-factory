@@ -24,10 +24,19 @@
 - [Handles & Lifecycle](concepts/fhe-handles.md)
 - [Anti-Patterns](concepts/fhe-anti-patterns.md)
 
+## Gaming
+
+- [Rock Paper Scissors](gaming/rock-paper-scissors.md)
+- [Encrypted Lottery](gaming/encrypted-lottery.md)
+- [Encrypted Poker](gaming/encrypted-poker.md)
+
 ## Advanced Examples
 
 - [Blind Auction](advanced/blind-auction.md)
 - [Hidden Voting](advanced/hidden-voting.md)
+- [Private Payroll](advanced/private-payroll.md)
+- [Encrypted Escrow](advanced/encrypted-escrow.md)
+- [Private KYC](advanced/private-kyc.md)
 
 ## OpenZeppelin Confidential Contracts
 
