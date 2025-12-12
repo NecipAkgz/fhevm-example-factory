@@ -48,9 +48,11 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 
 **Concepts**: `fhe-access-control`, `fhe-input-proof`, `fhe-handles`, `fhe-anti-patterns`
 
+**Gaming**: `rock-paper-scissors`, `encrypted-lottery`, `encrypted-poker`
+
 **OpenZeppelin**: `erc7984`, `erc7984-erc20-wrapper`, `swap-erc7984-to-erc20`, `swap-erc7984-to-erc7984`, `vesting-wallet`
 
-**Advanced**: `blind-auction`, `hidden-voting`
+**Advanced**: `blind-auction`, `hidden-voting`, `private-payroll`, `encrypted-escrow`, `private-kyc`
 
 ## Available Categories
 
@@ -59,8 +61,9 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 | `basic` | Encryption, decryption, basic operations (9 contracts) |
 | `concepts` | Access control, proofs, handles (4 contracts) |
 | `operations` | Arithmetic, comparison operations (4 contracts) |
+| `gaming` | Rock-paper-scissors, lottery, poker (3 contracts) |
 | `openzeppelin` | ERC7984, wrappers, swaps (5 contracts) |
-| `advanced` | Blind auction, voting (2 contracts) |
+| `advanced` | Blind auction, voting, payroll, escrow, KYC (5 contracts) |
 
 ## What Gets Created
 

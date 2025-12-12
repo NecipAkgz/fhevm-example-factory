@@ -96,28 +96,6 @@ npm run create:docs [example]  # No arg = all docs, with name = specific doc
 npm run create:help
 ```
 
-### 4. Add Example to Existing Project
-
-Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
-
-```bash
-# Using npx (recommended)
-npx create-fhevm-example --add
-
-# Or specify target directory
-npx create-fhevm-example --add --target ./my-existing-project
-```
-
-This will:
-- ✅ Detect your Hardhat project
-- ✅ Add FHEVM dependencies to `package.json`
-- ✅ Update `hardhat.config.ts` with FHEVM plugin
-- ✅ Add an example contract and test of your choice
-- ✅ Handle file conflicts intelligently (skip/overwrite/rename)
-
-> **Note:** The `--add` feature is available through `npx create-fhevm-example` only.
-
----
 
 ## 📂 Project Structure
 
@@ -147,6 +125,8 @@ fhevm-examples-generator/
 │
 ├── 📁 scripts/                   # Automation tools
 │   ├── create.ts                 # Main CLI entry point
+│   ├── generate-config.ts        # Auto-discover contracts, generate config
+│   ├── maintenance.ts            # Test all examples runner
 │   └── shared/                   # Shared utilities
 │       ├── config.ts             # Example & category configurations
 │       └── utils.ts              # Helper functions
@@ -158,7 +138,7 @@ fhevm-examples-generator/
 
 ## 📋 Available Examples
 
-**22 examples total** - Click to expand each category:
+**28 examples total** - Click to expand each category:
 
 <details>
 <summary><b>🟢 Basic & Encryption Examples (3)</b></summary>
@@ -200,6 +180,15 @@ fhevm-examples-generator/
 </details>
 
 <details>
+<summary><b>🎮 Gaming (3)</b></summary>
+
+- `rock-paper-scissors` - Encrypted moves with FHE commit-reveal pattern
+- `encrypted-lottery` - Private lottery with encrypted ticket numbers
+- `encrypted-poker` - Texas Hold'em with hidden hole cards
+
+</details>
+
+<details>
 <summary><b>🏛️ OpenZeppelin Integration (5)</b></summary>
 
 - `erc7984` - Confidential token standard (ERC7984)
@@ -211,10 +200,13 @@ fhevm-examples-generator/
 </details>
 
 <details>
-<summary><b>🚀 Advanced Examples (2)</b></summary>
+<summary><b>🚀 Advanced Examples (5)</b></summary>
 
 - `blind-auction` - Encrypted bids, winner computed via FHE.gt/select
 - `hidden-voting` - Homomorphic vote tallying, private ballots
+- `private-payroll` - Confidential salary payments with encrypted amounts
+- `encrypted-escrow` - Secure escrow with hidden amounts until release
+- `private-kyc` - Identity verification with predicate proofs (age, credit score)
 
 </details>
 
@@ -227,11 +219,13 @@ Generate entire category projects with multiple related examples:
 - **`basic`** (9 examples) - Encryption, decryption, FHE operations
 - **`concepts`** (4 examples) - Access control, proofs, handles, anti-patterns
 - **`operations`** (4 examples) - Arithmetic, comparison, conditionals
+- **`gaming`** (3 examples) - Rock-paper-scissors, lottery, poker
 - **`openzeppelin`** (5 examples) - ERC7984, wrappers, swaps, vesting
-- **`advanced`** (2 examples) - Blind auction, encrypted voting
+- **`advanced`** (5 examples) - Blind auction, voting, payroll, escrow, KYC
 
 ```bash
 npm run create:category basic ./my-basic-project
+npm run create:category gaming ./my-gaming-project
 ```
 
 ---
@@ -365,22 +359,51 @@ npm run create:docs                # All examples
 - `npm run create:category [name] [path]` - Generate category project
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
-- `npm run test:all` - Test all examples
+- `npm run test:all` - Test all examples (interactive mode)
+- `npm run test:all fhe-counter,fhe-add`  Direct: (comma-separated)
 - `npm run create:help` - Show help information
 
-### NPM Package Commands
+## NPM Package Commands
 
-The `create-fhevm-example` package can be used via `npx` for additional features:
+Published as `create-fhevm-example` on NPM, this package allows you to create FHEVM projects **without cloning this repository**. Perfect for quick starts and CI/CD pipelines.
+
+**Advantages:**
+- 🚀 **No Repository Clone** - Install and run directly via `npx`
+- 📦 **Always Up-to-Date** - Automatically downloads latest examples from GitHub
+- 🔧 **Works Anywhere** - No local dependencies or setup required
+- 🎯 **Production Ready** - Ideal for scaffolding new dApps or integrating into existing projects
+
+The `create-fhevm-example` package can be used via `npx`:
+
+```bash
+# Interactive mode (guided prompts)
+npx create-fhevm-example
+
+# Direct mode - create specific example
+npx create-fhevm-example --example fhe-counter
+npx create-fhevm-example --category basic --output ./my-project
+```
+
+### Add FHEVM to Existing Project
+
+Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
 
 ```bash
 # Add FHEVM to existing Hardhat project
 npx create-fhevm-example --add
-npx create-fhevm-example --add --target ./my-project
 
-# Create new projects (alternative to npm run create)
-npx create-fhevm-example --example fhe-counter
-npx create-fhevm-example --category basic --output ./my-project
+# Or specify target directory
+npx create-fhevm-example --add --target ./my-existing-project
 ```
+
+This will:
+- ✅ Detect your Hardhat project
+- ✅ Add FHEVM dependencies to `package.json`
+- ✅ Update `hardhat.config.ts` with FHEVM plugin
+- ✅ Add an example contract and test of your choice
+- ✅ Handle file conflicts intelligently (skip/overwrite/rename)
+
+> **Note:** The `--add` feature is available through `npx create-fhevm-example` only.
 
 ---
 

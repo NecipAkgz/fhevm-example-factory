@@ -152,6 +152,14 @@ The generator creates GitBook-compatible markdown files in `docs/` with:
 | `fhe-input-proof`                | Input proof validation                             |
 | `fhe-handles`                    | Handle lifecycle management                        |
 | `fhe-anti-patterns`              | Common mistakes and correct patterns               |
+| `rock-paper-scissors`            | Encrypted Rock-Paper-Scissors game                 |
+| `encrypted-lottery`              | Private lottery with encrypted tickets             |
+| `encrypted-poker`                | Texas Hold'em with hidden hole cards              |
+| `blind-auction`                  | Blind auction with encrypted bids                  |
+| `hidden-voting`                  | Hidden voting with homomorphic tallying            |
+| `private-payroll`                | Confidential salary payments                       |
+| `encrypted-escrow`               | Secure escrow with hidden amounts                  |
+| `private-kyc`                    | Identity verification with predicate proofs        |
 
 ## Available Categories
 
@@ -160,6 +168,9 @@ The generator creates GitBook-compatible markdown files in `docs/` with:
 | `basic`      | 9         | Encryption, decryption, basic operations       |
 | `concepts`   | 4         | Access control, proofs, handles, anti-patterns |
 | `operations` | 4         | Arithmetic, comparison, conditionals           |
+| `gaming`     | 3         | Rock-paper-scissors, lottery, poker            |
+| `advanced`   | 5         | Blind auction, voting, payroll, escrow, KYC    |
+| `openzeppelin` | 5       | ERC7984, wrappers, swaps, vesting              |
 
 ## Project Structure
 
