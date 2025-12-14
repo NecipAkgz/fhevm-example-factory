@@ -40,47 +40,98 @@ export function getContractName(contractPathOrContent: string): string | null {
   return match ? match[1] : null;
 }
 
+// =============================================================================
+// Naming Utilities
+// =============================================================================
+
 /**
- * Read file content safely
+ * Convert string to kebab-case
+ * Handles acronyms: FHECounter → fhe-counter, ERC7984 → erc7984
  */
-export function readFile(filePath: string): string {
-  const fullPath = filePath.startsWith("/")
-    ? filePath
-    : path.join(getRootDir(), filePath);
-
-  if (!fs.existsSync(fullPath)) {
-    throw new Error(`File not found: ${filePath}`);
-  }
-
-  return fs.readFileSync(fullPath, "utf-8");
+export function toKebabCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/([0-9])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
 }
 
 /**
- * Write file content, creating directories if needed
+ * Convert contract name to kebab-case example name
+ * Handles acronyms: FHECounter → fhe-counter, ERC7984 → erc7984
  */
-export function writeFile(filePath: string, content: string): void {
-  const fullPath = filePath.startsWith("/")
-    ? filePath
-    : path.join(getRootDir(), filePath);
-
-  const dir = path.dirname(fullPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  fs.writeFileSync(fullPath, content);
+export function contractNameToExampleName(contractName: string): string {
+  return toKebabCase(contractName);
 }
 
 /**
- * Check if file exists
+ * Convert contract name to title
+ * Handles acronyms: ERC7984 → ERC7984, FHECounter → FHE Counter
+ * Complex cases: ERC7984ERC20Wrapper → ERC7984 ERC20 Wrapper
  */
-export function fileExists(filePath: string): boolean {
-  const fullPath = filePath.startsWith("/")
-    ? filePath
-    : path.join(getRootDir(), filePath);
-
-  return fs.existsSync(fullPath);
+export function contractNameToTitle(contractName: string): string {
+  return contractName
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
 }
+
+/**
+ * Format folder name to proper category name
+ * Examples: "encryption" → "Encryption", "fhe-operations" → "FHE Operations"
+ */
+export function formatCategoryName(folderName: string): string {
+  return folderName
+    .replace(/\bfhe\b/gi, "FHE")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+/**
+ * Capitalize first letter of a string
+ */
+export function capitalize(str: string): string {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+// =============================================================================
+// Category Constants
+// =============================================================================
+
+export const CATEGORY_ICON = "📁";
+
+export const CATEGORY_ORDER = [
+  "Basic",
+  "Basic - Encryption",
+  "Basic - Decryption",
+  "Basic - FHE Operations",
+  "Concepts",
+  "Gaming",
+  "Openzeppelin",
+  "Advanced",
+];
+
+// =============================================================================
+// Template Constants
+// =============================================================================
+
+/**
+ * Content for test/types.ts file
+ */
+export const TEST_TYPES_CONTENT = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+
+/**
+ * Common signers interface used across test files
+ */
+export interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
+`;
+
+// =============================================================================
+// File System Utilities
+// =============================================================================
 
 /**
  * Copy directory recursively, excluding common build directories
@@ -117,6 +168,63 @@ export function copyDirectoryRecursive(
       fs.copyFileSync(sourcePath, destPath);
     }
   });
+}
+
+/**
+ * Clean up template files after copying
+ * Removes template-specific files and prepares for new content
+ */
+export function cleanupTemplate(outputDir: string): void {
+  // Remove .git directory
+  const gitDir = path.join(outputDir, ".git");
+  if (fs.existsSync(gitDir)) {
+    fs.rmSync(gitDir, { recursive: true, force: true });
+  }
+
+  // Remove template contract
+  const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
+  if (fs.existsSync(templateContract)) {
+    fs.unlinkSync(templateContract);
+  }
+
+  // Remove .gitkeep files
+  const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
+  if (fs.existsSync(contractsGitkeep)) {
+    fs.unlinkSync(contractsGitkeep);
+  }
+
+  // Clear test directory (remove template tests)
+  const testDir = path.join(outputDir, "test");
+  if (fs.existsSync(testDir)) {
+    fs.readdirSync(testDir).forEach((file) => {
+      if (file.endsWith(".ts") || file === ".gitkeep") {
+        fs.unlinkSync(path.join(testDir, file));
+      }
+    });
+  }
+
+  // Remove FHECounter import from hardhat.config.ts
+  const configPath = path.join(outputDir, "hardhat.config.ts");
+  if (fs.existsSync(configPath)) {
+    let configContent = fs.readFileSync(configPath, "utf-8");
+    configContent = configContent.replace(
+      /import "\.\/tasks\/FHECounter";\n?/g,
+      ""
+    );
+    fs.writeFileSync(configPath, configContent);
+  }
+
+  // Remove FHECounter task file
+  const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
+  if (fs.existsSync(oldTaskFile)) {
+    fs.unlinkSync(oldTaskFile);
+  }
+
+  // Create test/types.ts
+  fs.writeFileSync(
+    path.join(outputDir, "test", "types.ts"),
+    TEST_TYPES_CONTENT
+  );
 }
 
 /**

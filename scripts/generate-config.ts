@@ -12,6 +12,12 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import {
+  contractNameToExampleName,
+  contractNameToTitle,
+  formatCategoryName,
+  toKebabCase,
+} from "./shared/utils";
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const CONTRACTS_DIR = path.join(ROOT_DIR, "contracts");
@@ -30,22 +36,19 @@ interface ContractInfo {
   dependencies?: string[];
 }
 
+// =============================================================================
+// Contract Analysis
+// =============================================================================
+
 /**
  * Extract @notice from contract file
  */
 function extractNotice(contractPath: string): string | null {
   const content = fs.readFileSync(contractPath, "utf-8");
-
-  // Match contract-level @notice (before "contract" keyword)
   const noticeRegex =
     /\/\*\*[\s\S]*?@notice\s+([^\n*]+)[\s\S]*?\*\/[\s\S]*?contract\s+\w+/;
   const match = content.match(noticeRegex);
-
-  if (match && match[1]) {
-    return match[1].trim();
-  }
-
-  return null;
+  return match && match[1] ? match[1].trim() : null;
 }
 
 /**
@@ -56,11 +59,7 @@ function readExistingConfig(): Record<string, any> {
     if (!fs.existsSync(OUTPUT_FILE)) {
       return {};
     }
-
-    // Import the existing config module
-    // Clear require cache first to get fresh data
     delete require.cache[require.resolve(OUTPUT_FILE)];
-
     const config = require(OUTPUT_FILE);
     return config.EXAMPLES || {};
   } catch (error) {
@@ -70,90 +69,17 @@ function readExistingConfig(): Record<string, any> {
 }
 
 /**
- * Convert contract name to kebab-case example name
- * Handles acronyms: FHECounter → fhe-counter, ERC7984 → erc7984
- */
-function contractNameToExampleName(contractName: string): string {
-  return (
-    contractName
-      // Insert hyphen before uppercase letter that follows a lowercase letter
-      .replace(/([a-z])([A-Z])/g, "$1-$2")
-      // Insert hyphen before uppercase letter that follows a number
-      .replace(/([0-9])([A-Z])/g, "$1-$2")
-      // Insert hyphen before a word that follows an acronym
-      .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-      .toLowerCase()
-  );
-}
-
-/**
- * Convert contract name to title
- * Handles acronyms: ERC7984 → ERC7984, FHECounter → FHE Counter
- * Complex cases: ERC7984ERC20Wrapper → ERC7984 ERC20 Wrapper
- */
-function contractNameToTitle(contractName: string): string {
-  return (
-    contractName
-      // Insert space before uppercase letter that follows a lowercase letter
-      .replace(/([a-z])([A-Z])/g, "$1 $2")
-      // Insert space before uppercase letter that follows a number
-      .replace(/([0-9])([A-Z])/g, "$1 $2")
-      // Insert space before a word that follows an acronym
-      .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2")
-  );
-}
-
-/**
- * Format folder name to proper category name
- * Rules:
- *   - "fhe" → "FHE" (uppercase)
- *   - "-" → " " (space) and capitalize next letter
- *   - First letter always capitalized
- * Examples:
- *   "encryption" → "Encryption"
- *   "fhe-operations" → "FHE Operations"
- *   "openzeppelin" → "Openzeppelin"
- */
-function formatCategoryName(folderName: string): string {
-  return (
-    folderName
-      // Replace "fhe" with "FHE" (case-insensitive)
-      .replace(/\bfhe\b/gi, "FHE")
-      // Replace hyphens with spaces
-      .replace(/-/g, " ")
-      // Capitalize first letter of each word
-      .replace(/\b\w/g, (char) => char.toUpperCase())
-  );
-}
-
-/**
- * Capitalize first letter of a string
- */
-function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
-
-/**
  * Get category from file path (convention-based)
  * Examples:
  *   contracts/basic/File.sol → "Basic"
  *   contracts/basic/encrypt/File.sol → "Basic - Encryption"
- *   contracts/advanced/File.sol → "Advanced"
  */
 function getCategoryFromPath(relativePath: string): string {
   const parts = relativePath.split("/");
   parts.pop(); // Remove filename
 
-  if (parts.length === 0) {
-    return "Uncategorized";
-  }
-
-  if (parts.length === 1) {
-    // Single level: contracts/basic/ → "Basic"
-    return formatCategoryName(parts[0]);
-  }
-
-  // Multi-level: contracts/basic/encrypt/ → "Basic - Encryption"
+  if (parts.length === 0) return "Uncategorized";
+  if (parts.length === 1) return formatCategoryName(parts[0]);
   return parts.map(formatCategoryName).join(" - ");
 }
 
@@ -163,7 +89,6 @@ function getCategoryFromPath(relativePath: string): string {
 function findTestFile(contractPath: string): string | null {
   const relativePath = path.relative(CONTRACTS_DIR, contractPath);
   const testPath = path.join(TEST_DIR, relativePath.replace(".sol", ".ts"));
-
   return fs.existsSync(testPath)
     ? `test/${path.relative(TEST_DIR, testPath)}`
     : null;
@@ -171,26 +96,12 @@ function findTestFile(contractPath: string): string | null {
 
 /**
  * Get docs output path based on contract path
- * Converts to kebab-case for markdown standards
- * Examples:
- *   contracts/openzeppelin/ERC7984.sol → docs/openzeppelin/erc7984.md
- *   contracts/basic/FHECounter.sol → docs/basic/fhe-counter.md
- *   contracts/advanced/BlindAuction.sol → docs/advanced/blind-auction.md
  */
 function getDocsOutput(contractPath: string): string {
-  // Remove "contracts/" prefix and ".sol" extension
   const relativePath = contractPath
     .replace(/^contracts\//, "")
     .replace(/\.sol$/, "");
-
-  // Convert to kebab-case
-  const kebabPath = relativePath
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .replace(/([0-9])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .toLowerCase();
-
-  return `docs/${kebabPath}.md`;
+  return `docs/${toKebabCase(relativePath)}.md`;
 }
 
 /**
