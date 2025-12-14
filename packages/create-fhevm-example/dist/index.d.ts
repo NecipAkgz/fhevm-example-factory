@@ -6,17 +6,15 @@
  *   npx create-fhevm-example                    # Interactive mode
  *   npx create-fhevm-example --example <name>   # Create single example
  *   npx create-fhevm-example --category <name>  # Create category project
+ *   npx create-fhevm-example --add              # Add to existing project
  *
- * FILE STRUCTURE:
- * ================
- * 1. IMPORTS
- * 2. CONSTANTS - Category icons, order, etc.
- * 3. PROJECT BUILDERS - createSingleExample, createCategoryProject
- * 4. PROMPT HELPERS - Category/example selection prompts
- * 5. INSTALL & TEST - Build and test utilities
- * 6. INTERACTIVE MODE - Main interactive flow
- * 7. DIRECT MODE - CLI argument handling
- * 8. MAIN ENTRY POINT
+ * This is the main entry point - similar to scripts/create.ts in main project.
+ * Actual logic is split into:
+ *   - builders.ts   (createSingleExample, createCategoryProject)
+ *   - ui.ts         (prompts + commands)
+ *   - utils.ts      (file operations + constants + utilities)
+ *   - config.ts     (examples & categories)
+ *   - add-mode.ts   (add to existing project)
  */
 export {};
 //# sourceMappingURL=index.d.ts.map

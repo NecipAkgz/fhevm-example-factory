@@ -58,11 +58,13 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 
 | Category | Description |
 |----------|-------------|
-| `basic` | Encryption, decryption, basic operations (9 contracts) |
-| `concepts` | Access control, proofs, handles (4 contracts) |
-| `operations` | Arithmetic, comparison operations (4 contracts) |
+| `basic` | Basic encryption and counter examples (1 contract) |
+| `basicencryption` | Single and multiple value encryption (2 contracts) |
+| `basicdecryption` | Public and user decryption examples (4 contracts) |
+| `basicfheoperations` | FHE arithmetic and comparison (4 contracts) |
+| `concepts` | Access control, proofs, handles, anti-patterns (4 contracts) |
 | `gaming` | Rock-paper-scissors, lottery, poker (3 contracts) |
-| `openzeppelin` | ERC7984, wrappers, swaps (5 contracts) |
+| `openzeppelin` | ERC7984, wrappers, swaps, vesting (5 contracts) |
 | `advanced` | Blind auction, voting, payroll, escrow, KYC (5 contracts) |
 
 ## What Gets Created
@@ -91,6 +93,35 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 ## Developer Only
 
 >This section is for contributors and maintainers of the package.
+
+### File Structure
+
+The package follows a modular structure similar to the main project's `scripts/` directory:
+
+```
+src/
+├── index.ts      # Main entry point + CLI modes (~320 lines)
+├── builders.ts   # createSingleExample, createCategoryProject (~250 lines)
+├── ui.ts         # Interactive prompts + install/test commands (~180 lines)
+├── utils.ts      # Utilities + constants + validation + logging (~350 lines)
+├── config.ts     # Auto-generated examples & categories (~440 lines)
+└── add-mode.ts   # Add FHEVM to existing projects (~370 lines)
+```
+
+**Key Components:**
+- `index.ts` - Main CLI entry point, handles interactive and direct modes
+- `builders.ts` - Project creation logic (single example, category project)
+- `ui.ts` - User interface (prompts + commands, replaces old prompts.ts + commands.ts)
+- `utils.ts` - File operations, constants, validation, logging utilities
+- `config.ts` - Auto-generated configuration from monorepo contracts
+- `add-mode.ts` - Add FHEVM to existing Hardhat projects
+
+**Design Principles:**
+- **Modular**: Each file has a single responsibility
+- **Aligned**: Mirrors main project's `scripts/` structure
+- **Maintainable**: Easy to understand and update
+- **Type-safe**: Full TypeScript coverage
+- **Consistent**: Standardized logging, error handling, validation
 
 ### Configuration
 
@@ -156,10 +187,10 @@ npm unlink -g create-fhevm-example
 
 ### Scripts
 
-- `npm run build` - Compile TypeScript
-- `npm run dev` - Watch mode
-- `npm run update:config` - Update config from monorepo contracts
-- `npm run prepublishOnly` - Auto-runs update:config + build before publish
+- `npm run build` - Compile TypeScript to `dist/`
+- `npm run dev` - Watch mode for development
+- `npm run update:config` - Regenerate config from monorepo contracts
+- `npm run prepublishOnly` - Auto-runs before publish (update:config + build)
 
 ---
 

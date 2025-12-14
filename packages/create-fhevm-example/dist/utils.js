@@ -4,7 +4,94 @@
 import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
-import { REPO_URL, REPO_BRANCH, TEMPLATE_SUBMODULE_PATH } from "./config.js";
+import pc from "picocolors";
+import { REPO_URL, REPO_BRANCH, TEMPLATE_SUBMODULE_PATH, EXAMPLES, CATEGORIES, } from "./config.js";
+// =============================================================================
+// Constants
+// =============================================================================
+/**
+ * Simple folder icon for all categories
+ */
+export const CATEGORY_ICON = "📁";
+/**
+ * Display order for example categories in the interactive prompt
+ */
+export const CATEGORY_ORDER = [
+    "Basic",
+    "Basic - Encryption",
+    "Basic - Decryption",
+    "Basic - FHE Operations",
+    "Concepts",
+    "Gaming",
+    "Openzeppelin",
+    "Advanced",
+];
+/**
+ * Content for test/types.ts file
+ */
+export const TEST_TYPES_CONTENT = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
+
+/**
+ * Common signers interface used across test files
+ */
+export interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
+`;
+/**
+ * Centralized error messages
+ */
+export const ERROR_MESSAGES = {
+    EXAMPLE_REQUIRED: "Error: Either --example or --category is required",
+    BOTH_SPECIFIED: "Error: Cannot use both --example and --category",
+    UNKNOWN_EXAMPLE: (name) => `Error: Unknown example "${name}"`,
+    UNKNOWN_CATEGORY: (name) => `Error: Unknown category "${name}"`,
+    DIR_EXISTS: (path) => `Error: Directory already exists: ${path}`,
+    NOT_HARDHAT: "This directory does not contain a valid Hardhat project.",
+    CONFIG_NOT_FOUND: "hardhat.config.ts or hardhat.config.js not found",
+    CONTRACT_NAME_FAILED: "Could not extract contract name",
+};
+// =============================================================================
+// Logging Utility
+// =============================================================================
+/**
+ * Standardized logging functions
+ */
+export const log = {
+    success: (msg) => console.log(pc.green(msg)),
+    error: (msg) => console.error(pc.red(msg)),
+    info: (msg) => console.log(pc.cyan(msg)),
+    dim: (msg) => console.log(pc.dim(msg)),
+    message: (msg) => console.log(msg),
+};
+// =============================================================================
+// Validation Functions
+// =============================================================================
+/**
+ * Validates that an example exists
+ */
+export function validateExample(name) {
+    if (!EXAMPLES[name]) {
+        throw new Error(ERROR_MESSAGES.UNKNOWN_EXAMPLE(name));
+    }
+}
+/**
+ * Validates that a category exists
+ */
+export function validateCategory(name) {
+    if (!CATEGORIES[name]) {
+        throw new Error(ERROR_MESSAGES.UNKNOWN_CATEGORY(name));
+    }
+}
+/**
+ * Validates that a directory doesn't exist
+ */
+export function validateDirectoryNotExists(dirPath) {
+    if (fs.existsSync(dirPath)) {
+        throw new Error(ERROR_MESSAGES.DIR_EXISTS(dirPath));
+    }
+}
 // =============================================================================
 // File System Utilities
 // =============================================================================

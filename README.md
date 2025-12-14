@@ -365,6 +365,8 @@ npm run create:docs                # All examples
 
 ## NPM Package Commands
 
+> **ℹ️ Note:** The `create-fhevm-example` package (`packages/create-fhevm-example/`) is completely independent from the main project. It can be safely removed without affecting the main project's functionality. The package is published to NPM and can be used standalone without cloning this repository.
+
 Published as `create-fhevm-example` on NPM, this package allows you to create FHEVM projects **without cloning this repository**. Perfect for quick starts and CI/CD pipelines.
 
 **Advantages:**

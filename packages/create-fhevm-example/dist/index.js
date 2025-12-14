@@ -6,407 +6,31 @@
  *   npx create-fhevm-example                    # Interactive mode
  *   npx create-fhevm-example --example <name>   # Create single example
  *   npx create-fhevm-example --category <name>  # Create category project
+ *   npx create-fhevm-example --add              # Add to existing project
  *
- * FILE STRUCTURE:
- * ================
- * 1. IMPORTS
- * 2. CONSTANTS - Category icons, order, etc.
- * 3. PROJECT BUILDERS - createSingleExample, createCategoryProject
- * 4. PROMPT HELPERS - Category/example selection prompts
- * 5. INSTALL & TEST - Build and test utilities
- * 6. INTERACTIVE MODE - Main interactive flow
- * 7. DIRECT MODE - CLI argument handling
- * 8. MAIN ENTRY POINT
+ * This is the main entry point - similar to scripts/create.ts in main project.
+ * Actual logic is split into:
+ *   - builders.ts   (createSingleExample, createCategoryProject)
+ *   - ui.ts         (prompts + commands)
+ *   - utils.ts      (file operations + constants + utilities)
+ *   - config.ts     (examples & categories)
+ *   - add-mode.ts   (add to existing project)
  */
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
+// Config
 import { EXAMPLES, CATEGORIES } from "./config.js";
-import { cloneTemplate, initSubmodule, copyDirectoryRecursive, getContractName, downloadFileFromGitHub, runCommand, extractTestResults, generateDeployScript, } from "./utils.js";
+// Utilities
+import { cloneTemplate, initSubmodule, log, ERROR_MESSAGES, validateExample, validateCategory, validateDirectoryNotExists, } from "./utils.js";
+// Builders
+import { createSingleExample, createCategoryProject } from "./builders.js";
+// UI (Prompts + Commands)
+import { promptSelectCategory, promptSelectExampleFromCategory, promptSelectCategoryProject, askInstallAndTest, runInstallAndTest, } from "./ui.js";
+// Add Mode
 import { runAddMode } from "./add-mode.js";
-// =============================================================================
-// CONSTANTS
-// =============================================================================
-/**
- * Simple folder icon for all categories
- */
-const CATEGORY_ICON = "📁";
-/**
- * Display order for example categories in the interactive prompt
- */
-const CATEGORY_ORDER = [
-    "Basic",
-    "Basic - Encryption",
-    "Basic - Decryption",
-    "Basic - FHE Operations",
-    "Concepts",
-    "Openzeppelin",
-    "Advanced",
-];
-// =============================================================================
-// PROJECT BUILDERS
-// =============================================================================
-/**
- * Creates a single example project from the template
- *
- * Steps:
- * 1. Copy template directory
- * 2. Download contract and test files from GitHub
- * 3. Update package.json and deploy scripts
- * 4. Clean up template-specific files
- */
-async function createSingleExample(exampleName, outputDir, tempRepoPath) {
-    const example = EXAMPLES[exampleName];
-    if (!example) {
-        throw new Error(`Unknown example: ${exampleName}`);
-    }
-    const templateDir = path.join(tempRepoPath, "fhevm-hardhat-template");
-    const contractName = getContractName(example.contract);
-    if (!contractName) {
-        throw new Error("Could not extract contract name");
-    }
-    // Step 1: Copy template
-    copyDirectoryRecursive(templateDir, outputDir);
-    // Clean up .git and initialize fresh repository
-    const gitDir = path.join(outputDir, ".git");
-    if (fs.existsSync(gitDir)) {
-        fs.rmSync(gitDir, { recursive: true, force: true });
-    }
-    // Step 2: Remove template contract and download example contract
-    const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
-    if (fs.existsSync(templateContract)) {
-        fs.unlinkSync(templateContract);
-    }
-    await downloadFileFromGitHub(example.contract, path.join(outputDir, "contracts", `${contractName}.sol`));
-    // Step 3: Clean up and download test file
-    const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
-    if (fs.existsSync(contractsGitkeep)) {
-        fs.unlinkSync(contractsGitkeep);
-    }
-    const testDir = path.join(outputDir, "test");
-    fs.readdirSync(testDir).forEach((file) => {
-        if (file.endsWith(".ts") || file === ".gitkeep") {
-            fs.unlinkSync(path.join(testDir, file));
-        }
-    });
-    await downloadFileFromGitHub(example.test, path.join(outputDir, "test", path.basename(example.test)));
-    // Step 3.5: Download contract dependencies if specified
-    if (example.dependencies) {
-        for (const depPath of example.dependencies) {
-            const depName = path.basename(depPath);
-            // Preserve directory structure from config
-            const relativePath = depPath.replace(/^contracts\//, "");
-            const depDestPath = path.join(outputDir, "contracts", relativePath);
-            const depDestDir = path.dirname(depDestPath);
-            // Create directory if needed
-            if (!fs.existsSync(depDestDir)) {
-                fs.mkdirSync(depDestDir, { recursive: true });
-            }
-            await downloadFileFromGitHub(depPath, depDestPath);
-        }
-    }
-    // Step 4: Update configuration files
-    fs.writeFileSync(path.join(outputDir, "deploy", "deploy.ts"), generateDeployScript(contractName));
-    const packageJsonPath = path.join(outputDir, "package.json");
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-    packageJson.name = `fhevm-example-${exampleName}`;
-    packageJson.description = example.description;
-    // Add npm dependencies if specified in config
-    if (example.npmDependencies) {
-        if (!packageJson.dependencies) {
-            packageJson.dependencies = {};
-        }
-        Object.assign(packageJson.dependencies, example.npmDependencies);
-    }
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    // Step 5: Remove template-specific task
-    const configPath = path.join(outputDir, "hardhat.config.ts");
-    let configContent = fs.readFileSync(configPath, "utf-8");
-    configContent = configContent.replace(/import "\.\/tasks\/FHECounter";\n?/g, "");
-    fs.writeFileSync(configPath, configContent);
-    const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
-    if (fs.existsSync(oldTaskFile)) {
-        fs.unlinkSync(oldTaskFile);
-    }
-    // Step 6: Create test/types.ts for type safety
-    const typesContent = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-
-/**
- * Common signers interface used across test files
- */
-export interface Signers {
-  owner: HardhatEthersSigner;
-  alice: HardhatEthersSigner;
-}
-`;
-    fs.writeFileSync(path.join(outputDir, "test", "types.ts"), typesContent);
-    // Initialize git repository
-    try {
-        await runCommand("git", ["init"], outputDir);
-    }
-    catch (error) {
-        // Git init is optional, silently continue if it fails
-    }
-}
-/**
- * Creates a category project with multiple examples
- *
- * Steps:
- * 1. Copy template directory
- * 2. Download all contracts and tests for the category
- * 3. Update package.json
- * 4. Clean up template-specific files
- */
-async function createCategoryProject(categoryName, outputDir, tempRepoPath) {
-    const category = CATEGORIES[categoryName];
-    if (!category) {
-        throw new Error(`Unknown category: ${categoryName}`);
-    }
-    const templateDir = path.join(tempRepoPath, "fhevm-hardhat-template");
-    // Step 1: Copy template
-    copyDirectoryRecursive(templateDir, outputDir);
-    // Clean up .git and initialize fresh repository
-    const gitDir = path.join(outputDir, ".git");
-    if (fs.existsSync(gitDir)) {
-        fs.rmSync(gitDir, { recursive: true, force: true });
-    }
-    // Step 2: Clear template files
-    const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
-    if (fs.existsSync(templateContract))
-        fs.unlinkSync(templateContract);
-    const contractsGitkeep = path.join(outputDir, "contracts", ".gitkeep");
-    if (fs.existsSync(contractsGitkeep))
-        fs.unlinkSync(contractsGitkeep);
-    const testDir = path.join(outputDir, "test");
-    fs.readdirSync(testDir).forEach((file) => {
-        if (file.endsWith(".ts") || file === ".gitkeep") {
-            fs.unlinkSync(path.join(testDir, file));
-        }
-    });
-    // Step 3: Download all contracts and tests
-    for (const item of category.contracts) {
-        const contractName = getContractName(item.sol);
-        if (contractName) {
-            await downloadFileFromGitHub(item.sol, path.join(outputDir, "contracts", `${contractName}.sol`));
-        }
-        if (item.test) {
-            await downloadFileFromGitHub(item.test, path.join(outputDir, "test", path.basename(item.test)));
-        }
-    }
-    // Step 3.5: Download all dependencies from examples in this category
-    const allDependencies = new Set();
-    const allNpmDependencies = {};
-    // Collect dependencies from all examples in this category
-    for (const [exampleName, exampleConfig] of Object.entries(EXAMPLES)) {
-        if (exampleConfig.category === category.name.replace(" Examples", "")) {
-            // Collect contract dependencies
-            if (exampleConfig.dependencies) {
-                for (const dep of exampleConfig.dependencies) {
-                    allDependencies.add(dep);
-                }
-            }
-            // Collect npm dependencies
-            if (exampleConfig.npmDependencies) {
-                Object.assign(allNpmDependencies, exampleConfig.npmDependencies);
-            }
-        }
-    }
-    // Download all collected dependencies
-    for (const depPath of allDependencies) {
-        const relativePath = depPath.replace(/^contracts\//, "");
-        const depDestPath = path.join(outputDir, "contracts", relativePath);
-        const depDestDir = path.dirname(depDestPath);
-        if (!fs.existsSync(depDestDir)) {
-            fs.mkdirSync(depDestDir, { recursive: true });
-        }
-        await downloadFileFromGitHub(depPath, depDestPath);
-    }
-    // Step 4: Update configuration files
-    const configPath = path.join(outputDir, "hardhat.config.ts");
-    let configContent = fs.readFileSync(configPath, "utf-8");
-    configContent = configContent.replace(/import "\.\/tasks\/FHECounter";\n?/g, "");
-    fs.writeFileSync(configPath, configContent);
-    const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
-    if (fs.existsSync(oldTaskFile)) {
-        fs.unlinkSync(oldTaskFile);
-    }
-    // Step 5: Create test/types.ts for type safety
-    const typesContent = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-
-/**
- * Common signers interface used across test files
- */
-export interface Signers {
-  owner: HardhatEthersSigner;
-  alice: HardhatEthersSigner;
-}
-`;
-    fs.writeFileSync(path.join(outputDir, "test", "types.ts"), typesContent);
-    const packageJsonPath = path.join(outputDir, "package.json");
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-    packageJson.name = `fhevm-examples-${categoryName}`;
-    // Add aggregated npm dependencies
-    if (Object.keys(allNpmDependencies).length > 0) {
-        if (!packageJson.dependencies) {
-            packageJson.dependencies = {};
-        }
-        Object.assign(packageJson.dependencies, allNpmDependencies);
-    }
-    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-    // Initialize git repository
-    try {
-        await runCommand("git", ["init"], outputDir);
-    }
-    catch (error) {
-        // Git init is optional, silently continue if it fails
-    }
-}
-// =============================================================================
-// PROMPT HELPERS
-// =============================================================================
-/**
- * Counts how many examples exist in each category
- */
-function countExamplesPerCategory() {
-    const counts = {};
-    for (const config of Object.values(EXAMPLES)) {
-        counts[config.category] = (counts[config.category] || 0) + 1;
-    }
-    return counts;
-}
-/**
- * Prompts user to select a category
- * Returns the selected category name
- */
-async function promptSelectCategory() {
-    const categoryCounts = countExamplesPerCategory();
-    // Get all categories, prioritizing CATEGORY_ORDER, then alphabetically sorted others
-    const allCategories = Object.keys(categoryCounts);
-    const orderedCategories = [
-        ...CATEGORY_ORDER.filter((cat) => allCategories.includes(cat)),
-        ...allCategories.filter((cat) => !CATEGORY_ORDER.includes(cat)).sort(),
-    ];
-    return p.select({
-        message: "Select a category:",
-        options: orderedCategories.map((category) => ({
-            value: category,
-            label: `${CATEGORY_ICON} ${category}`,
-            hint: `${categoryCounts[category] || 0} example${categoryCounts[category] !== 1 ? "s" : ""}`,
-        })),
-    });
-}
-/**
- * Prompts user to select an example from a specific category
- * Returns the selected example name
- */
-async function promptSelectExampleFromCategory(category) {
-    const categoryExamples = Object.entries(EXAMPLES)
-        .filter(([, config]) => config.category === category)
-        .map(([key, config]) => ({
-        value: key,
-        label: key,
-        hint: config.description.slice(0, 80) +
-            (config.description.length > 80 ? "..." : ""),
-    }));
-    return p.select({
-        message: `Select an example from ${category}:`,
-        options: categoryExamples,
-    });
-}
-/**
- * Prompts user to select a category project
- * Returns the selected category key (lowercase)
- */
-async function promptSelectCategoryProject() {
-    return p.select({
-        message: "Select a category:",
-        options: Object.entries(CATEGORIES).map(([key, config]) => ({
-            value: key,
-            label: `${CATEGORY_ICON} ${config.name}`,
-            hint: `${config.contracts.length} contracts`,
-        })),
-    });
-}
-// =============================================================================
-// INSTALL & TEST
-// =============================================================================
-/**
- * Runs npm install, compile, and test in the project directory
- */
-async function runInstallAndTest(projectPath) {
-    const steps = [
-        {
-            name: "Installing dependencies",
-            cmd: "npm",
-            args: ["install"],
-            showOutput: false,
-        },
-        {
-            name: "Compiling contracts",
-            cmd: "npm",
-            args: ["run", "compile"],
-            showOutput: false,
-        },
-        {
-            name: "Running tests",
-            cmd: "npm",
-            args: ["run", "test"],
-            showOutput: true,
-        },
-    ];
-    for (const step of steps) {
-        const s = p.spinner();
-        s.start(step.name + "...");
-        try {
-            const output = await runCommand(step.cmd, step.args, projectPath);
-            if (step.showOutput) {
-                const testResults = extractTestResults(output);
-                s.stop(testResults
-                    ? pc.green(`✓ ${step.name} - ${testResults}`)
-                    : pc.green(`✓ ${step.name} completed`));
-            }
-            else {
-                s.stop(pc.green(`✓ ${step.name} completed`));
-            }
-        }
-        catch (error) {
-            s.stop(pc.red(`✗ ${step.name} failed`));
-            if (error instanceof Error) {
-                p.log.error(error.message);
-            }
-            throw new Error(`${step.name} failed`);
-        }
-    }
-    p.log.success(pc.green("All steps completed successfully!"));
-}
-/**
- * Shows quick start commands for the created project
- */
-function showQuickStart(relativePath) {
-    p.note(`${pc.dim("$")} cd ${relativePath}\n${pc.dim("$")} npm install\n${pc.dim("$")} npm run compile\n${pc.dim("$")} npm run test`, "🚀 Quick Start");
-}
-/**
- * Asks user if they want to install and test, then runs or shows quick start
- */
-async function askInstallAndTest(resolvedOutput, relativePath) {
-    const shouldInstall = await p.confirm({
-        message: "Install dependencies and run tests?",
-        initialValue: false,
-    });
-    if (p.isCancel(shouldInstall)) {
-        showQuickStart(relativePath);
-        return;
-    }
-    if (shouldInstall) {
-        p.log.message("");
-        await runInstallAndTest(resolvedOutput);
-    }
-    else {
-        showQuickStart(relativePath);
-    }
-}
 // =============================================================================
 // INTERACTIVE MODE
 // =============================================================================
@@ -442,7 +66,6 @@ async function runInteractiveMode() {
     let projectName = "";
     // Step 2: Select based on mode
     if (mode === "single") {
-        // Single example: first select category, then example
         const selectedCategory = await promptSelectCategory();
         if (p.isCancel(selectedCategory)) {
             p.cancel("Operation cancelled.");
@@ -460,7 +83,6 @@ async function runInteractiveMode() {
         });
     }
     else {
-        // Category project: select category directly
         categoryName = await promptSelectCategoryProject();
         if (p.isCancel(categoryName)) {
             p.cancel("Operation cancelled.");
@@ -540,35 +162,47 @@ async function runInteractiveMode() {
  */
 function showHelp() {
     console.log(`
-${pc.cyan("create-fhevm-example")}
+${pc.bgCyan(pc.black(pc.bold(" 🔐 create-fhevm-example ")))}
+${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
 
-${pc.yellow("Usage:")}
-  npx create-fhevm-example                     ${pc.dim("# Interactive mode")}
-  npx create-fhevm-example --example <name>    ${pc.dim("# Create single example")}
-  npx create-fhevm-example --category <name>   ${pc.dim("# Create category project")}
+${pc.cyan(pc.bold("📋 USAGE"))}
 
-${pc.yellow("Options:")}
-  --example <name>     Create a single example project
-  --category <name>    Create a category project
-  --add                Add FHEVM to existing Hardhat project
-  --target <dir>       Target directory for --add mode (default: current dir)
-  --output <dir>       Output directory (default: ./<project-name>)
-  --install            Auto-install dependencies
-  --test               Auto-run tests (requires --install)
-  --help, -h           Show this help message
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")}                  ${pc.dim("→")} Interactive mode ${pc.yellow("(recommended)")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--example")} ${pc.yellow("<name>")}  ${pc.dim("→")} Create single example
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--category")} ${pc.yellow("<name>")} ${pc.dim("→")} Create category project
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--add")}               ${pc.dim("→")} Add to existing project
 
-${pc.yellow("Examples:")}
-  ${pc.green("npx create-fhevm-example --example fhe-counter")}
-  ${pc.green("npx create-fhevm-example --category basic --output ./my-project")}
-  ${pc.green("npx create-fhevm-example --add")}
-  ${pc.green("npx create-fhevm-example --add --target ./my-existing-project")}
-  ${pc.green("npx create-fhevm-example --example fhe-counter --install --test")}
+${pc.cyan(pc.bold("⚙️  OPTIONS"))}
 
-${pc.yellow("Available examples:")}
-  ${Object.keys(EXAMPLES).join(", ")}
+  ${pc.green("--example")} ${pc.dim("<name>")}      Create a single example project
+  ${pc.green("--category")} ${pc.dim("<name>")}     Create a category project
+  ${pc.green("--add")}                 Add FHEVM to existing Hardhat project
+  ${pc.green("--target")} ${pc.dim("<dir>")}        Target directory for --add mode
+  ${pc.green("--output")} ${pc.dim("<dir>")}        Output directory
+  ${pc.green("--install")}             Auto-install dependencies
+  ${pc.green("--test")}                Auto-run tests (requires --install)
+  ${pc.green("--help")}${pc.dim(", -h")}            Show this help message
 
-${pc.yellow("Available categories:")}
-  ${Object.keys(CATEGORIES).join(", ")}
+${pc.cyan(pc.bold("⚡ EXAMPLES"))}
+
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--example")} ${pc.yellow("fhe-counter")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--category")} ${pc.yellow("basic")} ${pc.green("--output")} ${pc.blue("./my-project")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--add")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--example")} ${pc.yellow("fhe-counter")} ${pc.green("--install")} ${pc.green("--test")}
+
+${pc.cyan(pc.bold("📦 AVAILABLE EXAMPLES"))}
+
+  ${pc.dim(Object.keys(EXAMPLES).slice(0, 10).join(", "))}
+  ${pc.dim("...")} and ${pc.yellow(String(Object.keys(EXAMPLES).length - 10))} more
+
+${pc.cyan(pc.bold("📁 AVAILABLE CATEGORIES"))}
+
+  ${Object.keys(CATEGORIES)
+        .map((c) => pc.yellow(c))
+        .join(", ")}
+
+${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
+${pc.dim("📚 Documentation:")} ${pc.blue("https://github.com/NecipAkgz/fhevm-example-factory")}
 `);
 }
 /**
@@ -616,59 +250,66 @@ async function runDirectMode(args) {
     const shouldInstall = parsedArgs["install"] === true;
     // Validation
     if (!exampleName && !categoryName) {
-        console.error(pc.red("Error: Either --example or --category is required"));
+        log.error(ERROR_MESSAGES.EXAMPLE_REQUIRED);
         showHelp();
         process.exit(1);
     }
     if (exampleName && categoryName) {
-        console.error(pc.red("Error: Cannot use both --example and --category"));
+        log.error(ERROR_MESSAGES.BOTH_SPECIFIED);
         process.exit(1);
     }
     const mode = exampleName ? "example" : "category";
     const name = (exampleName || categoryName);
-    if (mode === "example" && !EXAMPLES[name]) {
-        console.error(pc.red(`Error: Unknown example "${name}"`));
-        console.log("Available:", Object.keys(EXAMPLES).join(", "));
-        process.exit(1);
+    try {
+        if (mode === "example") {
+            validateExample(name);
+        }
+        else {
+            validateCategory(name);
+        }
     }
-    if (mode === "category" && !CATEGORIES[name]) {
-        console.error(pc.red(`Error: Unknown category "${name}"`));
-        console.log("Available:", Object.keys(CATEGORIES).join(", "));
+    catch (error) {
+        log.error(error instanceof Error ? error.message : String(error));
+        log.message("Available: " +
+            Object.keys(mode === "example" ? EXAMPLES : CATEGORIES).join(", "));
         process.exit(1);
     }
     const defaultOutput = mode === "example" ? `./my-${name}-project` : `./my-${name}-examples`;
     const output = outputDir || defaultOutput;
     const resolved = path.resolve(process.cwd(), output);
-    if (fs.existsSync(resolved)) {
-        console.error(pc.red(`Error: Directory already exists: ${resolved}`));
+    try {
+        validateDirectoryNotExists(resolved);
+    }
+    catch (error) {
+        log.error(error instanceof Error ? error.message : String(error));
         process.exit(1);
     }
     // Create project
     const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
     try {
-        console.log(pc.cyan(`Creating ${mode}: ${name}`));
-        console.log(pc.dim("Downloading template..."));
+        log.info(`Creating ${mode}: ${name}`);
+        log.dim("Downloading template...");
         const tempRepoPath = await cloneTemplate(tempDir);
-        console.log(pc.dim("Initializing submodules..."));
+        log.dim("Initializing submodules...");
         await initSubmodule(tempRepoPath);
-        console.log(pc.dim("Creating project..."));
+        log.dim("Creating project...");
         if (mode === "example") {
             await createSingleExample(name, resolved, tempRepoPath);
         }
         else {
             await createCategoryProject(name, resolved, tempRepoPath);
         }
-        console.log(pc.green(`✓ Created: ${output}`));
+        log.success(`✓ Created: ${output}`);
         if (shouldInstall) {
-            console.log(pc.dim("\nInstalling dependencies..."));
+            log.dim("\nInstalling dependencies...");
             await runInstallAndTest(resolved);
         }
         else {
-            console.log(pc.dim(`\nNext: cd ${output} && npm install && npm run compile && npm run test`));
+            log.dim(`\nNext: cd ${output} && npm install && npm run compile && npm run test`);
         }
     }
     catch (error) {
-        console.error(pc.red("Error:"), error instanceof Error ? error.message : String(error));
+        log.error(error instanceof Error ? error.message : String(error));
         process.exit(1);
     }
     finally {
@@ -690,7 +331,7 @@ async function main() {
     }
 }
 main().catch((error) => {
-    console.error(pc.red("Fatal error:"), error);
+    log.error("Fatal error: " + (error instanceof Error ? error.message : String(error)));
     process.exit(1);
 });
 //# sourceMappingURL=index.js.map
