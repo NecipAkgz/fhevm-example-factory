@@ -84,7 +84,7 @@ async function generateDocumentation(
 /**
  * Handles the "Generate documentation" flow
  */
-async function handleInteractive(): Promise<void> {
+export async function handleInteractiveDocs(): Promise<void> {
   console.clear();
   p.intro(pc.bgCyan(pc.black(" 📚 Generate Documentation ")));
 
@@ -102,7 +102,7 @@ async function handleInteractive(): Promise<void> {
 
   if (p.isCancel(scope)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return;
   }
 
   let target = "all";
@@ -119,7 +119,7 @@ async function handleInteractive(): Promise<void> {
 
     if (p.isCancel(example)) {
       p.cancel("Operation cancelled.");
-      process.exit(0);
+      return;
     }
 
     target = example as string;
@@ -148,7 +148,6 @@ async function handleInteractive(): Promise<void> {
   } catch (error) {
     s.stop("Failed to generate documentation");
     p.log.error(error instanceof Error ? error.message : String(error));
-    process.exit(1);
   }
 }
 
@@ -159,7 +158,7 @@ async function handleInteractive(): Promise<void> {
 /**
  * Handles direct mode with CLI arguments
  */
-async function handleDirect(args: string[]): Promise<void> {
+export async function handleDirect(args: string[]): Promise<void> {
   const [target] = args;
 
   // No argument = generate all docs
@@ -192,8 +191,10 @@ async function main(): Promise<void> {
   if (args.length > 0) {
     await handleDirect(args);
   } else {
-    await handleInteractive();
+    await handleInteractiveDocs();
   }
 }
 
-main().catch(console.error);
+if (require.main === module) {
+  main().catch(console.error);
+}

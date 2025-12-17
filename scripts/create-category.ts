@@ -155,7 +155,7 @@ async function promptSelectCategoryProject(): Promise<string | symbol> {
 /**
  * Handles the "Create category project" flow
  */
-async function handleInteractive(): Promise<void> {
+export async function handleInteractiveCategory(): Promise<void> {
   console.clear();
   p.intro(pc.bgCyan(pc.black(" 🔐 Create Category Project ")));
 
@@ -163,7 +163,7 @@ async function handleInteractive(): Promise<void> {
   const category = await promptSelectCategoryProject();
   if (p.isCancel(category)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return;
   }
 
   // Step 2: Get project details
@@ -175,7 +175,7 @@ async function handleInteractive(): Promise<void> {
 
   if (p.isCancel(projectName)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return;
   }
 
   const outputDir = await p.text({
@@ -186,14 +186,14 @@ async function handleInteractive(): Promise<void> {
 
   if (p.isCancel(outputDir)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return;
   }
 
   const resolvedOutput = path.resolve(process.cwd(), outputDir as string);
 
   if (fs.existsSync(resolvedOutput)) {
     p.log.error(`Directory already exists: ${resolvedOutput}`);
-    process.exit(1);
+    return;
   }
 
   // Step 3: Create project
@@ -218,7 +218,6 @@ async function handleInteractive(): Promise<void> {
   } catch (error) {
     s.stop("Failed to create project");
     p.log.error(error instanceof Error ? error.message : String(error));
-    process.exit(1);
   }
 }
 
@@ -229,7 +228,7 @@ async function handleInteractive(): Promise<void> {
 /**
  * Handles direct mode with CLI arguments
  */
-async function handleDirect(args: string[]): Promise<void> {
+export async function handleDirect(args: string[]): Promise<void> {
   const [categoryName, outputDir] = args;
 
   if (!categoryName) {
@@ -273,8 +272,10 @@ async function main(): Promise<void> {
   if (args.length > 0) {
     await handleDirect(args);
   } else {
-    await handleInteractive();
+    await handleInteractiveCategory();
   }
 }
 
-main().catch(console.error);
+if (require.main === module) {
+  main().catch(console.error);
+}
