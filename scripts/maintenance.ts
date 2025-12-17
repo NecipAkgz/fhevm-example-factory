@@ -3,236 +3,349 @@
 /**
  * FHEVM Example Factory - Maintenance Tools
  *
- * CLI tools for maintaining FHEVM examples:
- * - test-all: Interactive example selection & testing
+ * Test multiple examples efficiently in a single project.
+ *
+ * Usage:
+ *   npm run test:all                    # Interactive selection
+ *   npm run test:all fhe-counter,fhe-add # Direct CLI
  */
 
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
+
 import { EXAMPLES, getExampleNames } from "./shared/config";
-import { getRootDir } from "./shared/utils";
-import { runCommandWithStatus, extractErrorMessage } from "./shared/commands";
-import { createSingleExample } from "./create-example";
+import {
+  getRootDir,
+  getContractName,
+  copyDirectoryRecursive,
+  getTemplateDir,
+  cleanupTemplate,
+  TEST_TYPES_CONTENT,
+} from "./shared/utils";
+import {
+  runCommandWithStatus,
+  extractErrorMessage,
+  extractTestResults,
+} from "./shared/commands";
 
 // =============================================================================
 // Types
 // =============================================================================
 
-interface TestResult {
-  example: string;
-  compile: "pass" | "fail" | "skip";
-  test: "pass" | "fail" | "skip";
-  error?: string;
+interface TestSummary {
+  totalExamples: number;
+  passed: number;
+  failed: number;
+  compileSuccess: boolean;
+  failedTests: string[];
 }
 
 // =============================================================================
-// Test Examples
+// Project Builder
 // =============================================================================
 
 /**
- * Test selected examples with interactive selection or CLI args
+ * Creates a test project with selected examples
  */
-async function testAllExamples(cliExamples?: string[]): Promise<void> {
-  p.intro(pc.cyan("🧪 FHEVM Example Tester"));
+async function createTestProject(
+  exampleNames: string[],
+  outputDir: string
+): Promise<void> {
+  const rootDir = getRootDir();
+  const templateDir = getTemplateDir();
 
+  copyDirectoryRecursive(templateDir, outputDir);
+  cleanupTemplate(outputDir);
+
+  const allNpmDeps: Record<string, string> = {};
+  const allContractDeps = new Set<string>();
+
+  for (const exampleName of exampleNames) {
+    const example = EXAMPLES[exampleName];
+    if (!example) continue;
+
+    const contractPath = path.join(rootDir, example.contract);
+    const testPath = path.join(rootDir, example.test);
+
+    if (fs.existsSync(contractPath)) {
+      const contractName = getContractName(example.contract);
+      if (contractName) {
+        fs.copyFileSync(
+          contractPath,
+          path.join(outputDir, "contracts", `${contractName}.sol`)
+        );
+      }
+    }
+
+    if (fs.existsSync(testPath)) {
+      fs.copyFileSync(
+        testPath,
+        path.join(outputDir, "test", path.basename(example.test))
+      );
+    }
+
+    if (example.dependencies) {
+      example.dependencies.forEach((dep) => allContractDeps.add(dep));
+    }
+    if (example.npmDependencies) {
+      Object.assign(allNpmDeps, example.npmDependencies);
+    }
+  }
+
+  for (const depPath of allContractDeps) {
+    const depFullPath = path.join(rootDir, depPath);
+    if (fs.existsSync(depFullPath)) {
+      const relativePath = depPath.replace(/^contracts\//, "");
+      const depDestPath = path.join(outputDir, "contracts", relativePath);
+      const depDestDir = path.dirname(depDestPath);
+
+      if (!fs.existsSync(depDestDir)) {
+        fs.mkdirSync(depDestDir, { recursive: true });
+      }
+      fs.copyFileSync(depFullPath, depDestPath);
+    }
+  }
+
+  const packageJsonPath = path.join(outputDir, "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+  packageJson.name = "fhevm-test-project";
+  packageJson.description = `Testing ${exampleNames.length} examples`;
+
+  if (Object.keys(allNpmDeps).length > 0) {
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...allNpmDeps,
+    };
+  }
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+
+  const typesPath = path.join(outputDir, "test", "types.ts");
+  if (!fs.existsSync(typesPath)) {
+    fs.writeFileSync(typesPath, TEST_TYPES_CONTENT);
+  }
+}
+
+// =============================================================================
+// Example Selection
+// =============================================================================
+
+/**
+ * Get examples to test from CLI args or interactive prompt
+ */
+async function getExamplesToTest(cliExamples?: string[]): Promise<string[]> {
   const allExamples = getExampleNames();
-  let examplesToTest: string[];
 
   if (cliExamples && cliExamples.length > 0) {
-    // Validate CLI examples
     const invalid = cliExamples.filter((e) => !allExamples.includes(e));
     if (invalid.length > 0) {
       p.log.error(`Unknown examples: ${invalid.join(", ")}`);
       p.log.message(pc.dim(`Available: ${allExamples.join(", ")}`));
       process.exit(1);
     }
-    examplesToTest = cliExamples;
-    p.log.message(
-      `Testing ${pc.bold(String(examplesToTest.length))} examples from CLI...`
-    );
-  } else {
-    // Interactive multiselect
-    const selected = await p.multiselect({
-      message: "Select examples to test (space to toggle, enter to confirm):",
-      options: allExamples.map((ex) => ({
-        value: ex,
-        label: ex,
-        hint: EXAMPLES[ex]?.category || "",
-      })),
-      required: true,
-    });
-
-    if (p.isCancel(selected)) {
-      p.cancel("Operation cancelled");
-      process.exit(0);
-    }
-
-    examplesToTest = selected as string[];
+    p.log.message(`Testing ${pc.bold(String(cliExamples.length))} examples...`);
+    return cliExamples;
   }
 
+  const selected = await p.multiselect({
+    message: "Select examples to test (space to toggle, enter to confirm):",
+    options: allExamples.map((ex) => ({
+      value: ex,
+      label: ex,
+      hint: EXAMPLES[ex]?.category || "",
+    })),
+    required: true,
+  });
+
+  if (p.isCancel(selected)) {
+    p.cancel("Operation cancelled");
+    process.exit(0);
+  }
+
+  return selected as string[];
+}
+
+// =============================================================================
+// Test Runner
+// =============================================================================
+
+/**
+ * Run install, compile, and test steps
+ */
+async function runTestPipeline(
+  tempDir: string,
+  exampleCount: number
+): Promise<TestSummary> {
+  const summary: TestSummary = {
+    totalExamples: exampleCount,
+    passed: 0,
+    failed: 0,
+    compileSuccess: false,
+    failedTests: [],
+  };
+
+  const s1 = p.spinner();
+  s1.start("Installing dependencies...");
+  const installResult = await runCommandWithStatus("npm", ["install"], tempDir);
+  if (!installResult.success) {
+    s1.stop(pc.red("✗ npm install failed"));
+    p.log.error(extractErrorMessage(installResult.output));
+    return summary;
+  }
+  s1.stop(pc.green("✓ Dependencies installed"));
+
+  const s2 = p.spinner();
+  s2.start("Compiling contracts...");
+  const compileResult = await runCommandWithStatus(
+    "npm",
+    ["run", "compile"],
+    tempDir
+  );
+  if (!compileResult.success) {
+    s2.stop(pc.red("✗ Compilation failed"));
+    p.log.error(extractErrorMessage(compileResult.output));
+    return summary;
+  }
+  s2.stop(pc.green("✓ Contracts compiled"));
+  summary.compileSuccess = true;
+
+  const s3 = p.spinner();
+  s3.start("Running tests...");
+  const testResult = await runCommandWithStatus(
+    "npm",
+    ["run", "test"],
+    tempDir
+  );
+
+  if (testResult.success) {
+    const testSummary = extractTestResults(testResult.output);
+    s3.stop(pc.green(`✓ ${testSummary || "All tests passed"}`));
+    summary.passed = exampleCount;
+  } else {
+    s3.stop(pc.yellow("⚠ Some tests failed"));
+    const failedMatches = testResult.output.match(/\d+\)\s+([^\n]+)/g);
+    if (failedMatches) {
+      summary.failedTests = failedMatches.map((m) =>
+        m.replace(/^\d+\)\s+/, "")
+      );
+      summary.failed = summary.failedTests.length;
+      summary.passed = exampleCount - summary.failed;
+    }
+  }
+
+  return summary;
+}
+
+/**
+ * Display test summary
+ */
+function showSummary(summary: TestSummary): void {
+  p.log.message("");
+  p.log.message(pc.bold("📊 Test Summary"));
+  p.log.message(pc.dim("─".repeat(50)));
+
+  p.log.message(`${pc.blue("📦 Examples:")} ${summary.totalExamples}`);
+  p.log.message(
+    `${pc.blue("📁 Compile:")} ${
+      summary.compileSuccess ? pc.green("✓ Success") : pc.red("✗ Failed")
+    }`
+  );
+
+  if (summary.compileSuccess) {
+    if (summary.failed === 0) {
+      p.log.message(`${pc.green("✓ Tests:")} All passed`);
+    } else {
+      p.log.message(`${pc.green("✓ Passed:")} ${summary.passed}`);
+      p.log.message(`${pc.red("✗ Failed:")} ${summary.failed}`);
+
+      if (summary.failedTests.length > 0) {
+        p.log.message("");
+        p.log.message(pc.red(pc.bold("Failed tests:")));
+        for (const test of summary.failedTests.slice(0, 10)) {
+          p.log.message(pc.red(`  ✗ ${test}`));
+        }
+        if (summary.failedTests.length > 10) {
+          p.log.message(
+            pc.dim(`  ... and ${summary.failedTests.length - 10} more`)
+          );
+        }
+      }
+    }
+  }
+
+  p.log.message(pc.dim("─".repeat(50)));
+
+  if (summary.compileSuccess && summary.failed === 0) {
+    p.outro(pc.green("✨ All tests passed!"));
+  } else {
+    p.outro(pc.yellow("Some issues need attention"));
+  }
+}
+
+// =============================================================================
+// Main Command
+// =============================================================================
+
+/**
+ * Test selected examples
+ */
+async function testAllExamples(cliExamples?: string[]): Promise<void> {
+  p.intro(pc.cyan("🧪 FHEVM Example Tester"));
+
+  const examplesToTest = await getExamplesToTest(cliExamples);
   if (examplesToTest.length === 0) {
     p.log.warning("No examples selected");
     p.outro(pc.dim("Nothing to test"));
     return;
   }
 
-  p.log.message(
-    `\nTesting ${pc.bold(String(examplesToTest.length))} examples...`
-  );
-
-  const tempBaseDir = path.join(getRootDir(), ".test-temp");
-  const results: TestResult[] = [];
-
-  // Create temp directory
-  if (!fs.existsSync(tempBaseDir)) {
-    fs.mkdirSync(tempBaseDir, { recursive: true });
-  }
-
-  for (let i = 0; i < examplesToTest.length; i++) {
-    const exampleName = examplesToTest[i];
-    const progress = `[${i + 1}/${examplesToTest.length}]`;
-
-    const s = p.spinner();
-    s.start(`${progress} Testing ${exampleName}...`);
-
-    const tempDir = path.join(tempBaseDir, exampleName);
-    const result: TestResult = {
-      example: exampleName,
-      compile: "skip",
-      test: "skip",
-    };
-
-    try {
-      // Clean temp dir if exists
-      if (fs.existsSync(tempDir)) {
-        fs.rmSync(tempDir, { recursive: true });
-      }
-
-      // Create example using shared project builder
-      try {
-        await createSingleExample(exampleName, tempDir);
-      } catch (err) {
-        result.error = "Failed to create example";
-        results.push(result);
-        s.stop(pc.red(`${progress} ✗ ${exampleName} - setup failed`));
-        continue;
-      }
-
-      // Install dependencies
-      const installResult = await runCommandWithStatus(
-        "npm",
-        ["install"],
-        tempDir
-      );
-      if (!installResult.success) {
-        result.error = "npm install failed";
-        results.push(result);
-        s.stop(pc.red(`${progress} ✗ ${exampleName} - install failed`));
-        continue;
-      }
-
-      // Compile
-      const compileResult = await runCommandWithStatus(
-        "npm",
-        ["run", "compile"],
-        tempDir
-      );
-      result.compile = compileResult.success ? "pass" : "fail";
-      if (!compileResult.success) {
-        // Extract the actual error from output
-        result.error = extractErrorMessage(compileResult.output);
-        results.push(result);
-        s.stop(pc.red(`${progress} ✗ ${exampleName} - compile failed`));
-        continue;
-      }
-
-      // Test
-      const testResult = await runCommandWithStatus(
-        "npm",
-        ["run", "test"],
-        tempDir
-      );
-      result.test = testResult.success ? "pass" : "fail";
-      if (!testResult.success) {
-        result.error = extractErrorMessage(testResult.output);
-      }
-
-      results.push(result);
-
-      if (result.test === "pass") {
-        s.stop(pc.green(`${progress} ✓ ${exampleName}`));
-      } else {
-        s.stop(pc.red(`${progress} ✗ ${exampleName} - tests failed`));
-      }
-    } catch (err) {
-      result.error = err instanceof Error ? err.message : String(err);
-      results.push(result);
-      s.stop(pc.red(`${progress} ✗ ${exampleName} - unexpected error`));
-    }
-  }
-
-  // Cleanup temp directory
-  if (fs.existsSync(tempBaseDir)) {
-    fs.rmSync(tempBaseDir, { recursive: true });
-  }
-
-  // Summary
   p.log.message("");
-  p.log.message(pc.bold("📊 Test Summary"));
-  p.log.message(pc.dim("─".repeat(50)));
-
-  const passed = results.filter((r) => r.test === "pass").length;
-  const failed = results.filter((r) => r.test === "fail").length;
-  const compileErrors = results.filter((r) => r.compile === "fail").length;
-  const skipped = results.filter((r) => r.test === "skip").length;
-
-  p.log.message(`${pc.green("✓ Passed:")} ${passed}`);
-  p.log.message(`${pc.red("✗ Failed:")} ${failed}`);
-  if (compileErrors > 0) {
-    p.log.message(`${pc.yellow("⚠ Compile Errors:")} ${compileErrors}`);
-  }
-  if (skipped > 0) {
-    p.log.message(`${pc.dim("○ Skipped:")} ${skipped}`);
-  }
-
-  // Show failed examples with error details
-  const failedExamples = results.filter(
-    (r) => r.compile === "fail" || r.test === "fail"
+  p.log.message(
+    `📦 Testing ${pc.bold(String(examplesToTest.length))} examples...`
   );
-  if (failedExamples.length > 0) {
-    p.log.message("");
-    p.log.message(pc.red(pc.bold("Failed examples:")));
-    for (const f of failedExamples) {
-      const status = f.compile === "fail" ? "compile" : "test";
-      p.log.message("");
-      p.log.message(pc.red(`  ✗ ${f.example} (${status} failed)`));
-      if (f.error) {
-        // Show error details indented
-        const errorLines = f.error.split("\n").slice(0, 10); // Max 10 lines
-        for (const line of errorLines) {
-          p.log.message(pc.dim(`    ${line}`));
-        }
-        if (f.error.split("\n").length > 10) {
-          p.log.message(pc.dim("    ... (truncated)"));
-        }
-      }
+
+  const tempDir = path.join(getRootDir(), ".test-temp");
+
+  if (fs.existsSync(tempDir)) {
+    fs.rmSync(tempDir, { recursive: true });
+  }
+
+  let summary: TestSummary;
+
+  try {
+    const s = p.spinner();
+    s.start("Setting up test project...");
+    await createTestProject(examplesToTest, tempDir);
+    s.stop(pc.green("✓ Project ready"));
+
+    summary = await runTestPipeline(tempDir, examplesToTest.length);
+  } finally {
+    if (fs.existsSync(tempDir)) {
+      fs.rmSync(tempDir, { recursive: true });
     }
   }
 
-  p.log.message(pc.dim("─".repeat(50)));
-
-  if (failed === 0 && compileErrors === 0) {
-    p.outro(pc.green("✨ All selected examples passed!"));
-  } else {
-    p.outro(pc.yellow("Some examples need attention"));
-  }
+  showSummary(summary);
 }
 
 // =============================================================================
 // CLI Entry Point
 // =============================================================================
+
+function showHelp(): void {
+  p.intro(pc.cyan("🔧 FHEVM Maintenance Tools"));
+  p.log.message("");
+  p.log.message(pc.bold("Available commands:"));
+  p.log.message("");
+  p.log.message(`  ${pc.cyan("test-all")}  Test examples`);
+  p.log.message("");
+  p.log.message(pc.bold("Usage:"));
+  p.log.message(pc.dim("  npm run test:all"));
+  p.log.message(pc.dim("  npm run test:all fhe-counter,fhe-add"));
+  p.outro("");
+}
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
@@ -240,26 +353,13 @@ async function main(): Promise<void> {
 
   switch (command) {
     case "test-all": {
-      // Check for CLI examples: npm run test-all fhe-counter,fhe-add
       const exampleArg = args[1];
       const examples = exampleArg ? exampleArg.split(",") : undefined;
       await testAllExamples(examples);
       break;
     }
-
     default:
-      p.intro(pc.cyan("🔧 FHEVM Maintenance Tools"));
-      p.log.message("");
-      p.log.message(pc.bold("Available commands:"));
-      p.log.message("");
-      p.log.message(
-        `  ${pc.cyan("test-all")}  Interactive example selection & testing`
-      );
-      p.log.message("");
-      p.log.message(pc.bold("Usage:"));
-      p.log.message(pc.dim("  npm run test-all"));
-      p.log.message(pc.dim("  npm run test-all fhe-counter,fhe-add"));
-      p.outro("");
+      showHelp();
   }
 }
 

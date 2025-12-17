@@ -23,7 +23,7 @@ npm run create:docs
 | `create:category <name> [output]` | Generate a category project |
 | `create:docs [example]` | Generate GitBook documentation |
 | `create:help` | Show help with all available commands |
-| `test:all` | Test all examples interactively |
+| `test:all` | Test selected examples together in one project |
 | `generate:config` | Auto-generate config from contracts |
 
 ## Project Structure

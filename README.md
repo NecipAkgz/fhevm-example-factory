@@ -359,7 +359,7 @@ npm run create:docs                # All examples
 - `npm run create:category [name] [path]` - Generate category project
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
-- `npm run test:all` - Test all examples (interactive mode)
+- `npm run test:all` - Test selected examples (interactive selection)
 - `npm run test:all fhe-counter,fhe-add`  Direct: (comma-separated)
 - `npm run create:help` - Show help information
 
@@ -413,7 +413,7 @@ This will:
 
 ### 🧪 Test Examples
 
-Generate standalone projects from examples, then compile and run tests to verify compatibility:
+Test selected examples in a unified project for fast, efficient verification:
 
 ```bash
 # Interactive mode - select with space, confirm with enter
@@ -422,6 +422,8 @@ npm run test:all
 # Direct mode - test specific examples
 npm run test:all fhe-counter,fhe-add
 ```
+
+> 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.
 
 ### Updating FHEVM Dependencies
 
