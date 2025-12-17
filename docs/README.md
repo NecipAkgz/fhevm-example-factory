@@ -43,6 +43,10 @@ bunx create-fhevm-example
 {% endtab %}
 {% endtabs %}
 
+{% embed url="https://asciinema.org/a/llxAbOblSJ4CqP4x2sLnHBgCn" %}
+🎬 Watch the CLI in action — scaffold a project in seconds!
+{% endembed %}
+
 ***
 
 ## 🎯 What You Get
@@ -161,6 +165,10 @@ npx create-fhevm-example --add
 3. ✅ Updates `hardhat.config.ts` with FHE imports
 4. ✅ Injects a sample contract and test of your choice
 
+{% embed url="https://asciinema.org/a/LvNAeZh5fOWKhol28r599VSgF" %}
+🔧 Adding FHE to an existing Hardhat project
+{% endembed %}
+
 ***
 
 ## 🔄 How It Works
@@ -240,6 +248,61 @@ Open `contracts/` and start writing your privacy-preserving logic!
 
 ***
 
+## ❓ Frequently Asked Questions
+
+<details>
+<summary><strong>Does this work with existing Hardhat projects?</strong></summary>
+
+Yes! Use the `--add` flag inside your project directory. The CLI will detect your Hardhat setup and inject FHE dependencies automatically.
+
+```bash
+cd my-existing-project
+npx create-fhevm-example --add
+```
+</details>
+
+<details>
+<summary><strong>Do I need to install anything globally?</strong></summary>
+
+No! Just use `npx` (comes with Node.js). The CLI runs directly without any global installation.
+</details>
+
+<details>
+<summary><strong>What Node.js version is required?</strong></summary>
+
+Node.js **v18.0.0** or higher is required. We recommend using the latest LTS version.
+</details>
+
+<details>
+<summary><strong>Can I use this offline?</strong></summary>
+
+The CLI downloads templates from GitHub, so an internet connection is required for the initial scaffold. After that, your project works fully offline.
+</details>
+
+<details>
+<summary><strong>How do I run tests after scaffolding?</strong></summary>
+
+Simply run these commands in your new project:
+
+```bash
+npm install
+npm run compile
+npm run test
+```
+</details>
+
+<details>
+<summary><strong>What networks are supported?</strong></summary>
+
+Projects are pre-configured for:
+- **Local** (Hardhat Network with FHEVM mock)
+- **Zama Devnet** (Sepolia-based testnet)
+
+You can add more networks in `hardhat.config.ts`.
+</details>
+
+***
+
 ## 📚 Learn More
 
 <table data-card-size="large" data-view="cards">
@@ -252,11 +315,11 @@ Open `contracts/` and start writing your privacy-preserving logic!
 <tbody>
 <tr>
 <td><strong>📖 FHEVM Documentation</strong></td>
-<td>Deep dive into Fully Homomorphic Encryption on the blockchain.<br><a href="https://docs.zama.ai/fhevm">docs.zama.ai/fhevm</a></td>
+<td>Deep dive into Fully Homomorphic Encryption on the blockchain.<br><a href="https://docs.zama.org/protocol/">docs.zama.org/protocol/</a></td>
 </tr>
 <tr>
 <td><strong>💻 GitHub Repository</strong></td>
-<td>Star us, report issues, or contribute!<br><a href="https://github.com/zama-ai/fhevm">github.com/zama-ai/fhevm</a></td>
+<td>Star us, report issues, or contribute!<br><a href="https://github.com/NecipAkgz/fhevm-example-factory">github.com/NecipAkgz/fhevm-example-factory</a></td>
 </tr>
 </tbody>
 </table>
