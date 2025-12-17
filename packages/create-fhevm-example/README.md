@@ -8,6 +8,8 @@ Create FHEVM example projects with a single command.
 npx create-fhevm-example
 ```
 
+![🎬 CLI Demo](https://i.ibb.co/d4YWwh7V/package.gif)
+
 This launches an interactive CLI that guides you through creating a project.
 
 ## Direct Mode

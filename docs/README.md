@@ -43,9 +43,7 @@ bunx create-fhevm-example
 {% endtab %}
 {% endtabs %}
 
-{% embed url="https://asciinema.org/a/llxAbOblSJ4CqP4x2sLnHBgCn" %}
-🎬 Watch the CLI in action — scaffold a project in seconds!
-{% endembed %}
+![🎬 Watch the CLI in action — scaffold a project in seconds!](https://i.ibb.co/d4YWwh7V/package.gif)
 
 ***
 
@@ -165,9 +163,7 @@ npx create-fhevm-example --add
 3. ✅ Updates `hardhat.config.ts` with FHE imports
 4. ✅ Injects a sample contract and test of your choice
 
-{% embed url="https://asciinema.org/a/LvNAeZh5fOWKhol28r599VSgF" %}
-🔧 Adding FHE to an existing Hardhat project
-{% endembed %}
+![🔧 Adding FHE to an existing Hardhat project](https://i.ibb.co/LXjWHvH0/add.gif)
 
 ***
 

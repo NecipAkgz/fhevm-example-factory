@@ -73,7 +73,7 @@ The interactive CLI now features **category-first browsing**:
 - Browse only the examples you're interested in
 
 <p align="left">
-  <img src="https://i.ibb.co/sdYVXFXm/create-cli.gif" alt="Interactive CLI Demo" width="400px" />
+  <img src="https://i.ibb.co/p6PGxGWS/main.gif" alt="Interactive CLI Demo" width="600px" />
 </p>
 
 ### 3. Quick Commands
