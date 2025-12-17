@@ -1,5 +1,7 @@
 # FHEVM Examples Documentation
 
+- [🔐 Create FHEVM Example](cli-tool.md)
+
 ## Basic
 
 - [FHE Counter](basic/fhe-counter.md)
