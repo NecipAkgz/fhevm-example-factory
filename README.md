@@ -23,7 +23,7 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ### ✨ Key Features
 
-- 🎯 **20+ Examples** - Comprehensive collection covering encryption, decryption, operations, and OpenZeppelin integration
+- 🎯 **28+ Examples** - Comprehensive collection covering encryption, decryption, operations, and OpenZeppelin integration
 - 🛠️ **Interactive CLI** - Modern command-line interface with beautiful prompts
 - 📦 **Standalone Projects** - Generate complete, runnable Hardhat projects from any example
 - 📚 **Auto Documentation** - Generate GitBook-formatted documentation automatically
