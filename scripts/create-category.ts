@@ -157,7 +157,7 @@ async function promptSelectCategoryProject(): Promise<string | symbol> {
  */
 export async function handleInteractiveCategory(): Promise<void> {
   console.clear();
-  p.intro(pc.bgCyan(pc.black(" 🔐 Create Category Project ")));
+  p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory - Category ")));
 
   // Step 1: Select category
   const category = await promptSelectCategoryProject();
@@ -202,7 +202,7 @@ export async function handleInteractiveCategory(): Promise<void> {
 
   try {
     await createCategoryProject(category as string, resolvedOutput);
-    s.stop("Project created successfully!");
+    s.stop("🎉 Project scaffolded successfully!");
 
     const categoryConfig = CATEGORIES[category as string];
     const relativePath = path.relative(process.cwd(), resolvedOutput);

@@ -422,6 +422,9 @@ npm run test:all
 # Direct mode - test specific examples
 npm run test:all fhe-counter,fhe-add
 ```
+<p align="left">
+  <img src="https://i.ibb.co/0pJfbPZP/test-all.gif" alt="Interactive CLI Demo" width="600px" />
+</p>
 
 > 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.
 

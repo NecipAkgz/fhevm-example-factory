@@ -283,7 +283,7 @@ export async function addExampleFiles(
  */
 export async function runAddMode(targetDir?: string): Promise<void> {
   console.clear();
-  p.intro(pc.bgCyan(pc.black(" 🔐 Add FHEVM to Existing Project ")));
+  p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory - Add Mode ")));
 
   // Determine target directory
   const projectDir = targetDir || process.cwd();

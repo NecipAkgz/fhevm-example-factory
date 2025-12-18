@@ -193,7 +193,7 @@ async function promptSelectExampleFromCategory(
  */
 export async function handleInteractiveExample(): Promise<void> {
   console.clear();
-  p.intro(pc.bgCyan(pc.black(" 🔐 Create FHEVM Example ")));
+  p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory ")));
 
   // Step 1: Select category
   const selectedCategory = await promptSelectCategory();
@@ -247,7 +247,7 @@ export async function handleInteractiveExample(): Promise<void> {
 
   try {
     await createSingleExample(example as string, resolvedOutput);
-    s.stop("Project created successfully!");
+    s.stop("🎉 Project scaffolded successfully!");
 
     const exampleConfig = EXAMPLES[example as string];
     const relativePath = path.relative(process.cwd(), resolvedOutput);

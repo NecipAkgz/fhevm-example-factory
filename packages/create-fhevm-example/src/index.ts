@@ -63,7 +63,7 @@ import { runAddMode } from "./add-mode.js";
  */
 async function runInteractiveMode(): Promise<void> {
   console.clear();
-  p.intro(pc.bgCyan(pc.black(" 🔐 Create FHEVM Example ")));
+  p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory ")));
 
   // Step 1: Choose mode (single example or category)
   const mode = await p.select({
@@ -161,7 +161,7 @@ async function runInteractiveMode(): Promise<void> {
     s.message("Initializing submodules...");
     await initSubmodule(tempRepoPath);
 
-    s.message("Creating project...");
+    s.message("Scaffolding your confidential project...");
     if (mode === "single") {
       await createSingleExample(
         exampleName as string,
@@ -176,7 +176,7 @@ async function runInteractiveMode(): Promise<void> {
       );
     }
 
-    s.stop("Project created successfully!");
+    s.stop("🎉 Project scaffolded successfully!");
 
     const relativePath = path.relative(process.cwd(), resolvedOutput);
     p.log.success(`📁 Created: ${pc.cyan(relativePath)}`);

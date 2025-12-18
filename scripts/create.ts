@@ -11,7 +11,7 @@ async function main(): Promise<void> {
 
   p.intro(
     pc.bgCyan(
-      pc.black(` 🔐 FHEVM Example Factory (${Object.keys(EXAMPLES).length}) `)
+      pc.black(` ⚡ FHEVM Example Factory (${Object.keys(EXAMPLES).length}) `)
     )
   );
 

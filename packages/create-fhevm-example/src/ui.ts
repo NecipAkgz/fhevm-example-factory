@@ -150,7 +150,7 @@ export async function runInstallAndTest(projectPath: string): Promise<void> {
     }
   }
 
-  p.log.success(pc.green("All steps completed successfully!"));
+  p.log.success(pc.green("🔐 All encryption tests passed!"));
 }
 
 /**

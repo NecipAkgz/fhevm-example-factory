@@ -172,7 +172,7 @@ async function getExamplesToTest(cliExamples?: string[]): Promise<string[]> {
 // =============================================================================
 
 /**
- * Run install, compile, and test steps
+ * Run install, compile, and test steps with real-time per-file output
  */
 async function runTestPipeline(
   tempDir: string,
@@ -186,6 +186,7 @@ async function runTestPipeline(
     failedTests: [],
   };
 
+  // Step 1: Install dependencies
   const s1 = p.spinner();
   s1.start("Installing dependencies...");
   const installResult = await runCommandWithStatus("npm", ["install"], tempDir);
@@ -196,6 +197,7 @@ async function runTestPipeline(
   }
   s1.stop(pc.green("✓ Dependencies installed"));
 
+  // Step 2: Compile contracts
   const s2 = p.spinner();
   s2.start("Compiling contracts...");
   const compileResult = await runCommandWithStatus(
@@ -211,29 +213,68 @@ async function runTestPipeline(
   s2.stop(pc.green("✓ Contracts compiled"));
   summary.compileSuccess = true;
 
-  const s3 = p.spinner();
-  s3.start("Running tests...");
-  const testResult = await runCommandWithStatus(
-    "npm",
-    ["run", "test"],
-    tempDir
-  );
+  // Step 3: Get test files and run each one
+  const testDir = path.join(tempDir, "test");
+  const testFiles = fs
+    .readdirSync(testDir)
+    .filter((f) => f.endsWith(".test.ts") || f.endsWith(".ts"))
+    .filter((f) => f !== "types.ts");
 
-  if (testResult.success) {
-    const testSummary = extractTestResults(testResult.output);
-    s3.stop(pc.green(`✓ ${testSummary || "All tests passed"}`));
-    summary.passed = exampleCount;
-  } else {
-    s3.stop(pc.yellow("⚠ Some tests failed"));
-    const failedMatches = testResult.output.match(/\d+\)\s+([^\n]+)/g);
-    if (failedMatches) {
-      summary.failedTests = failedMatches.map((m) =>
-        m.replace(/^\d+\)\s+/, "")
-      );
-      summary.failed = summary.failedTests.length;
-      summary.passed = exampleCount - summary.failed;
+  if (testFiles.length === 0) {
+    p.log.warning("No test files found");
+    return summary;
+  }
+
+  p.log.message("");
+  p.log.message(pc.bold(`🧪 Running ${testFiles.length} test files:`));
+  p.log.message("");
+
+  let passedTests = 0;
+  let failedTests = 0;
+  const startTime = Date.now();
+
+  for (let i = 0; i < testFiles.length; i++) {
+    const testFile = testFiles[i];
+    const progress = `[${i + 1}/${testFiles.length}]`;
+
+    // Show current test being run
+    process.stdout.write(`  ${pc.dim(progress)} ${testFile} `);
+
+    const testStart = Date.now();
+    const result = await runCommandWithStatus(
+      "npx",
+      ["hardhat", "test", `test/${testFile}`],
+      tempDir
+    );
+    const duration = ((Date.now() - testStart) / 1000).toFixed(1);
+
+    if (result.success) {
+      const testResults = extractTestResults(result.output);
+      const resultInfo = testResults
+        ? pc.dim(`(${testResults.replace(" ✓", "")})`)
+        : "";
+      console.log(pc.green(`✓`) + ` ${pc.dim(duration + "s")} ${resultInfo}`);
+      passedTests++;
+    } else {
+      console.log(pc.red(`✗`) + ` ${pc.dim(duration + "s")}`);
+      failedTests++;
+      summary.failedTests.push(testFile);
+
+      // Show brief error
+      const errorMsg = extractErrorMessage(result.output);
+      if (errorMsg) {
+        const shortError = errorMsg.split("\n")[0].slice(0, 80);
+        console.log(`    ${pc.red(pc.dim(shortError))}`);
+      }
     }
   }
+
+  const totalDuration = ((Date.now() - startTime) / 1000).toFixed(1);
+  p.log.message("");
+  p.log.message(pc.dim(`Completed in ${totalDuration}s`));
+
+  summary.passed = passedTests;
+  summary.failed = failedTests;
 
   return summary;
 }
