@@ -1,9 +1,36 @@
+# Environment
 .env
+.env.local
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Test artifacts
 test-output/
+.test-temp/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# AI assistants
 .claude/
 .agent/
-.vscode/
-.DS_Store
-.idea/
+.gemini/
 CLAUDE.md
-node_modules/
+
+# Hardhat
+artifacts/
+cache/
+coverage/
+types/
+
+# Logs
+*.log
+npm-debug.log*

@@ -8,14 +8,6 @@
  *   npx create-fhevm-example --example <name>   # Create single example
  *   npx create-fhevm-example --category <name>  # Create category project
  *   npx create-fhevm-example --add              # Add to existing project
- *
- * This is the main entry point - similar to scripts/create.ts in main project.
- * Actual logic is split into:
- *   - builders.ts   (createSingleExample, createCategoryProject)
- *   - ui.ts         (prompts + commands)
- *   - utils.ts      (file operations + constants + utilities)
- *   - config.ts     (examples & categories)
- *   - add-mode.ts   (add to existing project)
  */
 
 import * as p from "@clack/prompts";
@@ -25,7 +17,7 @@ import * as path from "path";
 import * as os from "os";
 
 // Config
-import { EXAMPLES, CATEGORIES } from "./config.js";
+import { EXAMPLES, CATEGORIES } from "./config";
 
 // Utilities
 import {
@@ -36,10 +28,10 @@ import {
   validateExample,
   validateCategory,
   validateDirectoryNotExists,
-} from "./utils.js";
+} from "./utils";
 
 // Builders
-import { createSingleExample, createCategoryProject } from "./builders.js";
+import { createSingleExample, createCategoryProject } from "./builders";
 
 // UI (Prompts + Commands)
 import {
@@ -48,24 +40,19 @@ import {
   promptSelectCategoryProject,
   askInstallAndTest,
   runInstallAndTest,
-} from "./ui.js";
+} from "./ui";
 
 // Add Mode
-import { runAddMode } from "./add-mode.js";
+import { runAddMode } from "./add-mode";
 
 // =============================================================================
 // INTERACTIVE MODE
 // =============================================================================
 
-/**
- * Main interactive mode flow
- * Guides user through project creation with prompts
- */
 async function runInteractiveMode(): Promise<void> {
   console.clear();
   p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory ")));
 
-  // Step 1: Choose mode (single example or category)
   const mode = await p.select({
     message: "What would you like to create?",
     options: [
@@ -91,7 +78,6 @@ async function runInteractiveMode(): Promise<void> {
   let categoryName: string | symbol = "";
   let projectName: string | symbol = "";
 
-  // Step 2: Select based on mode
   if (mode === "single") {
     const selectedCategory = await promptSelectCategory();
     if (p.isCancel(selectedCategory)) {
@@ -131,7 +117,6 @@ async function runInteractiveMode(): Promise<void> {
     process.exit(0);
   }
 
-  // Step 3: Output directory
   const outputDir = await p.text({
     message: "Output directory:",
     placeholder: `./${projectName}`,
@@ -150,7 +135,6 @@ async function runInteractiveMode(): Promise<void> {
     process.exit(1);
   }
 
-  // Step 4: Create project
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
   const s = p.spinner();
 
@@ -216,9 +200,6 @@ async function runInteractiveMode(): Promise<void> {
 // DIRECT MODE (CLI Arguments)
 // =============================================================================
 
-/**
- * Shows help information for CLI usage
- */
 function showHelp(): void {
   console.log(`
 ${pc.bgCyan(pc.black(pc.bold(" 🔐 create-fhevm-example ")))}
@@ -289,9 +270,6 @@ ${pc.dim("📚 Documentation:")} ${pc.blue(
 `);
 }
 
-/**
- * Parses CLI arguments into a key-value object
- */
 function parseArgs(args: string[]): Record<string, string | boolean> {
   const parsed: Record<string, string | boolean> = {};
 
@@ -315,9 +293,6 @@ function parseArgs(args: string[]): Record<string, string | boolean> {
   return parsed;
 }
 
-/**
- * Handles direct mode (CLI with arguments, non-interactive)
- */
 async function runDirectMode(args: string[]): Promise<void> {
   const parsedArgs = parseArgs(args);
 
@@ -326,7 +301,6 @@ async function runDirectMode(args: string[]): Promise<void> {
     return;
   }
 
-  // Handle --add mode
   if (parsedArgs["add"]) {
     const targetDir = parsedArgs["target"] as string | undefined;
     await runAddMode(targetDir);
@@ -338,7 +312,6 @@ async function runDirectMode(args: string[]): Promise<void> {
   const outputDir = parsedArgs["output"] as string;
   const shouldInstall = parsedArgs["install"] === true;
 
-  // Validation
   if (!exampleName && !categoryName) {
     log.error(ERROR_MESSAGES.EXAMPLE_REQUIRED);
     showHelp();
@@ -380,7 +353,6 @@ async function runDirectMode(args: string[]): Promise<void> {
     process.exit(1);
   }
 
-  // Create project
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
 
   try {

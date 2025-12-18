@@ -1,42 +1,57 @@
 {
-  "name": "fhevm-examples-generator",
-  "version": "1.0.0",
-  "description": "Tooling for generating standalone FHEVM example repositories and documentation",
+  "name": "create-fhevm-example",
+  "version": "1.3.0",
+  "description": "Create FHEVM example projects with a single command - A comprehensive toolkit for building privacy-preserving smart contracts",
+  "bin": {
+    "create-fhevm-example": "./dist/scripts/index.js"
+  },
+  "main": "./dist/scripts/index.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "create": "npx ts-node scripts/create.ts",
-    "create:example": "npx ts-node scripts/create-example.ts",
-    "create:category": "npx ts-node scripts/create-category.ts",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "create": "npx ts-node scripts/index.ts",
+    "create:example": "npx ts-node scripts/index.ts --example",
+    "create:category": "npx ts-node scripts/index.ts --category",
     "create:docs": "npx ts-node scripts/generate-docs.ts",
-    "create:help": "npx ts-node scripts/create.ts --help",
+    "create:help": "npx ts-node scripts/index.ts --help",
     "test:all": "npx ts-node scripts/maintenance.ts test-all",
     "generate:config": "npx ts-node scripts/generate-config.ts",
-    "postinstall": "git submodule update --init --recursive"
+
+    "prepublishOnly": "npm run build",
+    "prepack": "mv README.md GITHUB_README.md && cp NPM_README.md README.md",
+    "postpack": "mv GITHUB_README.md README.md"
   },
-  "workspaces": [
-    "packages/*"
-  ],
   "keywords": [
     "fhevm",
     "zama",
     "encryption",
     "blockchain",
     "examples",
-    "documentation",
-    "generator"
+    "cli",
+    "scaffold",
+    "create",
+    "privacy",
+    "fhe"
   ],
   "author": "Zama",
   "license": "BSD-3-Clause-Clear",
   "engines": {
     "node": ">=20"
   },
+  "homepage": "https://necips-organization-1.gitbook.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/NecipAkgz/fhevm-example-factory"
   },
-  "devDependencies": {
+  "dependencies": {
     "@clack/prompts": "^0.11.0",
+    "picocolors": "^1.1.1"
+  },
+  "devDependencies": {
     "@types/node": "^20.19.8",
-    "picocolors": "^1.1.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
   }

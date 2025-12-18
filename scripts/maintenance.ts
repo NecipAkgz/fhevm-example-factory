@@ -15,7 +15,7 @@ import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 
-import { EXAMPLES, getExampleNames } from "./shared/config";
+import { EXAMPLES, getExampleNames } from "./config";
 import {
   getRootDir,
   getContractName,
@@ -23,12 +23,10 @@ import {
   getTemplateDir,
   cleanupTemplate,
   TEST_TYPES_CONTENT,
-} from "./shared/utils";
-import {
   runCommandWithStatus,
   extractErrorMessage,
   extractTestResults,
-} from "./shared/commands";
+} from "./utils";
 
 // =============================================================================
 // Types
@@ -46,9 +44,6 @@ interface TestSummary {
 // Project Builder
 // =============================================================================
 
-/**
- * Creates a test project with selected examples
- */
 async function createTestProject(
   exampleNames: string[],
   outputDir: string
@@ -132,9 +127,6 @@ async function createTestProject(
 // Example Selection
 // =============================================================================
 
-/**
- * Get examples to test from CLI args or interactive prompt
- */
 async function getExamplesToTest(cliExamples?: string[]): Promise<string[]> {
   const allExamples = getExampleNames();
 
@@ -171,9 +163,6 @@ async function getExamplesToTest(cliExamples?: string[]): Promise<string[]> {
 // Test Runner
 // =============================================================================
 
-/**
- * Run install, compile, and test steps with real-time per-file output
- */
 async function runTestPipeline(
   tempDir: string,
   exampleCount: number
@@ -186,7 +175,6 @@ async function runTestPipeline(
     failedTests: [],
   };
 
-  // Step 1: Install dependencies
   const s1 = p.spinner();
   s1.start("Installing dependencies...");
   const installResult = await runCommandWithStatus("npm", ["install"], tempDir);
@@ -197,7 +185,6 @@ async function runTestPipeline(
   }
   s1.stop(pc.green("✓ Dependencies installed"));
 
-  // Step 2: Compile contracts
   const s2 = p.spinner();
   s2.start("Compiling contracts...");
   const compileResult = await runCommandWithStatus(
@@ -213,7 +200,6 @@ async function runTestPipeline(
   s2.stop(pc.green("✓ Contracts compiled"));
   summary.compileSuccess = true;
 
-  // Step 3: Get test files and run each one
   const testDir = path.join(tempDir, "test");
   const testFiles = fs
     .readdirSync(testDir)
@@ -237,7 +223,6 @@ async function runTestPipeline(
     const testFile = testFiles[i];
     const progress = `[${i + 1}/${testFiles.length}]`;
 
-    // Show current test being run
     process.stdout.write(`  ${pc.dim(progress)} ${testFile} `);
 
     const testStart = Date.now();
@@ -260,7 +245,6 @@ async function runTestPipeline(
       failedTests++;
       summary.failedTests.push(testFile);
 
-      // Show brief error
       const errorMsg = extractErrorMessage(result.output);
       if (errorMsg) {
         const shortError = errorMsg.split("\n")[0].slice(0, 80);
@@ -279,9 +263,6 @@ async function runTestPipeline(
   return summary;
 }
 
-/**
- * Display test summary
- */
 function showSummary(summary: TestSummary): void {
   p.log.message("");
   p.log.message(pc.bold("📊 Test Summary"));
@@ -329,10 +310,7 @@ function showSummary(summary: TestSummary): void {
 // Main Command
 // =============================================================================
 
-/**
- * Test selected examples
- */
-async function testAllExamples(cliExamples?: string[]): Promise<void> {
+export async function testAllExamples(cliExamples?: string[]): Promise<void> {
   p.intro(pc.cyan("🧪 FHEVM Example Tester"));
 
   const examplesToTest = await getExamplesToTest(cliExamples);
@@ -404,4 +382,8 @@ async function main(): Promise<void> {
   }
 }
 
-main().catch(console.error);
+// Only run if this is the main module
+const isMainModule = process.argv[1]?.includes("maintenance");
+if (isMainModule) {
+  main().catch(console.error);
+}

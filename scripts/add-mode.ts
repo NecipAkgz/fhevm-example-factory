@@ -1,9 +1,13 @@
+/**
+ * Add Mode - Add FHEVM to existing Hardhat projects
+ */
+
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
-import { EXAMPLES } from "./config.js";
-import { downloadFileFromGitHub, getContractName } from "./utils.js";
+import { EXAMPLES } from "./config";
+import { downloadFileFromGitHub, getContractName } from "./utils";
 
 // =============================================================================
 // PROJECT DETECTION
@@ -15,7 +19,7 @@ import { downloadFileFromGitHub, getContractName } from "./utils.js";
 export function detectHardhatProject(targetDir: string): boolean {
   const packageJsonPath = path.join(targetDir, "package.json");
   const hardhatConfigTs = path.join(targetDir, "hardhat.config.ts");
-  const hardhatConfigJs = path.join(targetDir, "hardhat.config.js");
+  const hardhatConfigJs = path.join(targetDir, "hardhat.config");
 
   if (!fs.existsSync(packageJsonPath)) {
     return false;
@@ -46,14 +50,12 @@ export function updatePackageJson(targetDir: string): void {
   const packageJsonPath = path.join(targetDir, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 
-  // Add dependencies
   packageJson.dependencies = {
     ...packageJson.dependencies,
     "encrypted-types": "^0.0.4",
     "@fhevm/solidity": "^0.9.1",
   };
 
-  // Add devDependencies
   packageJson.devDependencies = {
     ...packageJson.devDependencies,
     "@fhevm/hardhat-plugin": "^0.3.0-1",
@@ -75,7 +77,7 @@ export function updatePackageJson(targetDir: string): void {
  */
 export function updateHardhatConfig(targetDir: string): void {
   const configPathTs = path.join(targetDir, "hardhat.config.ts");
-  const configPathJs = path.join(targetDir, "hardhat.config.js");
+  const configPathJs = path.join(targetDir, "hardhat.config");
 
   const actualPath = fs.existsSync(configPathTs)
     ? configPathTs
@@ -89,15 +91,11 @@ export function updateHardhatConfig(targetDir: string): void {
 
   let content = fs.readFileSync(actualPath, "utf-8");
 
-  // Check if already has FHEVM plugin
   if (content.includes("@fhevm/hardhat-plugin")) {
-    return; // Already configured
+    return;
   }
 
-  // Add import at the top (after other imports)
   const importStatement = 'import "@fhevm/hardhat-plugin";\n';
-
-  // Find the last import statement
   const lines = content.split("\n");
   let lastImportIndex = -1;
 
@@ -111,7 +109,6 @@ export function updateHardhatConfig(targetDir: string): void {
   if (lastImportIndex >= 0) {
     lines.splice(lastImportIndex + 1, 0, importStatement);
   } else {
-    // No imports found, add at the beginning
     lines.unshift(importStatement);
   }
 
@@ -175,7 +172,6 @@ export async function addExampleFiles(
       p.log.success(`Overwritten: ${contractName}.sol`);
     }
   } else {
-    // Ensure contracts directory exists
     const contractsDir = path.join(targetDir, "contracts");
     if (!fs.existsSync(contractsDir)) {
       fs.mkdirSync(contractsDir, { recursive: true });
@@ -208,7 +204,6 @@ export async function addExampleFiles(
       p.log.success(`Overwritten: ${testFileName}`);
     }
   } else {
-    // Ensure test directory exists
     const testDir = path.join(targetDir, "test");
     if (!fs.existsSync(testDir)) {
       fs.mkdirSync(testDir, { recursive: true });
@@ -228,7 +223,6 @@ export async function addExampleFiles(
       const depDestDir = path.dirname(depDestPath);
       const depName = path.basename(depPath);
 
-      // Create directory if needed
       if (!fs.existsSync(depDestDir)) {
         fs.mkdirSync(depDestDir, { recursive: true });
       }
@@ -285,11 +279,9 @@ export async function runAddMode(targetDir?: string): Promise<void> {
   console.clear();
   p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory - Add Mode ")));
 
-  // Determine target directory
   const projectDir = targetDir || process.cwd();
   const absoluteDir = path.resolve(projectDir);
 
-  // Step 1: Detect Hardhat project
   const s = p.spinner();
   s.start("Detecting Hardhat project...");
 
@@ -306,7 +298,6 @@ export async function runAddMode(targetDir?: string): Promise<void> {
 
   s.stop(pc.green("✓ Valid Hardhat project detected"));
 
-  // Step 2: Select example
   const exampleName = await p.select({
     message: "Which FHEVM example would you like to add?",
     options: Object.entries(EXAMPLES).map(([key, config]) => ({
@@ -323,7 +314,6 @@ export async function runAddMode(targetDir?: string): Promise<void> {
 
   p.log.message("");
 
-  // Step 3: Update package.json
   s.start("Updating package.json with FHEVM dependencies...");
   try {
     updatePackageJson(absoluteDir);
@@ -333,7 +323,6 @@ export async function runAddMode(targetDir?: string): Promise<void> {
     throw error;
   }
 
-  // Step 4: Update hardhat.config
   s.start("Updating hardhat.config with FHEVM plugin...");
   try {
     updateHardhatConfig(absoluteDir);
@@ -343,7 +332,6 @@ export async function runAddMode(targetDir?: string): Promise<void> {
     throw error;
   }
 
-  // Step 5: Add example files
   p.log.message("");
   p.log.message(pc.bold("Adding example files..."));
   try {
@@ -353,7 +341,6 @@ export async function runAddMode(targetDir?: string): Promise<void> {
     throw error;
   }
 
-  // Success!
   p.log.message("");
   p.log.success(pc.green("✨ FHEVM capabilities added successfully!"));
   p.log.message("");

@@ -1,0 +1,35 @@
+# Source files - only dist/ is published
+scripts/
+*.ts
+tsconfig.json
+
+# Development
+.git
+.gitignore
+.gitmodules
+node_modules/
+
+# Test & temp
+.test-temp/
+test-output/
+
+# Build artifacts
+*.log
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# AI assistants
+.gemini/
+.claude/
+.agent/
+
+# Project files not needed in NPM
+contracts/
+test/
+docs/
+fhevm-hardhat-template/
+GITHUB_README.md
+NPM_README.md

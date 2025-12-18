@@ -4,25 +4,16 @@
  * Auto-Discovery Config Generator
  *
  * Scans contracts/ directory and generates config.ts automatically
- * Extracts metadata from:
- * - @notice tags in contract files
- * - Folder structure for categories
- * - Matching test files
+ * Extracts metadata from @notice tags and folder structure.
  */
 
 import * as fs from "fs";
 import * as path from "path";
-import {
-  contractNameToExampleName,
-  contractNameToTitle,
-  formatCategoryName,
-  toKebabCase,
-} from "./shared/utils";
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const CONTRACTS_DIR = path.join(ROOT_DIR, "contracts");
 const TEST_DIR = path.join(ROOT_DIR, "test");
-const OUTPUT_FILE = path.join(ROOT_DIR, "scripts/shared/config.ts");
+const OUTPUT_FILE = path.join(ROOT_DIR, "cli/config.ts");
 
 interface ContractInfo {
   name: string;
@@ -37,12 +28,39 @@ interface ContractInfo {
 }
 
 // =============================================================================
+// Naming Utilities
+// =============================================================================
+
+function toKebabCase(str: string): string {
+  return str
+    .replace(/([a-z])([A-Z])/g, "$1-$2")
+    .replace(/([0-9])([A-Z])/g, "$1-$2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
+    .toLowerCase();
+}
+
+function contractNameToExampleName(contractName: string): string {
+  return toKebabCase(contractName);
+}
+
+function contractNameToTitle(contractName: string): string {
+  return contractName
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/([0-9])([A-Z])/g, "$1 $2")
+    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
+}
+
+function formatCategoryName(folderName: string): string {
+  return folderName
+    .replace(/\bfhe\b/gi, "FHE")
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+// =============================================================================
 // Contract Analysis
 // =============================================================================
 
-/**
- * Extract @notice from contract file
- */
 function extractNotice(contractPath: string): string | null {
   const content = fs.readFileSync(contractPath, "utf-8");
   const noticeRegex =
@@ -51,9 +69,6 @@ function extractNotice(contractPath: string): string | null {
   return match && match[1] ? match[1].trim() : null;
 }
 
-/**
- * Read existing config to preserve manual npmDependencies and dependencies
- */
 function readExistingConfig(): Record<string, any> {
   try {
     if (!fs.existsSync(OUTPUT_FILE)) {
@@ -68,24 +83,15 @@ function readExistingConfig(): Record<string, any> {
   }
 }
 
-/**
- * Get category from file path (convention-based)
- * Examples:
- *   contracts/basic/File.sol → "Basic"
- *   contracts/basic/encrypt/File.sol → "Basic - Encryption"
- */
 function getCategoryFromPath(relativePath: string): string {
   const parts = relativePath.split("/");
-  parts.pop(); // Remove filename
+  parts.pop();
 
   if (parts.length === 0) return "Uncategorized";
   if (parts.length === 1) return formatCategoryName(parts[0]);
   return parts.map(formatCategoryName).join(" - ");
 }
 
-/**
- * Find matching test file
- */
 function findTestFile(contractPath: string): string | null {
   const relativePath = path.relative(CONTRACTS_DIR, contractPath);
   const testPath = path.join(TEST_DIR, relativePath.replace(".sol", ".ts"));
@@ -94,9 +100,6 @@ function findTestFile(contractPath: string): string | null {
     : null;
 }
 
-/**
- * Get docs output path based on contract path
- */
 function getDocsOutput(contractPath: string): string {
   const relativePath = contractPath
     .replace(/^contracts\//, "")
@@ -104,13 +107,8 @@ function getDocsOutput(contractPath: string): string {
   return `docs/${toKebabCase(relativePath)}.md`;
 }
 
-/**
- * Scan contracts directory recursively
- */
 function scanContracts(): ContractInfo[] {
   const contracts: ContractInfo[] = [];
-
-  // Read existing config to preserve manual dependencies
   const existingConfig = readExistingConfig();
 
   function scan(dir: string) {
@@ -150,13 +148,11 @@ function scanContracts(): ContractInfo[] {
           docsOutput: getDocsOutput(`contracts/${relativePath}`),
         };
 
-        // Preserve manual npmDependencies from existing config
         const existingExample = existingConfig[exampleName];
         if (existingExample?.npmDependencies) {
           contractInfo.npmDependencies = existingExample.npmDependencies;
         }
 
-        // Preserve manual dependencies from existing config
         if (existingExample?.dependencies) {
           contractInfo.dependencies = existingExample.dependencies;
         }
@@ -170,9 +166,10 @@ function scanContracts(): ContractInfo[] {
   return contracts;
 }
 
-/**
- * Generate EXAMPLES config
- */
+// =============================================================================
+// Config Generation
+// =============================================================================
+
 function generateExamplesConfig(contracts: ContractInfo[]): string {
   const entries = contracts.map((c) => {
     const npmDepsField = c.npmDependencies
@@ -206,9 +203,6 @@ function generateExamplesConfig(contracts: ContractInfo[]): string {
   )}\n};`;
 }
 
-/**
- * Generate CATEGORIES config
- */
 function generateCategoriesConfig(contracts: ContractInfo[]): string {
   const categoryMap: Record<string, ContractInfo[]> = {};
 
@@ -248,14 +242,11 @@ ${contracts}
   )}\n};`;
 }
 
-/**
- * Generate full config file
- */
 function generateConfigFile(contracts: ContractInfo[]): string {
   return `/**
  * ⚠️ AUTO-GENERATED FILE - DO NOT EDIT MANUALLY ⚠️
  *
- * This file is auto-generated by scripts/generate-config.ts
+ * This file is auto-generated by cli/generate-config.ts
  * Run 'npm run generate:config' to regenerate
  */
 
@@ -288,6 +279,14 @@ export interface CategoryConfig {
   /** List of contracts in this category */
   contracts: Array<{ sol: string; test?: string }>;
 }
+
+// =============================================================================
+// GitHub Repository Configuration
+// =============================================================================
+
+export const REPO_URL = "https://github.com/NecipAkgz/fhevm-example-factory";
+export const REPO_BRANCH = "main";
+export const TEMPLATE_SUBMODULE_PATH = "fhevm-hardhat-template";
 
 // =============================================================================
 // Example Configurations
@@ -342,9 +341,10 @@ export function getDocsFileName(exampleName: string): string {
 `;
 }
 
-/**
- * Main function
- */
+// =============================================================================
+// Main
+// =============================================================================
+
 function main() {
   console.log("🔍 Scanning contracts...\n");
 
@@ -352,7 +352,6 @@ function main() {
 
   console.log(`✅ Found ${contracts.length} contracts\n`);
 
-  // Show summary
   const categoryCount: Record<string, number> = {};
   for (const c of contracts) {
     categoryCount[c.category] = (categoryCount[c.category] || 0) + 1;
@@ -371,4 +370,7 @@ function main() {
   console.log(`✅ Config generated: ${path.relative(ROOT_DIR, OUTPUT_FILE)}`);
 }
 
-main();
+const isMainModule = process.argv[1]?.includes("generate-config");
+if (isMainModule) {
+  main();
+}

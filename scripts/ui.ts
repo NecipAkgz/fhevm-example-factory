@@ -2,18 +2,17 @@
  * User Interface - Prompts & Commands
  *
  * Interactive prompts and command execution for CLI.
- * Combines functionality from prompts.ts and commands.ts
  */
 
 import * as p from "@clack/prompts";
 import pc from "picocolors";
-import { EXAMPLES, CATEGORIES } from "./config.js";
+import { EXAMPLES, CATEGORIES } from "./config";
 import {
   CATEGORY_ICON,
   CATEGORY_ORDER,
   runCommand,
   extractTestResults,
-} from "./utils.js";
+} from "./utils";
 
 // =============================================================================
 // Category Helpers
@@ -40,7 +39,6 @@ export function countExamplesPerCategory(): Record<string, number> {
 export async function promptSelectCategory(): Promise<string | symbol> {
   const categoryCounts = countExamplesPerCategory();
 
-  // Get all categories, prioritizing CATEGORY_ORDER, then alphabetically sorted others
   const allCategories = Object.keys(categoryCounts);
   const orderedCategories = [
     ...CATEGORY_ORDER.filter((cat) => allCategories.includes(cat)),

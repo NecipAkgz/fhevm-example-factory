@@ -3,10 +3,7 @@
 /**
  * Generate Documentation - GitBook Documentation Generator
  *
- * Generates GitBook-compatible markdown documentation for FHEVM examples:
- * - Extracts contract and test code
- * - Formats with GitBook tabs and hints
- * - Outputs to docs/ directory
+ * Generates GitBook-compatible markdown documentation for FHEVM examples.
  */
 
 import * as p from "@clack/prompts";
@@ -14,22 +11,17 @@ import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 
-import { EXAMPLES, getDocsFileName } from "./shared/config";
+import { EXAMPLES, getDocsFileName } from "./config";
 import {
   getRootDir,
   getContractName,
   generateGitBookMarkdown,
-} from "./shared/utils";
+} from "./utils";
 
 // =============================================================================
 // Documentation Generator
 // =============================================================================
 
-/**
- * Generates GitBook-compatible documentation for examples
- * @param exampleName - Single example name or "all" for all examples
- * @returns Number of documentation files generated
- */
 async function generateDocumentation(
   exampleName: string | "all"
 ): Promise<number> {
@@ -81,9 +73,6 @@ async function generateDocumentation(
 // Interactive Mode
 // =============================================================================
 
-/**
- * Handles the "Generate documentation" flow
- */
 export async function handleInteractiveDocs(): Promise<void> {
   console.clear();
   p.intro(pc.bgCyan(pc.black(" 📚 Generate Documentation ")));
@@ -155,13 +144,9 @@ export async function handleInteractiveDocs(): Promise<void> {
 // Direct Mode (CLI)
 // =============================================================================
 
-/**
- * Handles direct mode with CLI arguments
- */
 export async function handleDirect(args: string[]): Promise<void> {
   const [target] = args;
 
-  // No argument = generate all docs
   if (!target) {
     console.log(pc.cyan("Generating all documentation..."));
     const count = await generateDocumentation("all");
@@ -169,7 +154,6 @@ export async function handleDirect(args: string[]): Promise<void> {
     return;
   }
 
-  // Specific example name
   if (!EXAMPLES[target]) {
     console.error(pc.red(`Error: Unknown example "${target}"`));
     console.log("Available:", Object.keys(EXAMPLES).join(", "));
@@ -195,6 +179,7 @@ async function main(): Promise<void> {
   }
 }
 
-if (require.main === module) {
+const isMainModule = process.argv[1]?.includes("generate-docs");
+if (isMainModule) {
   main().catch(console.error);
 }
