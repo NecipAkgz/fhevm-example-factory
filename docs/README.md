@@ -163,24 +163,21 @@ npx create-fhevm-example --add
 3. ✅ Updates `hardhat.config.ts` with FHE imports
 4. ✅ Injects a sample contract and test of your choice
 
+
 ![🔧 Adding FHE to an existing Hardhat project](https://i.ibb.co/LXjWHvH0/add.gif)
 
 ***
 
-## 🔄 How It Works
+## ⌨️ CLI Options
 
-```mermaid
-flowchart LR
-    A[🚀 Run CLI] --> B{Select Mode}
-    B -->|Single| C[Choose Example]
-    B -->|Category| D[Choose Category]
-    B -->|Add| E[Detect Project]
-    C --> F[📦 Download Template]
-    D --> F
-    E --> G[🔧 Inject FHE]
-    F --> H[✅ Ready to Build!]
-    G --> H
-```
+| Option | Description |
+| :--- | :--- |
+| `--example <name>` | Create a single example project |
+| `--category <name>` | Create a category project |
+| `--add` | Add FHEVM to existing Hardhat project |
+| `--target <dir>` | Target directory for --add mode |
+| `--output <dir>` | Output directory |
+| `--help` | Show help message |
 
 ***
 

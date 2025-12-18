@@ -1,6 +1,6 @@
 # FHEVM Examples Documentation
 
-- [🔐 Create FHEVM Example](README.md)
+- [🔐 Create FHEVM Example CLI](README.md)
 
 ## Basic
 
