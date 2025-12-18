@@ -19,7 +19,7 @@
 
 ## 📖 Overview
 
-This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama. FHEVM enables Fully Homomorphic Encryption (FHE) operations directly on the blockchain, allowing computations on encrypted data without revealing the underlying values.
+This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama.
 
 ### ✨ Key Features
 
@@ -31,11 +31,11 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ### 🔑 Key Dependencies
 
-- `@fhevm/solidity` (^0.9.1) - Core FHEVM Solidity library
-- `@fhevm/hardhat-plugin` (^0.3.0-1) - Hardhat testing integration
-- `@zama-fhe/relayer-sdk` (^0.3.0-5) - Decryption relayer SDK
-- `hardhat-deploy` (^0.11.45) - Deployment management
-- `encrypted-types` (^0.0.4) - TypeScript encrypted types
+- `@fhevm/solidity` - Core FHEVM Solidity library
+- `@fhevm/hardhat-plugin` - Hardhat testing integration
+- `@zama-fhe/relayer-sdk` - Decryption relayer SDK
+- `hardhat-deploy` - Deployment management
+- `encrypted-types` - TypeScript encrypted types
 
 ---
 
@@ -51,6 +51,8 @@ Before you begin, ensure you have the following installed:
 
 ## 🚀 Quick Start
 
+> Don't want to manage a local repo? [**Jump NPM Guide ➜**](#npm-package-commands)
+> use `npx create-fhevm-example`
 ### 1. Installation
 
 ```bash
@@ -96,52 +98,35 @@ npm run create:docs [example]  # No arg = all docs, with name = specific doc
 npm run create:help
 ```
 
+---
+## 🔄 Maintenance
 
-## 📂 Project Structure
+### 🧪 Test Examples
 
+Test selected examples in a unified project for fast, efficient verification:
+
+```bash
+# Interactive mode - select with space, confirm with enter
+npm run test:all
+
+# Direct mode - test specific examples
+npm run test:all fhe-counter,fhe-add
 ```
-fhevm-examples-generator/
-│
-├── 📁 fhevm-hardhat-template/    # Base Hardhat template (git submodule)
-│   ├── contracts/                # Template contract
-│   ├── test/                     # Template tests
-│   ├── deploy/                   # Deployment scripts
-│   └── hardhat.config.ts         # Hardhat configuration
-│
-├── 📁 contracts/                 # All example contracts
-│   ├── basic/                    # Basic FHE operations
-│   │   ├── FHECounter.sol
-│   │   └── ...
-│   ├── concepts/                 # Critical FHEVM concepts
-│   │   ├── FHEAccessControl.sol
-│   │   └── ...
-│   └── openzeppelin/             # OpenZeppelin integration
-│       ├── ERC7984.sol
-│       └── ...
-│
-├── 📁 test/                      # All test files (mirrors contracts/)
-│
-├── 📁 docs/                      # Generated GitBook documentation
-│
-├── 📁 scripts/                   # Automation tools
-│   ├── create.ts                 # Main CLI entry point
-│   ├── generate-config.ts        # Auto-discover contracts, generate config
-│   ├── maintenance.ts            # Test all examples runner
-│   └── shared/                   # Shared utilities
-│       ├── config.ts             # Example & category configurations
-│       └── utils.ts              # Helper functions
-│
-└── README.md                     # This file
-```
+<p align="left">
+  <img src="https://i.ibb.co/0pJfbPZP/test-all.gif" alt="Interactive CLI Demo" width="600px" />
+</p>
+
+> 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.
 
 ---
+
 
 ## 📋 Available Examples
 
 **28 examples total** - Click to expand each category:
 
 <details>
-<summary><b>🟢 Basic & Encryption Examples (3)</b></summary>
+<summary><b>🔐 Encryption Examples (3)</b></summary>
 
 - `fhe-counter` - Simple encrypted counter demonstrating FHE basics
 - `encrypt-single-value` - FHE encryption mechanism and common pitfalls
@@ -210,23 +195,54 @@ fhevm-examples-generator/
 
 </details>
 
----
-
-## 📦 Categories
-
-Generate entire category projects with multiple related examples:
-
-- **`basic`** (9 examples) - Encryption, decryption, FHE operations
-- **`concepts`** (4 examples) - Access control, proofs, handles, anti-patterns
-- **`operations`** (4 examples) - Arithmetic, comparison, conditionals
-- **`gaming`** (3 examples) - Rock-paper-scissors, lottery, poker
-- **`openzeppelin`** (5 examples) - ERC7984, wrappers, swaps, vesting
-- **`advanced`** (5 examples) - Blind auction, voting, payroll, escrow, KYC
+##### Generate entire category projects with multiple related examples:
 
 ```bash
-npm run create:category basic ./my-basic-project
-npm run create:category gaming ./my-gaming-project
+# npm run create:category [name] [path]
+npm run create:category basic ./my-basic-examples
 ```
+
+---
+
+
+## 📂 Project Structure
+Click to expand: ⬇️
+<details>
+<summary><b>📂 fhevm-examples-generator ⏎</b></summary>
+
+```
+├── 📁 fhevm-hardhat-template/    # Base Hardhat template (git submodule)
+│   ├── contracts/                # Template contract
+│   ├── test/                     # Template tests
+│   ├── deploy/                   # Deployment scripts
+│   └── hardhat.config.ts         # Hardhat configuration
+│
+├── 📁 contracts/                 # All example contracts
+│   ├── basic/                    # Basic FHE operations
+│   │   ├── FHECounter.sol
+│   │   └── ...
+│   ├── concepts/                 # Critical FHEVM concepts
+│   │   ├── FHEAccessControl.sol
+│   │   └── ...
+│   └── openzeppelin/             # OpenZeppelin integration
+│       ├── ERC7984.sol
+│       └── ...
+│
+├── 📁 test/                      # All test files (mirrors contracts/)
+│
+├── 📁 docs/                      # Generated GitBook documentation
+│
+├── 📁 scripts/                   # Automation tools
+│   ├── create.ts                 # Main CLI entry point
+│   ├── generate-config.ts        # Auto-discover contracts, generate config
+│   ├── maintenance.ts            # Test all examples runner
+│   └── shared/                   # Shared utilities
+│       ├── config.ts             # Example & category configurations
+│       └── utils.ts              # Helper functions
+│
+└── README.md                     # This file
+```
+</details>
 
 ---
 
@@ -237,8 +253,6 @@ Empower your development with tools designed to automate the repetitive parts of
 > 📖 For technical details, see [scripts/README.md](scripts/README.md)
 
 ### 1. Standalone Project Generator (`create-example`)
-
-**Best for:** Focusing on a specific concept or starting a new dApp.
 
 Creates a production-ready Hardhat environment tailored for a single example. It handles the heavy lifting:
 
@@ -253,7 +267,6 @@ npm run create:example fhe-counter ./my-counter
 
 ### 2. Category Bundle Generator (`create-category`)
 
-**Best for:** Learning related concepts or testing multiple features at once.
 
 Generates a unified workspace containing all examples from a specific category (e.g., all decryption methods).
 
@@ -266,8 +279,6 @@ npm run create:category openzeppelin ./my-oz-examples
 ```
 
 ### 3. Documentation Engine (`create-docs`)
-
-**Best for:** Keeping documentation in sync with code.
 
 Automatically builds GitBook-ready markdown files directly from your source code.
 
@@ -312,9 +323,6 @@ npm run create:docs                # All examples
 
 3. **Write Tests** in `test/<category>/YourExample.ts`
 
-   - Include success and failure cases
-   - Use descriptive test names
-
 4. **Generate Configuration** (Auto-Discovery)
 
    ```bash
@@ -350,20 +358,8 @@ npm run create:docs                # All examples
 
 ---
 
-## 📚 Script Commands
 
-> 📖 See [scripts/README.md](scripts/README.md) for detailed usage and examples.
-
-- `npm run create` - Interactive CLI
-- `npm run create:example [name] [path]` - Generate single example
-- `npm run create:category [name] [path]` - Generate category project
-- `npm run create:docs [example]` - Generate docs (all or specific)
-- `npm run generate:config` - Auto-discover contracts and generate config
-- `npm run test:all` - Test selected examples (interactive selection)
-- `npm run test:all fhe-counter,fhe-add`  Direct: (comma-separated)
-- `npm run create:help` - Show help information
-
-## NPM Package Commands
+## 📦 NPM Package Commands
 
 > **ℹ️ Note:** The `create-fhevm-example` package (`packages/create-fhevm-example/`) is completely independent from the main project. It can be safely removed without affecting the main project's functionality. The package is published to NPM and can be used standalone without cloning this repository.
 
@@ -386,7 +382,7 @@ npx create-fhevm-example --example fhe-counter
 npx create-fhevm-example --category basic --output ./my-project
 ```
 
-### Add FHEVM to Existing Project
+### Add FHEVM example to Existing Project
 
 Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
 
@@ -409,25 +405,6 @@ This will:
 
 ---
 
-## 🔄 Maintenance
-
-### 🧪 Test Examples
-
-Test selected examples in a unified project for fast, efficient verification:
-
-```bash
-# Interactive mode - select with space, confirm with enter
-npm run test:all
-
-# Direct mode - test specific examples
-npm run test:all fhe-counter,fhe-add
-```
-<p align="left">
-  <img src="https://i.ibb.co/0pJfbPZP/test-all.gif" alt="Interactive CLI Demo" width="600px" />
-</p>
-
-> 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.
-
 ### Updating FHEVM Dependencies
 
 When `@fhevm/solidity` or related packages release new versions:
@@ -448,6 +425,21 @@ When `@fhevm/solidity` or related packages release new versions:
    ```bash
    npm run create:docs
    ```
+
+---
+
+## 💻 CLI Reference
+
+> 📖 See [scripts/README.md](scripts/README.md) for detailed usage and examples.
+
+- `npm run create` - Interactive CLI
+- `npm run create:example [name] [path]` - Generate single example
+- `npm run create:category [name] [path]` - Generate category project
+- `npm run create:docs [example]` - Generate docs (all or specific)
+- `npm run generate:config` - Auto-discover contracts and generate config
+- `npm run test:all` - Test selected examples (interactive selection)
+- `npm run test:all fhe-counter,fhe-add` - Direct mode (comma-separated)
+- `npm run create:help` - Show help information
 
 ---
 

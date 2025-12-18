@@ -81,13 +81,6 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     "category": "Advanced",
     "title": "Private Payroll"
   },
-  "fhe-counter": {
-    "contract": "contracts/basic/FHECounter.sol",
-    "test": "test/basic/FHECounter.ts",
-    "description": "Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.",
-    "category": "Basic",
-    "title": "FHE Counter"
-  },
   "public-decrypt-multiple-values": {
     "contract": "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
     "test": "test/basic/decryption/PublicDecryptMultipleValues.ts",
@@ -129,6 +122,13 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     "description": "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
     "category": "Basic - Encryption",
     "title": "Encrypt Single Value"
+  },
+  "fhe-counter": {
+    "contract": "contracts/basic/encryption/FHECounter.sol",
+    "test": "test/basic/encryption/FHECounter.ts",
+    "description": "Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.",
+    "category": "Basic - Encryption",
+    "title": "FHE Counter"
   },
   "fhe-add": {
     "contract": "contracts/basic/fhe-operations/FHEAdd.sol",
@@ -306,15 +306,6 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       }
     ]
   },
-  "basic": {
-    "name": "Basic Examples",
-    "contracts": [
-      {
-        "sol": "contracts/basic/FHECounter.sol",
-        "test": "test/basic/FHECounter.ts"
-      }
-    ]
-  },
   "basicdecryption": {
     "name": "Basic - Decryption Examples",
     "contracts": [
@@ -346,6 +337,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         "sol": "contracts/basic/encryption/EncryptSingleValue.sol",
         "test": "test/basic/encryption/EncryptSingleValue.ts"
+      },
+      {
+        "sol": "contracts/basic/encryption/FHECounter.sol",
+        "test": "test/basic/encryption/FHECounter.ts"
       }
     ]
   },

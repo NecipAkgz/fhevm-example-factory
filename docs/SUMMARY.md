@@ -4,13 +4,13 @@
 
 ## Basic
 
-- [FHE Counter](basic/fhe-counter.md)
 - FHE Operations
   - [Add](basic/fhe-operations/fhe-add.md)
   - [Arithmetic Operations](basic/fhe-operations/fhe-arithmetic.md)
   - [Comparison Operations](basic/fhe-operations/fhe-comparison.md)
   - [If-Then-Else](basic/fhe-operations/fhe-if-then-else.md)
 - Encryption
+  - [FHE Counter](basic/encryption/fhe-counter.md)
   - [Encrypt Single Value](basic/encryption/encrypt-single-value.md)
   - [Encrypt Multiple Values](basic/encryption/encrypt-multiple-values.md)
 - Decryption

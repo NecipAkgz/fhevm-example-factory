@@ -1,13 +1,14 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "Create FHEVM example projects with a single command",
   "type": "module",
   "bin": {
     "create-fhevm-example": "./dist/index.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -30,7 +31,7 @@
   "engines": {
     "node": ">=20"
   },
-  "homepage": "https://github.com/NecipAkgz/fhevm-example-factory/tree/main/packages/create-fhevm-example#readme",
+  "homepage": "https://necips-organization-1.gitbook.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/NecipAkgz/fhevm-example-factory",

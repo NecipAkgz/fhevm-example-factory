@@ -69,11 +69,6 @@ bunx create-fhevm-example
 <td></td>
 </tr>
 <tr>
-<td><strong>🛡️ Security First</strong></td>
-<td>Built with OpenZeppelin patterns, proper access control, and battle-tested best practices for FHE development.</td>
-<td></td>
-</tr>
-<tr>
 <td><strong>🔌 Plug & Play</strong></td>
 <td>Create new projects OR inject FHE capabilities into your existing Hardhat projects with <code>--add</code> mode.</td>
 <td></td>
