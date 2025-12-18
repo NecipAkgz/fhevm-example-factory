@@ -365,5 +365,5 @@ export async function runAddMode(targetDir?: string): Promise<void> {
     "🚀 Next Steps"
   );
 
-  p.outro(pc.green("Happy coding with FHEVM! 🔐"));
+  p.outro(pc.green("✅ Setup complete. Happy encrypting!"));
 }

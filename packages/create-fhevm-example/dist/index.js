@@ -152,7 +152,7 @@ async function runInteractiveMode() {
             fs.rmSync(tempDir, { recursive: true, force: true });
         }
     }
-    p.outro(pc.green("🎉 Happy coding with FHEVM!"));
+    p.outro(pc.green("✅ Setup complete. Happy encrypting!"));
 }
 // =============================================================================
 // DIRECT MODE (CLI Arguments)

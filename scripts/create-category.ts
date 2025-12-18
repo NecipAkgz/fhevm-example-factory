@@ -214,7 +214,7 @@ export async function handleInteractiveCategory(): Promise<void> {
     );
 
     await askInstallAndTest(resolvedOutput, relativePath);
-    p.outro(pc.green("🎉 Happy coding with FHEVM!"));
+    p.outro(pc.green("✅ Setup complete. Happy encrypting!"));
   } catch (error) {
     s.stop("Failed to create project");
     p.log.error(error instanceof Error ? error.message : String(error));

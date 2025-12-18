@@ -2,7 +2,7 @@
 description: The fastest way to bootstrap privacy-preserving dApps on FHEVM
 ---
 
-# 🔐 Create FHEVM Example
+# 🔐 Create FHEVM Example CLI
 
 
 {% hint style="success" %}

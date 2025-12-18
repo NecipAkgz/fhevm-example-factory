@@ -296,6 +296,6 @@ export async function runAddMode(targetDir) {
     p.log.success(pc.green("✨ FHEVM capabilities added successfully!"));
     p.log.message("");
     p.note(`${pc.dim("$")} npm install\n${pc.dim("$")} npm run compile\n${pc.dim("$")} npm run test`, "🚀 Next Steps");
-    p.outro(pc.green("Happy coding with FHEVM! 🔐"));
+    p.outro(pc.green("✅ Setup complete. Happy encrypting!"));
 }
 //# sourceMappingURL=add-mode.js.map
