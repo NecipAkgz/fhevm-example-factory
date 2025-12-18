@@ -268,8 +268,6 @@ export interface ExampleConfig {
   contract: string;
   /** Path to the TypeScript test file */
   test: string;
-  /** Optional path to test fixture file */
-  testFixture?: string;
   /** Optional additional contract dependencies */
   dependencies?: string[];
   /** Optional npm packages to install */
