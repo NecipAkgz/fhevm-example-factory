@@ -22,6 +22,8 @@
   <a href="#️-creating-a-new-example">✨ <strong>Add New Example</strong></a>
 </p>
 
+> **📖 Technical Deep Dive:** See [**OVERVIEW.md**](OVERVIEW.md) for architecture decisions, design patterns, and detailed module documentation.
+
 ---
 
 ## Overview
