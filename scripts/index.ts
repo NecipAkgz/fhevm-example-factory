@@ -35,7 +35,6 @@ import {
   promptSelectCategory,
   promptSelectExampleFromCategory,
   promptSelectCategoryProject,
-  askInstallAndTest,
   runInstallAndTest,
 } from "./ui";
 
@@ -51,6 +50,7 @@ interface ProjectConfig {
   mode: "single" | "category";
   name: string;
   outputDir: string;
+  shouldInstall: boolean;
 }
 
 /** Prompts user to select mode and returns project configuration */
@@ -138,10 +138,20 @@ async function getProjectConfig(): Promise<ProjectConfig | null> {
     return null;
   }
 
+  const shouldInstall = await p.confirm({
+    message: "Install dependencies and run tests?",
+    initialValue: false,
+  });
+  if (p.isCancel(shouldInstall)) {
+    p.cancel("Operation cancelled.");
+    return null;
+  }
+
   return {
     mode: mode as "single" | "category",
     name,
     outputDir: outputDir as string,
+    shouldInstall: shouldInstall as boolean,
   };
 }
 
@@ -191,7 +201,19 @@ async function scaffoldProject(config: ProjectConfig): Promise<void> {
       }
     }
 
-    await askInstallAndTest(resolvedOutput, relativePath);
+    if (config.shouldInstall) {
+      p.log.message("");
+      await runInstallAndTest(resolvedOutput);
+    } else {
+      p.note(
+        `${pc.dim("$")} cd ${relativePath}\n${pc.dim(
+          "$"
+        )} npm install\n${pc.dim("$")} npm run compile\n${pc.dim(
+          "$"
+        )} npm run test`,
+        "🚀 Quick Start"
+      );
+    }
   } catch (error) {
     s.stop(pc.red("Failed to create project"));
     p.log.error(error instanceof Error ? error.message : String(error));
@@ -214,80 +236,6 @@ async function runInteractiveMode(): Promise<void> {
   if (!config) return;
 
   await scaffoldProject(config);
-}
-
-// =============================================================================
-// QUICK MODE (CLI Arguments)
-// =============================================================================
-
-function showHelp(): void {
-  console.log(`
-${pc.bgCyan(pc.black(pc.bold(" 🔐 create-fhevm-example ")))}
-${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
-
-${pc.cyan(pc.bold("📋 USAGE"))}
-
-  ${pc.dim("$")} ${pc.white(
-    "npx create-fhevm-example"
-  )}                  ${pc.dim("→")} Interactive mode ${pc.yellow(
-    "(recommended)"
-  )}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--example"
-  )} ${pc.yellow("<name>")}  ${pc.dim("→")} Create single example
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--category"
-  )} ${pc.yellow("<name>")} ${pc.dim("→")} Create category project
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--add"
-  )}               ${pc.dim("→")} Add to existing project
-
-${pc.cyan(pc.bold("⚙️  OPTIONS"))}
-
-  ${pc.green("--example")} ${pc.dim(
-    "<name>"
-  )}      Create a single example project
-  ${pc.green("--category")} ${pc.dim("<name>")}     Create a category project
-  ${pc.green("--add")}                 Add FHEVM to existing Hardhat project
-  ${pc.green("--target")} ${pc.dim(
-    "<dir>"
-  )}        Target directory for --add mode
-  ${pc.green("--output")} ${pc.dim("<dir>")}        Output directory
-  ${pc.green("--install")}             Auto-install dependencies
-  ${pc.green("--test")}                Auto-run tests (requires --install)
-  ${pc.green("--help")}${pc.dim(", -h")}            Show this help message
-
-${pc.cyan(pc.bold("⚡ EXAMPLES"))}
-
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--example"
-  )} ${pc.yellow("fhe-counter")}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--category"
-  )} ${pc.yellow("basic")} ${pc.green("--output")} ${pc.blue("./my-project")}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--add")}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--example"
-  )} ${pc.yellow("fhe-counter")} ${pc.green("--install")} ${pc.green("--test")}
-
-${pc.cyan(pc.bold("📦 AVAILABLE EXAMPLES"))}
-
-  ${pc.dim(Object.keys(EXAMPLES).slice(0, 10).join(", "))}
-  ${pc.dim("...")} and ${pc.yellow(
-    String(Object.keys(EXAMPLES).length - 10)
-  )} more
-
-${pc.cyan(pc.bold("📁 AVAILABLE CATEGORIES"))}
-
-  ${Object.keys(CATEGORIES)
-    .map((c) => pc.yellow(c))
-    .join(", ")}
-
-${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
-${pc.dim("📚 Documentation:")} ${pc.blue(
-    "https://github.com/NecipAkgz/fhevm-example-factory"
-  )}
-`);
 }
 
 function parseArgs(args: string[]): Record<string, string | boolean> {
@@ -408,6 +356,80 @@ async function runDirectMode(args: string[]): Promise<void> {
       fs.rmSync(tempDir, { recursive: true, force: true });
     }
   }
+}
+
+// =============================================================================
+// QUICK MODE (CLI Arguments)
+// =============================================================================
+
+function showHelp(): void {
+  console.log(`
+${pc.bgCyan(pc.black(pc.bold(" 🔐 create-fhevm-example ")))}
+${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
+
+${pc.cyan(pc.bold("📋 USAGE"))}
+
+  ${pc.dim("$")} ${pc.white(
+    "npx create-fhevm-example"
+  )}                  ${pc.dim("→")} Interactive mode ${pc.yellow(
+    "(recommended)"
+  )}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
+    "--example"
+  )} ${pc.yellow("<name>")}  ${pc.dim("→")} Create single example
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
+    "--category"
+  )} ${pc.yellow("<name>")} ${pc.dim("→")} Create category project
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
+    "--add"
+  )}               ${pc.dim("→")} Add to existing project
+
+${pc.cyan(pc.bold("⚙️  OPTIONS"))}
+
+  ${pc.green("--example")} ${pc.dim(
+    "<name>"
+  )}      Create a single example project
+  ${pc.green("--category")} ${pc.dim("<name>")}     Create a category project
+  ${pc.green("--add")}                 Add FHEVM to existing Hardhat project
+  ${pc.green("--target")} ${pc.dim(
+    "<dir>"
+  )}        Target directory for --add mode
+  ${pc.green("--output")} ${pc.dim("<dir>")}        Output directory
+  ${pc.green("--install")}             Auto-install dependencies
+  ${pc.green("--test")}                Auto-run tests (requires --install)
+  ${pc.green("--help")}${pc.dim(", -h")}            Show this help message
+
+${pc.cyan(pc.bold("⚡ EXAMPLES"))}
+
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
+    "--example"
+  )} ${pc.yellow("fhe-counter")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
+    "--category"
+  )} ${pc.yellow("basic")} ${pc.green("--output")} ${pc.blue("./my-project")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--add")}
+  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
+    "--example"
+  )} ${pc.yellow("fhe-counter")} ${pc.green("--install")} ${pc.green("--test")}
+
+${pc.cyan(pc.bold("📦 AVAILABLE EXAMPLES"))}
+
+  ${pc.dim(Object.keys(EXAMPLES).slice(0, 10).join(", "))}
+  ${pc.dim("...")} and ${pc.yellow(
+    String(Object.keys(EXAMPLES).length - 10)
+  )} more
+
+${pc.cyan(pc.bold("📁 AVAILABLE CATEGORIES"))}
+
+  ${Object.keys(CATEGORIES)
+    .map((c) => pc.yellow(c))
+    .join(", ")}
+
+${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
+${pc.dim("📚 Documentation:")} ${pc.blue(
+    "https://github.com/NecipAkgz/fhevm-example-factory"
+  )}
+`);
 }
 
 // =============================================================================
