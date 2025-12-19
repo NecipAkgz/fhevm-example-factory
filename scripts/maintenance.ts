@@ -19,17 +19,12 @@ import * as path from "path";
 import { EXAMPLES, getExampleNames } from "./config";
 import {
   getRootDir,
-  getContractName,
-  copyDirectoryRecursive,
-  getTemplateDir,
-  cleanupTemplate,
-  TEST_TYPES_CONTENT,
+  log,
   runCommandWithStatus,
   extractErrorMessage,
   extractTestResults,
-  updateProjectPackageJson,
-  log,
 } from "./utils";
+import { createLocalTestProject } from "./builders";
 
 // =============================================================================
 // Types
@@ -41,83 +36,6 @@ interface TestSummary {
   failed: number;
   compileSuccess: boolean;
   failedTests: string[];
-}
-
-// =============================================================================
-// Project Builder
-// =============================================================================
-
-async function createTestProject(
-  exampleNames: string[],
-  outputDir: string
-): Promise<void> {
-  const rootDir = getRootDir();
-  const templateDir = getTemplateDir();
-
-  copyDirectoryRecursive(templateDir, outputDir);
-  cleanupTemplate(outputDir);
-
-  const allNpmDeps: Record<string, string> = {};
-  const allContractDeps = new Set<string>();
-
-  for (const exampleName of exampleNames) {
-    const example = EXAMPLES[exampleName];
-    if (!example) continue;
-
-    const contractPath = path.join(rootDir, example.contract);
-    const testPath = path.join(rootDir, example.test);
-
-    if (fs.existsSync(contractPath)) {
-      const contractName = getContractName(example.contract);
-      if (contractName) {
-        fs.copyFileSync(
-          contractPath,
-          path.join(outputDir, "contracts", `${contractName}.sol`)
-        );
-      }
-    }
-
-    if (fs.existsSync(testPath)) {
-      fs.copyFileSync(
-        testPath,
-        path.join(outputDir, "test", path.basename(example.test))
-      );
-    }
-
-    if (example.dependencies) {
-      example.dependencies.forEach((dep) => allContractDeps.add(dep));
-    }
-    if (example.npmDependencies) {
-      Object.assign(allNpmDeps, example.npmDependencies);
-    }
-  }
-
-  for (const depPath of allContractDeps) {
-    const depFullPath = path.join(rootDir, depPath);
-    if (fs.existsSync(depFullPath)) {
-      const relativePath = depPath.replace(/^contracts\//, "");
-      const depDestPath = path.join(outputDir, "contracts", relativePath);
-      const depDestDir = path.dirname(depDestPath);
-
-      if (!fs.existsSync(depDestDir)) {
-        fs.mkdirSync(depDestDir, { recursive: true });
-      }
-      fs.copyFileSync(depFullPath, depDestPath);
-    }
-  }
-
-  // Update package.json using shared utility
-  updateProjectPackageJson(
-    outputDir,
-    "fhevm-test-project",
-    `Testing ${exampleNames.length} examples`,
-    Object.keys(allNpmDeps).length > 0 ? allNpmDeps : undefined
-  );
-
-  const typesPath = path.join(outputDir, "test", "types.ts");
-  if (!fs.existsSync(typesPath)) {
-    fs.writeFileSync(typesPath, TEST_TYPES_CONTENT);
-  }
 }
 
 // =============================================================================
@@ -333,7 +251,7 @@ export async function testAllExamples(cliExamples?: string[]): Promise<void> {
   try {
     const s = p.spinner();
     s.start("Setting up test project...");
-    await createTestProject(examplesToTest, tempDir);
+    await createLocalTestProject(examplesToTest, tempDir);
     s.stop(pc.green("✓ Project ready"));
 
     summary = await runTestPipeline(tempDir, examplesToTest.length);

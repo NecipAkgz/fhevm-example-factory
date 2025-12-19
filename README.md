@@ -13,21 +13,21 @@
 
 ---
 
-## 📖 Overview
+## Overview
 
 This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama.
 
-### ✨ Key Features
+### Key Features
 
-- 🎯 **28+ Examples** - Comprehensive collection covering encryption, decryption, operations, and OpenZeppelin integration
+- 🎯 **28+ Examples** - encryption, decryption, operations,  OpenZeppelin and more
 - 🛠️ **Interactive CLI** - Modern command-line interface with beautiful prompts
-- 📦 **Standalone Projects** - Generate complete, runnable Hardhat projects from any example
-- 📚 **Auto Documentation** - Generate GitBook-formatted documentation automatically
+- 📦 **Standalone Projects** - Generate, runnable Hardhat projects from any example
+- 📚 **Auto Documentation** - GitBook-formatted documentation automatically
 - 🔗 **Hardhat Template** - Pre-configured template with all FHEVM dependencies
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 > 💡 **Recommended**: Use `npx create-fhevm-example` - no installation needed!
 ### Option 1: NPX (Recommended)

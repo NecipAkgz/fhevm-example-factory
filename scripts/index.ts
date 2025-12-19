@@ -178,24 +178,22 @@ async function scaffoldProject(config: ProjectConfig): Promise<void> {
 
     if (config.mode === "single") {
       const exampleConfig = EXAMPLES[config.name];
-      p.log.info(
-        `📝 Example: ${pc.yellow(exampleConfig?.title || config.name)}`
-      );
+      if (exampleConfig) {
+        p.log.info(`📝 Example: ${pc.yellow(exampleConfig.title)}`);
+      }
     } else {
       const categoryConfig = CATEGORIES[config.name];
-      p.log.info(
-        `📦 Category: ${pc.yellow(categoryConfig?.name || config.name)}`
-      );
-      p.log.info(
-        `📄 Contracts: ${pc.green(
-          String(categoryConfig?.contracts.length || 0)
-        )}`
-      );
+      if (categoryConfig) {
+        p.log.info(`📦 Category: ${pc.yellow(categoryConfig.name)}`);
+        p.log.info(
+          `📄 Contracts: ${pc.green(String(categoryConfig.contracts.length))}`
+        );
+      }
     }
 
     await askInstallAndTest(resolvedOutput, relativePath);
   } catch (error) {
-    s.stop("Failed to create project");
+    s.stop(pc.red("Failed to create project"));
     p.log.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
   } finally {
@@ -375,7 +373,8 @@ async function runDirectMode(args: string[]): Promise<void> {
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
 
   try {
-    log.info(`Creating ${mode}: ${name}`);
+    log.info(`\n🚀 Creating ${mode}: ${pc.yellow(name)}`);
+    log.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
     log.dim("Downloading template...");
 
     const tempRepoPath = await cloneTemplate(tempDir);
@@ -383,22 +382,24 @@ async function runDirectMode(args: string[]): Promise<void> {
     log.dim("Initializing submodules...");
     await initSubmodule(tempRepoPath);
 
-    log.dim("Creating project...");
+    log.dim("Building project...");
     if (mode === "example") {
       await createSingleExample(name, resolved, tempRepoPath);
     } else {
       await createCategoryProject(name, resolved, tempRepoPath);
     }
 
-    log.success(`✓ Created: ${output}`);
+    log.success(`\n✨ Successfully created: ${pc.cyan(output)}`);
 
     if (shouldInstall) {
-      log.dim("\nInstalling dependencies...");
+      log.dim("Installing dependencies and running tests...");
       await runInstallAndTest(resolved);
     } else {
-      log.dim(
-        `\nNext: cd ${output} && npm install && npm run compile && npm run test`
-      );
+      log.message(pc.dim("\nNext steps:"));
+      log.message(`  ${pc.cyan("cd")} ${output}`);
+      log.message(`  ${pc.cyan("npm install")}`);
+      log.message(`  ${pc.cyan("npm run compile")}`);
+      log.message(`  ${pc.cyan("npm run test")}`);
     }
   } catch (error) {
     handleError(error);

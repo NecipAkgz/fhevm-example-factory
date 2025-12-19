@@ -1,8 +1,8 @@
 /**
  * Project Builders - Core logic for scaffolding FHEVM projects.
  *
- * Handles the creation of single example projects and category-based
- * project bundles from remote or local templates.
+ * Handles the creation of single example projects, category-based
+ * project bundles, and specialized test environments.
  */
 
 import * as fs from "fs";
@@ -17,6 +17,9 @@ import {
   generateDeployScript,
   cleanupTemplate,
   updateProjectPackageJson,
+  getRootDir,
+  getTemplateDir,
+  TEST_TYPES_CONTENT,
 } from "./utils";
 
 // =============================================================================
@@ -55,14 +58,11 @@ async function initGitRepo(outputDir: string): Promise<void> {
 }
 
 // =============================================================================
-// Single Example Builder
+// Project Scaffolding
 // =============================================================================
 
 /**
  * Creates a single example project from the template
- * @param exampleName - Name of the example to create
- * @param outputDir - Target directory for the project
- * @param tempRepoPath - Path to cloned template repository
  */
 export async function createSingleExample(
   exampleName: string,
@@ -80,28 +80,27 @@ export async function createSingleExample(
     throw new Error("Could not extract contract name");
   }
 
-  // Step 1: Copy template and clean up
+  // 1. Copy template and clean up
   copyDirectoryRecursive(templateDir, outputDir);
   cleanupTemplate(outputDir);
 
-  // Step 2: Download example contract
+  // 2. Download example contract and dependencies
   await downloadFileFromGitHub(
     example.contract,
     path.join(outputDir, "contracts", `${contractName}.sol`)
   );
 
-  // Download contract dependencies if specified
   if (example.dependencies) {
     await downloadDependencies(example.dependencies, outputDir);
   }
 
-  // Step 3: Download test file
+  // 3. Download test file
   await downloadFileFromGitHub(
     example.test,
     path.join(outputDir, "test", path.basename(example.test))
   );
 
-  // Step 4: Update deploy script and package.json
+  // 4. Update deploy script and package.json
   fs.writeFileSync(
     path.join(outputDir, "deploy", "deploy.ts"),
     generateDeployScript(contractName)
@@ -114,19 +113,11 @@ export async function createSingleExample(
     example.npmDependencies
   );
 
-  // Initialize git repository
   await initGitRepo(outputDir);
 }
 
-// =============================================================================
-// Category Project Builder
-// =============================================================================
-
 /**
  * Creates a category project with multiple examples
- * @param categoryName - Name of the category to create
- * @param outputDir - Target directory for the project
- * @param tempRepoPath - Path to cloned template repository
  */
 export async function createCategoryProject(
   categoryName: string,
@@ -140,11 +131,11 @@ export async function createCategoryProject(
 
   const templateDir = path.join(tempRepoPath, TEMPLATE_DIR_NAME);
 
-  // Step 1: Copy template and clean up
+  // 1. Copy template and clean up
   copyDirectoryRecursive(templateDir, outputDir);
   cleanupTemplate(outputDir);
 
-  // Step 2: Download all contracts and tests
+  // 2. Download all contracts and tests
   for (const item of category.contracts) {
     const contractName = getContractName(item.sol);
     if (contractName) {
@@ -162,12 +153,19 @@ export async function createCategoryProject(
     }
   }
 
-  // Collect dependencies from all examples in this category
+  // 3. Collect and download dependencies
   const allDependencies = new Set<string>();
   const allNpmDependencies: Record<string, string> = {};
 
   for (const [exampleName, exampleConfig] of Object.entries(EXAMPLES)) {
-    if (exampleConfig.category === category.name.replace(" Examples", "")) {
+    // Check if example belongs to this category
+    const configCategoryLower = exampleConfig.category
+      .toLowerCase()
+      .replace(/\s+/g, "");
+    if (
+      configCategoryLower === categoryName ||
+      exampleConfig.category === category.name.replace(" Examples", "")
+    ) {
       if (exampleConfig.dependencies) {
         exampleConfig.dependencies.forEach((dep) => allDependencies.add(dep));
       }
@@ -177,12 +175,11 @@ export async function createCategoryProject(
     }
   }
 
-  // Download all collected dependencies
   if (allDependencies.size > 0) {
     await downloadDependencies(Array.from(allDependencies), outputDir);
   }
 
-  // Step 3: Update package.json
+  // 4. Update package.json
   updateProjectPackageJson(
     outputDir,
     `fhevm-examples-${categoryName}`,
@@ -190,6 +187,88 @@ export async function createCategoryProject(
     allNpmDependencies
   );
 
-  // Initialize git repository
   await initGitRepo(outputDir);
+}
+
+// =============================================================================
+// Specialized Builders
+// =============================================================================
+
+/**
+ * Creates a temporary test project using LOCAL files (used by maintenance.ts)
+ */
+export async function createLocalTestProject(
+  exampleNames: string[],
+  outputDir: string
+): Promise<void> {
+  const rootDir = getRootDir();
+  const templateDir = getTemplateDir();
+
+  // 1. Setup base project from local template
+  copyDirectoryRecursive(templateDir, outputDir);
+  cleanupTemplate(outputDir);
+
+  const allNpmDeps: Record<string, string> = {};
+  const allContractDeps = new Set<string>();
+
+  // 2. Copy local example files
+  for (const exampleName of exampleNames) {
+    const example = EXAMPLES[exampleName];
+    if (!example) continue;
+
+    const contractPath = path.join(rootDir, example.contract);
+    const testPath = path.join(rootDir, example.test);
+
+    if (fs.existsSync(contractPath)) {
+      const contractName = getContractName(example.contract);
+      if (contractName) {
+        fs.copyFileSync(
+          contractPath,
+          path.join(outputDir, "contracts", `${contractName}.sol`)
+        );
+      }
+    }
+
+    if (fs.existsSync(testPath)) {
+      fs.copyFileSync(
+        testPath,
+        path.join(outputDir, "test", path.basename(example.test))
+      );
+    }
+
+    if (example.dependencies) {
+      example.dependencies.forEach((dep) => allContractDeps.add(dep));
+    }
+    if (example.npmDependencies) {
+      Object.assign(allNpmDeps, example.npmDependencies);
+    }
+  }
+
+  // 3. Copy dependencies
+  for (const depPath of allContractDeps) {
+    const depFullPath = path.join(rootDir, depPath);
+    if (fs.existsSync(depFullPath)) {
+      const relativePath = depPath.replace(/^contracts\//, "");
+      const depDestPath = path.join(outputDir, "contracts", relativePath);
+      const depDestDir = path.dirname(depDestPath);
+
+      if (!fs.existsSync(depDestDir)) {
+        fs.mkdirSync(depDestDir, { recursive: true });
+      }
+      fs.copyFileSync(depFullPath, depDestPath);
+    }
+  }
+
+  // 4. Finalize project
+  updateProjectPackageJson(
+    outputDir,
+    "fhevm-test-project",
+    `Testing ${exampleNames.length} examples`,
+    Object.keys(allNpmDeps).length > 0 ? allNpmDeps : undefined
+  );
+
+  const typesPath = path.join(outputDir, "test", "types.ts");
+  if (!fs.existsSync(typesPath)) {
+    fs.writeFileSync(typesPath, TEST_TYPES_CONTENT);
+  }
 }

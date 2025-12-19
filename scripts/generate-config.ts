@@ -16,6 +16,7 @@ import {
   formatCategoryName,
   log,
 } from "./utils";
+import pc from "picocolors";
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const CONTRACTS_DIR = path.join(ROOT_DIR, "contracts");
@@ -322,28 +323,39 @@ export function getDocsFileName(exampleName: string): string {
 // =============================================================================
 
 function main() {
-  log.info("🔍 Scanning contracts...\n");
+  log.info(`🔍 Scanning examples in: ${pc.cyan("contracts/")}\n`);
 
   const contracts = scanContracts();
 
-  log.success(`✅ Found ${contracts.length} contracts\n`);
+  if (contracts.length === 0) {
+    log.error("❌ No valid contracts discovered. Check for @notice tags.");
+    process.exit(1);
+  }
+
+  log.success(`✅ Found ${pc.bold(String(contracts.length))} contracts\n`);
 
   const categoryCount: Record<string, number> = {};
   for (const c of contracts) {
     categoryCount[c.category] = (categoryCount[c.category] || 0) + 1;
   }
 
-  log.message("📊 By category:");
+  log.message(pc.bold("📊 Discovery Summary:"));
   for (const [category, count] of Object.entries(categoryCount)) {
-    log.message(`   ${category}: ${count}`);
+    log.message(
+      `   ${pc.dim("•")} ${pc.yellow(category.padEnd(25))} ${pc.cyan(
+        String(count).padStart(2)
+      )} examples`
+    );
   }
 
-  log.message("\n📝 Generating config...");
+  log.message(
+    `\n📝 Generating: ${pc.cyan(path.relative(ROOT_DIR, OUTPUT_FILE))}...`
+  );
   const configContent = generateConfigFile(contracts);
 
   fs.writeFileSync(OUTPUT_FILE, configContent);
 
-  log.success(`✅ Config generated: ${path.relative(ROOT_DIR, OUTPUT_FILE)}`);
+  log.success(`\n✨ Configuration updated successfully!`);
 }
 
 const isMainModule = process.argv[1]?.includes("generate-config");

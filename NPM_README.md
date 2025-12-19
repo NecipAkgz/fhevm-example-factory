@@ -64,14 +64,16 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install -
 
 ## 📋 CLI Options
 
-`--example <name>` - Create a single example project
-`--category <name>` - Create a category project
-`--add` - Add FHEVM to existing Hardhat project
-`--target <dir>` - Target directory for --add mode (default: current dir)
-`--output <dir>` - Output directory
-`--install` - Auto-install dependencies
-`--test` - Auto-run tests
-`--help` - Show help
+| Option | Description |
+| :--- | :--- |
+| `--example <name>` | Create a single example project |
+| `--category <name>` | Create a category project |
+| `--add` | Add FHEVM to an existing Hardhat project |
+| `--target <dir>` | Target directory for `--add` mode (default: current dir) |
+| `--output <dir>` | Output directory for new projects |
+| `--install` | Auto-install dependencies after scaffolding |
+| `--test` | Auto-run tests (requires `--install`) |
+| `--help`, `-h` | Show help information |
 
 ---
 

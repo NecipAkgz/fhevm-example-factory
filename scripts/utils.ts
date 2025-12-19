@@ -12,7 +12,7 @@ import pc from "picocolors";
 import { REPO_URL, REPO_BRANCH, EXAMPLES, CATEGORIES } from "./config";
 
 // =============================================================================
-// Constants
+// Constants & Types
 // =============================================================================
 
 export type ProjectMode = "single" | "category";
@@ -110,32 +110,9 @@ export function getRootDir(): string {
   return path.resolve(__dirname, "..");
 }
 
+/** Resolves template directory path */
 export function getTemplateDir(): string {
   return path.join(getRootDir(), TEMPLATE_DIR_NAME);
-}
-
-/** Extracts contract name from file path or content */
-export function getContractName(contractPathOrContent: string): string | null {
-  let content: string;
-
-  if (
-    contractPathOrContent.includes("contract ") ||
-    contractPathOrContent.includes("pragma solidity")
-  ) {
-    content = contractPathOrContent;
-  } else {
-    const fullPath = contractPathOrContent.startsWith("/")
-      ? contractPathOrContent
-      : path.join(getRootDir(), contractPathOrContent);
-    if (!fs.existsSync(fullPath)) {
-      const match = contractPathOrContent.match(/([^/]+)\.sol$/);
-      return match ? match[1] : null;
-    }
-    content = fs.readFileSync(fullPath, "utf-8");
-  }
-
-  const match = content.match(/^\s*contract\s+(\w+)(?:\s+is\s+|\s*\{)/m);
-  return match ? match[1] : null;
 }
 
 /** Copies directory recursively, excluding specified directories */
@@ -195,6 +172,29 @@ export function formatCategoryName(folderName: string): string {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
+export function getContractName(contractPathOrContent: string): string | null {
+  let content: string;
+
+  if (
+    contractPathOrContent.includes("contract ") ||
+    contractPathOrContent.includes("pragma solidity")
+  ) {
+    content = contractPathOrContent;
+  } else {
+    const fullPath = contractPathOrContent.startsWith("/")
+      ? contractPathOrContent
+      : path.join(getRootDir(), contractPathOrContent);
+    if (!fs.existsSync(fullPath)) {
+      const match = contractPathOrContent.match(/([^/]+)\.sol$/);
+      return match ? match[1] : null;
+    }
+    content = fs.readFileSync(fullPath, "utf-8");
+  }
+
+  const match = content.match(/^\s*contract\s+(\w+)(?:\s+is\s+|\s*\{)/m);
+  return match ? match[1] : null;
+}
+
 // =============================================================================
 // Validation Functions
 // =============================================================================
@@ -218,7 +218,7 @@ export function validateDirectoryNotExists(dirPath: string): void {
 }
 
 // =============================================================================
-// Template Utilities
+// Template & Scaffolding Utilities
 // =============================================================================
 
 export function cleanupTemplate(outputDir: string): void {
@@ -325,109 +325,6 @@ export function generateGitBookMarkdown(
   return markdown;
 }
 
-// =============================================================================
-// GitHub Repository Utilities
-// =============================================================================
-
-/** Downloads a file from GitHub repository */
-export async function downloadFileFromGitHub(
-  filePath: string,
-  outputPath: string
-): Promise<void> {
-  const urlParts = REPO_URL.replace("https://github.com/", "").split("/");
-  const owner = urlParts[0];
-  const repo = urlParts[1];
-
-  const url = `https://raw.githubusercontent.com/${owner}/${repo}/${REPO_BRANCH}/${filePath}`;
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to download ${filePath}: ${response.statusText}`);
-  }
-
-  const content = await response.text();
-
-  const dir = path.dirname(outputPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  fs.writeFileSync(outputPath, content);
-}
-
-/** Clones the template repository to temp directory */
-export async function cloneTemplate(tempDir: string): Promise<string> {
-  const templatePath = path.join(tempDir, "template");
-
-  return new Promise((resolve, reject) => {
-    const cloneUrl = `${REPO_URL}.git`;
-    const args = [
-      "clone",
-      "--depth=1",
-      "--branch",
-      REPO_BRANCH,
-      "--single-branch",
-      cloneUrl,
-      templatePath,
-    ];
-
-    const child = spawn("git", args, {
-      stdio: "pipe",
-    });
-
-    let stderr = "";
-
-    child.stderr?.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    child.on("close", (code) => {
-      if (code === 0) {
-        resolve(templatePath);
-      } else {
-        reject(new Error(`Git clone failed: ${stderr}`));
-      }
-    });
-
-    child.on("error", reject);
-  });
-}
-
-/** Initializes git submodule for the template */
-export async function initSubmodule(repoPath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(
-      "git",
-      ["submodule", "update", "--init", "--recursive", TEMPLATE_DIR_NAME],
-      {
-        cwd: repoPath,
-        stdio: "pipe",
-      }
-    );
-
-    let stderr = "";
-
-    child.stderr?.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    child.on("close", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Submodule init failed: ${stderr}`));
-      }
-    });
-
-    child.on("error", reject);
-  });
-}
-
-// =============================================================================
-// Package.json Utilities
-// =============================================================================
-
-/** Updates package.json with project name, description, and npm dependencies */
 export function updateProjectPackageJson(
   outputDir: string,
   projectName: string,
@@ -455,8 +352,6 @@ export function updateProjectPackageJson(
 // =============================================================================
 // Command Execution Utilities
 // =============================================================================
-
-/** Executes a command and returns output */
 export function runCommand(
   cmd: string,
   args: string[],
@@ -571,4 +466,108 @@ export function extractErrorMessage(output: string): string {
 
   const nonEmptyLines = lines.filter((l) => l.trim().length > 0);
   return nonEmptyLines.slice(-5).join("\n");
+}
+
+// =============================================================================
+// GitHub Repository Utilities
+// =============================================================================
+
+/**
+ * Downloads a file from GitHub repository
+ */
+export async function downloadFileFromGitHub(
+  filePath: string,
+  outputPath: string
+): Promise<void> {
+  const urlParts = REPO_URL.replace("https://github.com/", "").split("/");
+  const owner = urlParts[0];
+  const repo = urlParts[1];
+
+  const url = `https://raw.githubusercontent.com/${owner}/${repo}/${REPO_BRANCH}/${filePath}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to download ${filePath}: ${response.statusText}`);
+  }
+
+  const content = await response.text();
+
+  const dir = path.dirname(outputPath);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  fs.writeFileSync(outputPath, content);
+}
+
+/**
+ * Clones the template repository to temp directory
+ */
+export async function cloneTemplate(tempDir: string): Promise<string> {
+  const templatePath = path.join(tempDir, "template");
+
+  return new Promise((resolve, reject) => {
+    const cloneUrl = `${REPO_URL}.git`;
+    const args = [
+      "clone",
+      "--depth=1",
+      "--branch",
+      REPO_BRANCH,
+      "--single-branch",
+      cloneUrl,
+      templatePath,
+    ];
+
+    const child = spawn("git", args, {
+      stdio: "pipe",
+    });
+
+    let stderr = "";
+
+    child.stderr?.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve(templatePath);
+      } else {
+        reject(new Error(`Git clone failed: ${stderr}`));
+      }
+    });
+
+    child.on("error", reject);
+  });
+}
+
+/**
+ * Initializes git submodule for the template
+ */
+export async function initSubmodule(repoPath: string): Promise<void> {
+  return new Promise((resolve, reject) => {
+    const child = spawn(
+      "git",
+      ["submodule", "update", "--init", "--recursive", TEMPLATE_DIR_NAME],
+      {
+        cwd: repoPath,
+        stdio: "pipe",
+      }
+    );
+
+    let stderr = "";
+
+    child.stderr?.on("data", (data) => {
+      stderr += data.toString();
+    });
+
+    child.on("close", (code) => {
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(new Error(`Submodule init failed: ${stderr}`));
+      }
+    });
+
+    child.on("error", reject);
+  });
 }
