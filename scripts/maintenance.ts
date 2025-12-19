@@ -1,13 +1,14 @@
 #!/usr/bin/env node
 
 /**
- * FHEVM Example Factory - Maintenance Tools
+ * Maintenance Tools - Utilities for project maintenance and testing.
  *
- * Test multiple examples efficiently in a single project.
+ * Includes the test-all runner which allows for efficient testing
+ * of multiple examples in a temporary workspace.
  *
  * Usage:
- *   npm run test:all                    # Interactive selection
- *   npm run test:all fhe-counter,fhe-add # Direct CLI
+ *   npm run test:all                      # Interactive selection
+ *   npm run test:all fhe-counter,fhe-add  # Direct CLI
  */
 
 import * as p from "@clack/prompts";

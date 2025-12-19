@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Generate Documentation - GitBook Documentation Generator
+ * Documentation Generator - Creates GitBook-compatible markdown docs.
  *
- * Generates GitBook-compatible markdown documentation for FHEVM examples.
+ * Processes FHEVM examples to produce structured documentation,
+ * including contract descriptions and automated index updates.
  */
 
 import * as p from "@clack/prompts";

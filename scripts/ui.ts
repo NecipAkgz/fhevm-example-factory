@@ -1,7 +1,8 @@
 /**
- * User Interface - Prompts & Commands
+ * User Interface - CLI Prompts and Interaction Logic.
  *
- * Interactive prompts and command execution for CLI.
+ * Provides centralized components for user input, selection menus,
+ * and standard command execution feedback for the CLI.
  */
 
 import * as p from "@clack/prompts";

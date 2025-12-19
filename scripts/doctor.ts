@@ -1,5 +1,14 @@
 #!/usr/bin/env node
 
+/**
+ * FHEVM Doctor - Environment and project integrity validator
+ *
+ * Checks:
+ *   - Node.js version compatibility
+ *   - Git installation
+ *   - Config.ts path integrity (validates all example paths)
+ */
+
 import * as fs from "fs";
 import * as path from "path";
 import { execSync } from "child_process";

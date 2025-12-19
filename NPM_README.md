@@ -1,5 +1,3 @@
-# create-fhevm-example
-
 <p align="center">
   <strong>Create FHEVM example projects with a single command</strong>
 </p>

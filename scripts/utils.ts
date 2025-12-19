@@ -1,5 +1,8 @@
 /**
- * Utility functions for FHEVM Example Factory CLI
+ * Shared Utilities - Helper functions for the FHEVM Example Factory.
+ *
+ * Contains common logic for file system operations, string formatting,
+ * error handling, and terminal logging used throughout the project.
  */
 
 import * as fs from "fs";

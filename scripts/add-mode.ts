@@ -1,5 +1,8 @@
 /**
- * Add Mode - Add FHEVM to existing Hardhat projects
+ * Add Mode - Feature for adding FHEVM to existing Hardhat projects.
+ *
+ * Logic for managing configuration updates, dependency installations,
+ * and scaffolding example contracts into established projects.
  */
 
 import * as p from "@clack/prompts";

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Auto-Discovery Config Generator
+ * Auto-Discovery Config Generator - Automatically updates project configuration.
  *
- * Scans contracts/ directory and generates config.ts automatically
- * Extracts metadata from @notice tags and folder structure.
+ * Scans the contracts/ directory and generates scripts/config.ts.
+ * Extracts metadata from @notice tags and infers category structure.
  */
 
 import * as fs from "fs";

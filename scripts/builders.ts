@@ -1,7 +1,8 @@
 /**
- * Project Builders
+ * Project Builders - Core logic for scaffolding FHEVM projects.
  *
- * Creates single example and category projects from templates.
+ * Handles the creation of single example projects and category-based
+ * project bundles from remote or local templates.
  */
 
 import * as fs from "fs";
