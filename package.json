@@ -1,6 +1,6 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.3.1",
+  "version": "1.3.2",
   "description": "Create FHEVM example projects with a single command - A comprehensive toolkit for building privacy-preserving smart contracts",
   "bin": {
     "create-fhevm-example": "./dist/scripts/index.js"
@@ -18,11 +18,11 @@
     "test:all": "npx ts-node scripts/maintenance.ts test-all",
     "generate:config": "npx ts-node scripts/generate-config.ts",
     "doctor": "npx ts-node scripts/doctor.ts",
-    "help:create": "npx ts-node scripts/index.ts --help",
+    "help:create": "LOCAL_DEV=1 npx ts-node scripts/index.ts --help",
     "help:docs": "npx ts-node scripts/generate-docs.ts --help",
     "help:test": "npx ts-node scripts/maintenance.ts test-all --help",
 
-    "postinstall": "git submodule update --init --recursive",
+    "prepare": "git submodule update --init --recursive || true",
     "prepublishOnly": "npm run build",
     "prepack": "mv README.md GITHUB_README.md && cp NPM_README.md README.md",
     "postpack": "mv GITHUB_README.md README.md"

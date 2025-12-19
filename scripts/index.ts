@@ -363,73 +363,72 @@ async function runDirectMode(args: string[]): Promise<void> {
 // =============================================================================
 
 function showHelp(): void {
-  console.log(`
+  const isDev = process.env.LOCAL_DEV === "1";
+
+  if (isDev) {
+    // Developer help - show npm run scripts
+    console.log(`
+${pc.bgCyan(pc.black(pc.bold(" 🔐 FHEVM Example Factory - Developer Mode ")))}
+${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
+
+${pc.cyan(pc.bold("📋 CREATE COMMANDS"))}
+
+  ${pc.green("npm run create")}              Interactive mode ${pc.yellow("(recommended)")}
+  ${pc.green("npm run create:example")} ${pc.dim("<name>")}  Create single example
+  ${pc.green("npm run create:category")} ${pc.dim("<name>")} Create category project
+  ${pc.green("npm run create:docs")}         Generate documentation
+
+${pc.cyan(pc.bold("🛠️  MAINTENANCE"))}
+
+  ${pc.green("npm run test:all")}            Test multiple examples
+  ${pc.green("npm run generate:config")}     Update contract registry
+  ${pc.green("npm run doctor")}              System health check
+
+${pc.cyan(pc.bold("❓ HELP"))}
+
+  ${pc.green("npm run help:create")}         This help
+  ${pc.green("npm run help:docs")}           Docs generator help
+  ${pc.green("npm run help:test")}           Test runner help
+
+${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
+`);
+  } else {
+    // End-user help - show npx commands
+    console.log(`
 ${pc.bgCyan(pc.black(pc.bold(" 🔐 create-fhevm-example ")))}
 ${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
 
 ${pc.cyan(pc.bold("📋 USAGE"))}
 
-  ${pc.dim("$")} ${pc.white(
-    "npx create-fhevm-example"
-  )}                  ${pc.dim("→")} Interactive mode ${pc.yellow(
-    "(recommended)"
-  )}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--example"
-  )} ${pc.yellow("<name>")}  ${pc.dim("→")} Create single example
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--category"
-  )} ${pc.yellow("<name>")} ${pc.dim("→")} Create category project
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--add"
-  )}               ${pc.dim("→")} Add to existing project
+  ${pc.dim("$")} npx create-fhevm-example                    ${pc.dim("→")} Interactive ${pc.yellow("(recommended)")}
+  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--example")} ${pc.yellow("<name>")}   ${pc.dim("→")} Single example
+  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--category")} ${pc.yellow("<name>")}  ${pc.dim("→")} Category project
+  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--add")}                ${pc.dim("→")} Add to existing project
 
 ${pc.cyan(pc.bold("⚙️  OPTIONS"))}
 
-  ${pc.green("--example")} ${pc.dim(
-    "<name>"
-  )}      Create a single example project
-  ${pc.green("--category")} ${pc.dim("<name>")}     Create a category project
-  ${pc.green("--add")}                 Add FHEVM to existing Hardhat project
-  ${pc.green("--target")} ${pc.dim(
-    "<dir>"
-  )}        Target directory for --add mode
-  ${pc.green("--output")} ${pc.dim("<dir>")}        Output directory
-  ${pc.green("--install")}             Auto-install dependencies
-  ${pc.green("--test")}                Auto-run tests (requires --install)
-  ${pc.green("--help")}${pc.dim(", -h")}            Show this help message
+  ${pc.green("--example")} ${pc.dim("<name>")}     Single example project
+  ${pc.green("--category")} ${pc.dim("<name>")}    Category project
+  ${pc.green("--add")}                Add FHEVM to existing Hardhat project
+  ${pc.green("--output")} ${pc.dim("<dir>")}       Output directory
+  ${pc.green("--install")}            Auto-install dependencies
+  ${pc.green("--help")}               Show this help
 
 ${pc.cyan(pc.bold("⚡ EXAMPLES"))}
 
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--example"
-  )} ${pc.yellow("fhe-counter")}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--category"
-  )} ${pc.yellow("basic")} ${pc.green("--output")} ${pc.blue("./my-project")}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green("--add")}
-  ${pc.dim("$")} ${pc.white("npx create-fhevm-example")} ${pc.green(
-    "--example"
-  )} ${pc.yellow("fhe-counter")} ${pc.green("--install")} ${pc.green("--test")}
+  ${pc.dim("$")} npx create-fhevm-example --example fhe-counter
+  ${pc.dim("$")} npx create-fhevm-example --category basic --output ./my-project
+  ${pc.dim("$")} npx create-fhevm-example --add
 
-${pc.cyan(pc.bold("📦 AVAILABLE EXAMPLES"))}
+${pc.cyan(pc.bold("📦 AVAILABLE"))}
 
-  ${pc.dim(Object.keys(EXAMPLES).slice(0, 10).join(", "))}
-  ${pc.dim("...")} and ${pc.yellow(
-    String(Object.keys(EXAMPLES).length - 10)
-  )} more
-
-${pc.cyan(pc.bold("📁 AVAILABLE CATEGORIES"))}
-
-  ${Object.keys(CATEGORIES)
-    .map((c) => pc.yellow(c))
-    .join(", ")}
+  Examples: ${pc.dim(Object.keys(EXAMPLES).slice(0, 5).join(", "))} ${pc.dim("...")} (${Object.keys(EXAMPLES).length} total)
+  Categories: ${Object.keys(CATEGORIES).map((c) => pc.yellow(c)).join(", ")}
 
 ${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
-${pc.dim("📚 Documentation:")} ${pc.blue(
-    "https://github.com/NecipAkgz/fhevm-example-factory"
-  )}
+${pc.dim("📚 Docs:")} ${pc.blue("https://github.com/NecipAkgz/fhevm-example-factory")}
 `);
+  }
 }
 
 // =============================================================================
