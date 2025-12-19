@@ -22,6 +22,7 @@
     "help:docs": "npx ts-node scripts/generate-docs.ts --help",
     "help:test": "npx ts-node scripts/maintenance.ts test-all --help",
 
+    "postinstall": "git submodule update --init --recursive",
     "prepublishOnly": "npm run build",
     "prepack": "mv README.md GITHUB_README.md && cp NPM_README.md README.md",
     "postpack": "mv GITHUB_README.md README.md"
