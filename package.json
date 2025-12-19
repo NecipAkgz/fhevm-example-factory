@@ -17,6 +17,7 @@
     "create:docs": "npx ts-node scripts/generate-docs.ts",
     "test:all": "npx ts-node scripts/maintenance.ts test-all",
     "generate:config": "npx ts-node scripts/generate-config.ts",
+    "doctor": "npx ts-node scripts/doctor.ts",
     "help:create": "npx ts-node scripts/index.ts --help",
     "help:docs": "npx ts-node scripts/generate-docs.ts --help",
     "help:test": "npx ts-node scripts/maintenance.ts test-all --help",
@@ -37,7 +38,7 @@
     "privacy",
     "fhe"
   ],
-  "author": "Zama",
+  "author": "Necip Akgz",
   "license": "BSD-3-Clause-Clear",
   "engines": {
     "node": ">=20"

@@ -266,6 +266,7 @@ npm run create:docs                # All examples
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run test:all` - Test selected examples (interactive selection)
+- `npm run doctor` - Validate environment and config integrity
 - `npm run help:create` - Show help information
 
 **NPM Package:**
