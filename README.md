@@ -13,6 +13,17 @@
 
 ---
 
+<p align="center">
+  <a href="#quick-start">🚀 <strong>Quick Start</strong></a> •
+  <a href="#-npm-package">📦 <strong>NPM Package</strong></a> •
+  <a href="#-available-examples">📚 <strong>Example Gallery</strong></a> •
+  <a href="#-automation-tools">🛠️ <strong>Automation Tools</strong></a> •
+  <a href="#-cli-reference">💻 <strong>CLI Reference</strong></a> •
+  <a href="#️-creating-a-new-example">✨ <strong>Add New Example</strong></a>
+</p>
+
+---
+
 ## Overview
 
 This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama.
