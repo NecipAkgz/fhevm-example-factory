@@ -7,7 +7,11 @@ import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 import { EXAMPLES } from "./config";
-import { downloadFileFromGitHub, getContractName } from "./utils";
+import {
+  downloadFileFromGitHub,
+  getContractName,
+  FHEVM_DEPENDENCIES,
+} from "./utils";
 
 // =============================================================================
 // PROJECT DETECTION
@@ -16,7 +20,7 @@ import { downloadFileFromGitHub, getContractName } from "./utils";
 /**
  * Detects if the target directory is a valid Hardhat project
  */
-export function detectHardhatProject(targetDir: string): boolean {
+function detectHardhatProject(targetDir: string): boolean {
   const packageJsonPath = path.join(targetDir, "package.json");
   const hardhatConfigTs = path.join(targetDir, "hardhat.config.ts");
   const hardhatConfigJs = path.join(targetDir, "hardhat.config");
@@ -46,20 +50,18 @@ export function detectHardhatProject(targetDir: string): boolean {
 /**
  * Updates package.json with FHEVM dependencies
  */
-export function updatePackageJson(targetDir: string): void {
+function updatePackageJson(targetDir: string): void {
   const packageJsonPath = path.join(targetDir, "package.json");
   const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
 
   packageJson.dependencies = {
     ...packageJson.dependencies,
-    "encrypted-types": "^0.0.4",
-    "@fhevm/solidity": "^0.9.1",
+    ...FHEVM_DEPENDENCIES.dependencies,
   };
 
   packageJson.devDependencies = {
     ...packageJson.devDependencies,
-    "@fhevm/hardhat-plugin": "^0.3.0-1",
-    "@zama-fhe/relayer-sdk": "^0.3.0-5",
+    ...FHEVM_DEPENDENCIES.devDependencies,
   };
 
   fs.writeFileSync(
@@ -75,7 +77,7 @@ export function updatePackageJson(targetDir: string): void {
 /**
  * Updates hardhat.config.ts/js with FHEVM plugin import
  */
-export function updateHardhatConfig(targetDir: string): void {
+function updateHardhatConfig(targetDir: string): void {
   const configPathTs = path.join(targetDir, "hardhat.config.ts");
   const configPathJs = path.join(targetDir, "hardhat.config");
 
@@ -123,7 +125,7 @@ export function updateHardhatConfig(targetDir: string): void {
 /**
  * Adds example contract and test files to the project
  */
-export async function addExampleFiles(
+async function addExampleFiles(
   exampleName: string,
   targetDir: string
 ): Promise<void> {

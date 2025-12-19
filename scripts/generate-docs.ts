@@ -16,6 +16,8 @@ import {
   getRootDir,
   getContractName,
   generateGitBookMarkdown,
+  log,
+  handleError,
 } from "./utils";
 
 // =============================================================================
@@ -141,28 +143,45 @@ export async function handleInteractiveDocs(): Promise<void> {
 }
 
 // =============================================================================
-// Direct Mode (CLI)
+// QUICK MODE (CLI)
 // =============================================================================
 
 export async function handleDirect(args: string[]): Promise<void> {
   const [target] = args;
 
   if (!target) {
-    console.log(pc.cyan("Generating all documentation..."));
+    log.info("Generating all documentation...");
     const count = await generateDocumentation("all");
-    console.log(pc.green(`✓ Generated ${count} documentation files`));
+    log.success(`✓ Generated ${count} documentation files`);
     return;
   }
 
   if (!EXAMPLES[target]) {
-    console.error(pc.red(`Error: Unknown example "${target}"`));
-    console.log("Available:", Object.keys(EXAMPLES).join(", "));
-    process.exit(1);
+    log.message("Available: " + Object.keys(EXAMPLES).join(", "));
+    handleError(`Unknown example "${target}"`);
   }
 
-  console.log(pc.cyan(`Generating docs for: ${target}`));
+  log.info(`Generating docs for: ${target}`);
   await generateDocumentation(target);
-  console.log(pc.green(`✓ Generated: docs/${getDocsFileName(target)}.md`));
+  log.success(`✓ Generated: docs/${getDocsFileName(target)}.md`);
+}
+
+// =============================================================================
+// Help
+// =============================================================================
+
+function showHelp(): void {
+  log.info("📚 FHEVM Documentation Generator");
+  log.message("");
+  log.message("Usage:");
+  log.message("  npm run create:docs              Generate all docs");
+  log.message(
+    "  npm run create:docs <example>    Generate specific example doc"
+  );
+  log.message("");
+  log.message("Examples:");
+  log.dim("  npm run create:docs");
+  log.dim("  npm run create:docs fhe-counter");
 }
 
 // =============================================================================
@@ -172,11 +191,12 @@ export async function handleDirect(args: string[]): Promise<void> {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
 
-  if (args.length > 0) {
-    await handleDirect(args);
-  } else {
-    await handleInteractiveDocs();
+  if (args.includes("--help") || args.includes("-h")) {
+    showHelp();
+    return;
   }
+
+  await handleDirect(args);
 }
 
 const isMainModule = process.argv[1]?.includes("generate-docs");

@@ -8,12 +8,14 @@ import * as fs from "fs";
 import * as path from "path";
 import { EXAMPLES, CATEGORIES } from "./config";
 import {
+  TEMPLATE_DIR_NAME,
   copyDirectoryRecursive,
   getContractName,
   downloadFileFromGitHub,
   runCommand,
   generateDeployScript,
   cleanupTemplate,
+  updateProjectPackageJson,
 } from "./utils";
 
 // =============================================================================
@@ -41,33 +43,6 @@ async function downloadDependencies(
 }
 
 /**
- * Updates package.json with project name, description, and npm dependencies
- */
-function updatePackageJson(
-  outputDir: string,
-  projectName: string,
-  description?: string,
-  npmDependencies?: Record<string, string>
-): void {
-  const packageJsonPath = path.join(outputDir, "package.json");
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-
-  packageJson.name = projectName;
-  if (description) {
-    packageJson.description = description;
-  }
-
-  if (npmDependencies && Object.keys(npmDependencies).length > 0) {
-    if (!packageJson.dependencies) {
-      packageJson.dependencies = {};
-    }
-    Object.assign(packageJson.dependencies, npmDependencies);
-  }
-
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
-}
-
-/**
  * Initializes git repository (optional, fails silently)
  */
 async function initGitRepo(outputDir: string): Promise<void> {
@@ -84,6 +59,9 @@ async function initGitRepo(outputDir: string): Promise<void> {
 
 /**
  * Creates a single example project from the template
+ * @param exampleName - Name of the example to create
+ * @param outputDir - Target directory for the project
+ * @param tempRepoPath - Path to cloned template repository
  */
 export async function createSingleExample(
   exampleName: string,
@@ -95,7 +73,7 @@ export async function createSingleExample(
     throw new Error(`Unknown example: ${exampleName}`);
   }
 
-  const templateDir = path.join(tempRepoPath, "fhevm-hardhat-template");
+  const templateDir = path.join(tempRepoPath, TEMPLATE_DIR_NAME);
   const contractName = getContractName(example.contract);
   if (!contractName) {
     throw new Error("Could not extract contract name");
@@ -128,7 +106,7 @@ export async function createSingleExample(
     generateDeployScript(contractName)
   );
 
-  updatePackageJson(
+  updateProjectPackageJson(
     outputDir,
     `fhevm-example-${exampleName}`,
     example.description,
@@ -145,6 +123,9 @@ export async function createSingleExample(
 
 /**
  * Creates a category project with multiple examples
+ * @param categoryName - Name of the category to create
+ * @param outputDir - Target directory for the project
+ * @param tempRepoPath - Path to cloned template repository
  */
 export async function createCategoryProject(
   categoryName: string,
@@ -156,7 +137,7 @@ export async function createCategoryProject(
     throw new Error(`Unknown category: ${categoryName}`);
   }
 
-  const templateDir = path.join(tempRepoPath, "fhevm-hardhat-template");
+  const templateDir = path.join(tempRepoPath, TEMPLATE_DIR_NAME);
 
   // Step 1: Copy template and clean up
   copyDirectoryRecursive(templateDir, outputDir);
@@ -201,7 +182,7 @@ export async function createCategoryProject(
   }
 
   // Step 3: Update package.json
-  updatePackageJson(
+  updateProjectPackageJson(
     outputDir,
     `fhevm-examples-${categoryName}`,
     undefined,

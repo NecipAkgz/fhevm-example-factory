@@ -10,6 +10,7 @@ import { EXAMPLES, CATEGORIES } from "./config";
 import {
   CATEGORY_ICON,
   CATEGORY_ORDER,
+  MAX_DESCRIPTION_LENGTH,
   runCommand,
   extractTestResults,
 } from "./utils";
@@ -69,8 +70,8 @@ export async function promptSelectExampleFromCategory(
       value: key,
       label: key,
       hint:
-        config.description.slice(0, 80) +
-        (config.description.length > 80 ? "..." : ""),
+        config.description.slice(0, MAX_DESCRIPTION_LENGTH) +
+        (config.description.length > MAX_DESCRIPTION_LENGTH ? "..." : ""),
     }));
 
   return p.select({

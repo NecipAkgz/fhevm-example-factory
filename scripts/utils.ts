@@ -1,38 +1,49 @@
 /**
  * Utility functions for FHEVM Example Factory CLI
- *
- * Consolidated utilities from:
- * - scripts/shared/utils.ts
- * - scripts/shared/commands.ts
- * - packages/create-fhevm-example/src/utils.ts
  */
 
 import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
 import pc from "picocolors";
-import {
-  REPO_URL,
-  REPO_BRANCH,
-  TEMPLATE_SUBMODULE_PATH,
-  EXAMPLES,
-  CATEGORIES,
-} from "./config";
-
-// =============================================================================
-// Type Definitions
-// =============================================================================
-
-export type PromptResult<T> = T | symbol;
-export type ExampleName = string;
-export type CategoryName = string;
-export type ProjectMode = "single" | "category";
+import { REPO_URL, REPO_BRANCH, EXAMPLES, CATEGORIES } from "./config";
 
 // =============================================================================
 // Constants
 // =============================================================================
 
+export type ProjectMode = "single" | "category";
+
 export const CATEGORY_ICON = "📁";
+
+/** Template directory name within the cloned repo */
+export const TEMPLATE_DIR_NAME = "fhevm-hardhat-template";
+
+/** Maximum description length for UI display */
+export const MAX_DESCRIPTION_LENGTH = 80;
+
+/** Directories to exclude when copying template */
+export const EXCLUDE_DIRS = [
+  "node_modules",
+  "artifacts",
+  "cache",
+  "coverage",
+  "types",
+  "dist",
+  ".git",
+];
+
+/** FHEVM package versions for --add mode */
+export const FHEVM_DEPENDENCIES = {
+  dependencies: {
+    "encrypted-types": "^0.0.4",
+    "@fhevm/solidity": "^0.9.1",
+  },
+  devDependencies: {
+    "@fhevm/hardhat-plugin": "^0.3.0-1",
+    "@zama-fhe/relayer-sdk": "^0.3.0-5",
+  },
+};
 
 export const CATEGORY_ORDER = [
   "Basic - Encryption",
@@ -78,18 +89,29 @@ export const log = {
   message: (msg: string) => console.log(msg),
 };
 
+/**
+ * Standardized error handler for CLI - logs error and exits
+ */
+export function handleError(error: unknown, exitCode = 1): never {
+  const message = error instanceof Error ? error.message : String(error);
+  log.error(message);
+  process.exit(exitCode);
+}
+
 // =============================================================================
 // File System Utilities
 // =============================================================================
 
+/** Resolves root directory of the project */
 export function getRootDir(): string {
   return path.resolve(__dirname, "..");
 }
 
 export function getTemplateDir(): string {
-  return path.join(getRootDir(), "fhevm-hardhat-template");
+  return path.join(getRootDir(), TEMPLATE_DIR_NAME);
 }
 
+/** Extracts contract name from file path or content */
 export function getContractName(contractPathOrContent: string): string | null {
   let content: string;
 
@@ -113,18 +135,11 @@ export function getContractName(contractPathOrContent: string): string | null {
   return match ? match[1] : null;
 }
 
+/** Copies directory recursively, excluding specified directories */
 export function copyDirectoryRecursive(
   source: string,
   destination: string,
-  excludeDirs: string[] = [
-    "node_modules",
-    "artifacts",
-    "cache",
-    "coverage",
-    "types",
-    "dist",
-    ".git",
-  ]
+  excludeDirs: string[] = EXCLUDE_DIRS
 ): void {
   if (!fs.existsSync(destination)) {
     fs.mkdirSync(destination, { recursive: true });
@@ -311,6 +326,7 @@ export function generateGitBookMarkdown(
 // GitHub Repository Utilities
 // =============================================================================
 
+/** Downloads a file from GitHub repository */
 export async function downloadFileFromGitHub(
   filePath: string,
   outputPath: string
@@ -336,6 +352,7 @@ export async function downloadFileFromGitHub(
   fs.writeFileSync(outputPath, content);
 }
 
+/** Clones the template repository to temp directory */
 export async function cloneTemplate(tempDir: string): Promise<string> {
   const templatePath = path.join(tempDir, "template");
 
@@ -373,11 +390,12 @@ export async function cloneTemplate(tempDir: string): Promise<string> {
   });
 }
 
+/** Initializes git submodule for the template */
 export async function initSubmodule(repoPath: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const child = spawn(
       "git",
-      ["submodule", "update", "--init", "--recursive", TEMPLATE_SUBMODULE_PATH],
+      ["submodule", "update", "--init", "--recursive", TEMPLATE_DIR_NAME],
       {
         cwd: repoPath,
         stdio: "pipe",
@@ -403,9 +421,39 @@ export async function initSubmodule(repoPath: string): Promise<void> {
 }
 
 // =============================================================================
+// Package.json Utilities
+// =============================================================================
+
+/** Updates package.json with project name, description, and npm dependencies */
+export function updateProjectPackageJson(
+  outputDir: string,
+  projectName: string,
+  description?: string,
+  npmDependencies?: Record<string, string>
+): void {
+  const packageJsonPath = path.join(outputDir, "package.json");
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
+
+  packageJson.name = projectName;
+  if (description) {
+    packageJson.description = description;
+  }
+
+  if (npmDependencies && Object.keys(npmDependencies).length > 0) {
+    if (!packageJson.dependencies) {
+      packageJson.dependencies = {};
+    }
+    Object.assign(packageJson.dependencies, npmDependencies);
+  }
+
+  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+}
+
+// =============================================================================
 // Command Execution Utilities
 // =============================================================================
 
+/** Executes a command and returns output */
 export function runCommand(
   cmd: string,
   args: string[],

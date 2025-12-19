@@ -77,7 +77,7 @@ npm run create:category basic ./my-basic-examples
 npm run create:docs [example]  # No arg = all docs, with name = specific doc
 
 # Show help
-npm run create:help
+npm run help:create
 ```
 
 ---
@@ -266,7 +266,7 @@ npm run create:docs                # All examples
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run test:all` - Test selected examples (interactive selection)
-- `npm run create:help` - Show help information
+- `npm run help:create` - Show help information
 
 **NPM Package:**
 - `npx create-fhevm-example` - Interactive mode
@@ -287,7 +287,7 @@ Test selected examples in a unified project for fast, efficient verification:
 # Interactive mode - select with space, confirm with enter
 npm run test:all
 
-# Direct mode - test specific examples
+# Quick mode - test specific examples
 npm run test:all fhe-counter,fhe-add
 ```
 

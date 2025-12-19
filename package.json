@@ -11,14 +11,15 @@
   ],
   "scripts": {
     "build": "tsc",
-    "dev": "tsc --watch",
-    "create": "npx ts-node scripts/index.ts",
+    "create": "LOCAL_DEV=1 npx ts-node scripts/index.ts",
     "create:example": "npx ts-node scripts/index.ts --example",
     "create:category": "npx ts-node scripts/index.ts --category",
     "create:docs": "npx ts-node scripts/generate-docs.ts",
-    "create:help": "npx ts-node scripts/index.ts --help",
     "test:all": "npx ts-node scripts/maintenance.ts test-all",
     "generate:config": "npx ts-node scripts/generate-config.ts",
+    "help:create": "npx ts-node scripts/index.ts --help",
+    "help:docs": "npx ts-node scripts/generate-docs.ts --help",
+    "help:test": "npx ts-node scripts/maintenance.ts test-all --help",
 
     "prepublishOnly": "npm run build",
     "prepack": "mv README.md GITHUB_README.md && cp NPM_README.md README.md",

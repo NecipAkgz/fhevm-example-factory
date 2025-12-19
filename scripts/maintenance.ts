@@ -26,6 +26,8 @@ import {
   runCommandWithStatus,
   extractErrorMessage,
   extractTestResults,
+  updateProjectPackageJson,
+  log,
 } from "./utils";
 
 // =============================================================================
@@ -103,19 +105,13 @@ async function createTestProject(
     }
   }
 
-  const packageJsonPath = path.join(outputDir, "package.json");
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf-8"));
-  packageJson.name = "fhevm-test-project";
-  packageJson.description = `Testing ${exampleNames.length} examples`;
-
-  if (Object.keys(allNpmDeps).length > 0) {
-    packageJson.dependencies = {
-      ...packageJson.dependencies,
-      ...allNpmDeps,
-    };
-  }
-
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  // Update package.json using shared utility
+  updateProjectPackageJson(
+    outputDir,
+    "fhevm-test-project",
+    `Testing ${exampleNames.length} examples`,
+    Object.keys(allNpmDeps).length > 0 ? allNpmDeps : undefined
+  );
 
   const typesPath = path.join(outputDir, "test", "types.ts");
   if (!fs.existsSync(typesPath)) {
@@ -238,17 +234,17 @@ async function runTestPipeline(
       const resultInfo = testResults
         ? pc.dim(`(${testResults.replace(" ✓", "")})`)
         : "";
-      console.log(pc.green(`✓`) + ` ${pc.dim(duration + "s")} ${resultInfo}`);
+      p.log.message(pc.green(`✓`) + ` ${pc.dim(duration + "s")} ${resultInfo}`);
       passedTests++;
     } else {
-      console.log(pc.red(`✗`) + ` ${pc.dim(duration + "s")}`);
+      p.log.message(pc.red(`✗`) + ` ${pc.dim(duration + "s")}`);
       failedTests++;
       summary.failedTests.push(testFile);
 
       const errorMsg = extractErrorMessage(result.output);
       if (errorMsg) {
         const shortError = errorMsg.split("\n")[0].slice(0, 80);
-        console.log(`    ${pc.red(pc.dim(shortError))}`);
+        p.log.message(`    ${pc.red(pc.dim(shortError))}`);
       }
     }
   }
@@ -354,26 +350,36 @@ export async function testAllExamples(cliExamples?: string[]): Promise<void> {
 // =============================================================================
 
 function showHelp(): void {
-  p.intro(pc.cyan("🔧 FHEVM Maintenance Tools"));
-  p.log.message("");
-  p.log.message(pc.bold("Available commands:"));
-  p.log.message("");
-  p.log.message(`  ${pc.cyan("test-all")}  Test examples`);
-  p.log.message("");
-  p.log.message(pc.bold("Usage:"));
-  p.log.message(pc.dim("  npm run test:all"));
-  p.log.message(pc.dim("  npm run test:all fhe-counter,fhe-add"));
-  p.outro("");
+  log.info("🔧 FHEVM Maintenance Tools");
+  log.message("");
+  log.message("Available commands:");
+  log.message("");
+  log.message("  test-all  Test examples");
+  log.message("");
+  log.message("Usage:");
+  log.dim("  npm run test:all");
+  log.dim("  npm run test:all fhe-counter,fhe-add");
 }
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
+
+  // Check for help flag first
+  if (args.includes("--help") || args.includes("-h")) {
+    showHelp();
+    return;
+  }
+
   const command = args[0];
 
   switch (command) {
     case "test-all": {
       const exampleArg = args[1];
-      const examples = exampleArg ? exampleArg.split(",") : undefined;
+      // Filter out help flags from example list
+      const examples =
+        exampleArg && !exampleArg.startsWith("-")
+          ? exampleArg.split(",")
+          : undefined;
       await testAllExamples(examples);
       break;
     }

@@ -1,8 +1,21 @@
 # create-fhevm-example
 
-Create FHEVM example projects with a single command.
+<p align="center">
+  <strong>Create FHEVM example projects with a single command</strong>
+</p>
 
-## Quick Start
+<p align="center">
+  <a href="https://docs.zama.org/protocol"><img src="https://img.shields.io/badge/docs-fhevm-blue" alt="FHEVM Docs"></a>
+  <a href="https://github.com/NecipAkgz/fhevm-example-factory/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-BSD--3--Clause--Clear-green" alt="License"></a>
+  <a href="#"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node"></a>
+</p>
+
+---
+
+
+## 🚀 Quick Start
+
+Launch the interactive CLI to create your project:
 
 ```bash
 npx create-fhevm-example
@@ -10,9 +23,29 @@ npx create-fhevm-example
 
 ![🎬 CLI Demo](https://i.ibb.co/d4YWwh7V/package.gif)
 
-This launches an interactive CLI that guides you through creating a project.
+---
 
-## Quick Commands
+## 🔧 Add to Existing Hardhat Project
+
+Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
+
+```bash
+npx create-fhevm-example --add
+npx create-fhevm-example --add --target ./my-existing-project
+```
+
+This will:
+- ✅ Detect your Hardhat project
+- ✅ Add FHEVM dependencies to `package.json`
+- ✅ Update `hardhat.config.ts` with FHEVM plugin
+- ✅ Add an example contract and test of your choice
+- ✅ Handle file conflicts intelligently (skip/overwrite/rename)
+
+---
+
+## ⚡ Quick Commands
+
+Skip the prompts and create projects directly:
 
 ```bash
 # Create single example
@@ -25,76 +58,76 @@ npx create-fhevm-example --category basic
 npx create-fhevm-example --add
 npx create-fhevm-example --add --target ./my-existing-project
 
-# With options
-npx create-fhevm-example --example fhe-counter --output ./my-project --install
+# With auto-install and testing
+npx create-fhevm-example --example fhe-counter --output ./my-project --install --test
 ```
 
-## CLI Options
+---
 
-| Option | Description |
-|--------|-------------|
-| `--example <name>` | Create a single example project |
-| `--category <name>` | Create a category project |
-| `--add` | Add FHEVM to existing Hardhat project |
-| `--target <dir>` | Target directory for --add mode (default: current dir) |
-| `--output <dir>` | Output directory |
-| `--install` | Auto-install dependencies |
-| `--test` | Auto-run tests |
-| `--help` | Show help |
+## 📋 CLI Options
 
-## Available Examples
+`--example <name>` - Create a single example project
+`--category <name>` - Create a category project
+`--add` - Add FHEVM to existing Hardhat project
+`--target <dir>` - Target directory for --add mode (default: current dir)
+`--output <dir>` - Output directory
+`--install` - Auto-install dependencies
+`--test` - Auto-run tests
+`--help` - Show help
 
-**Basic**: `fhe-counter`, `encrypt-single-value`, `encrypt-multiple-values`, `user-decrypt-single-value`, `user-decrypt-multiple-values`, `public-decrypt-single-value`, `public-decrypt-multiple-values`
+---
 
-**FHE Operations**: `fhe-add`, `fhe-if-then-else`, `fhe-arithmetic`, `fhe-comparison`
+## 📦 Available Examples
 
-**Concepts**: `fhe-access-control`, `fhe-input-proof`, `fhe-handles`, `fhe-anti-patterns`
+**Basic Encryption** (3): `fhe-counter`, `encrypt-single-value`, `encrypt-multiple-values`
 
-**Gaming**: `rock-paper-scissors`, `encrypted-lottery`, `encrypted-poker`
+**Decryption** (4): `user-decrypt-single-value`, `user-decrypt-multiple-values`, `public-decrypt-single-value`, `public-decrypt-multiple-values`
 
-**OpenZeppelin**: `erc7984`, `erc7984-erc20-wrapper`, `swap-erc7984-to-erc20`, `swap-erc7984-to-erc7984`, `vesting-wallet`
+**FHE Operations** (4): `fhe-add`, `fhe-if-then-else`, `fhe-arithmetic`, `fhe-comparison`
 
-**Advanced**: `blind-auction`, `hidden-voting`, `private-payroll`, `encrypted-escrow`, `private-kyc`
+**Concepts** (4): `fhe-access-control`, `fhe-input-proof`, `fhe-handles`, `fhe-anti-patterns`
 
-## Available Categories
+**Gaming** (3): `rock-paper-scissors`, `encrypted-lottery`, `encrypted-poker`
 
-| Category | Description |
-|----------|-------------|
-| `basicencryption` | Single and multiple value encryption (3 contracts) |
-| `basicdecryption` | Public and user decryption examples (4 contracts) |
-| `basicfheoperations` | FHE arithmetic and comparison (4 contracts) |
-| `concepts` | Access control, proofs, handles, anti-patterns (4 contracts) |
-| `gaming` | Rock-paper-scissors, lottery, poker (3 contracts) |
-| `openzeppelin` | ERC7984, wrappers, swaps, vesting (5 contracts) |
-| `advanced` | Blind auction, voting, payroll, escrow, KYC (5 contracts) |
+**OpenZeppelin** (5): `erc7984`, `erc7984-erc20-wrapper`, `swap-erc7984-to-erc20`, `swap-erc7984-to-erc7984`, `vesting-wallet`
 
-## What Gets Created
+**Advanced** (5): `blind-auction`, `hidden-voting`, `private-payroll`, `encrypted-escrow`, `private-kyc`
 
-### New Projects (--example / --category)
+---
+
+## ✅ What Gets Created
+
+### New Projects (`--example` / `--category`)
 
 - ✅ Hardhat configuration for FHEVM
-- ✅ Smart contracts and test files
+- ✅ Smart contracts and comprehensive tests
 - ✅ Deployment scripts
 - ✅ All dependencies configured
 
-### Existing Projects (--add)
+### Existing Projects (`--add`)
 
 - ✅ FHEVM dependencies added to `package.json`
 - ✅ FHEVM plugin imported in `hardhat.config.ts`
 - ✅ Example contract and test of your choice
-- ✅ Intelligent file conflict handling (skip/overwrite/rename)
+- ✅ Intelligent conflict handling (skip/overwrite/rename)
 
-## Requirements
+---
+
+## 💻 Requirements
 
 - Node.js >= 20
 - Git
 
-## Learn More
+---
 
-- [FHEVM Documentation](https://docs.zama.org/protocol)
-- [Example Repository](https://github.com/NecipAkgz/fhevm-example-factory)
-- [Zama](https://www.zama.ai/)
+## 🔗 Learn More
 
-## License
+- 📖 [FHEVM Documentation](https://docs.zama.org/protocol)
+- 💻 [Source Repository](https://github.com/NecipAkgz/fhevm-example-factory)
+- 🌐 [Zama](https://www.zama.ai/)
+
+---
+
+## 📄 License
 
 BSD-3-Clause-Clear

@@ -41,7 +41,6 @@ export interface CategoryConfig {
 
 export const REPO_URL = "https://github.com/NecipAkgz/fhevm-example-factory";
 export const REPO_BRANCH = "main";
-export const TEMPLATE_SUBMODULE_PATH = "fhevm-hardhat-template";
 
 // =============================================================================
 // Example Configurations
@@ -55,15 +54,16 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Blind Auction with encrypted bids - only the winning price is revealed",
     category: "Advanced",
     docsOutput: "docs/advanced/blind-auction.md",
-    title: "Blind Auction",
+    title: "Blind Auction"
   },
   "encrypted-escrow": {
     contract: "contracts/advanced/EncryptedEscrow.sol",
     test: "test/advanced/EncryptedEscrow.ts",
-    description: "Encrypted Escrow service - amounts hidden until release!",
+    description:
+      "Encrypted Escrow service - amounts hidden until release!",
     category: "Advanced",
     docsOutput: "docs/advanced/encrypted-escrow.md",
-    title: "Encrypted Escrow",
+    title: "Encrypted Escrow"
   },
   "hidden-voting": {
     contract: "contracts/advanced/HiddenVoting.sol",
@@ -72,7 +72,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Hidden Voting with encrypted ballots and homomorphic tallying",
     category: "Advanced",
     docsOutput: "docs/advanced/hidden-voting.md",
-    title: "Hidden Voting",
+    title: "Hidden Voting"
   },
   "private-kyc": {
     contract: "contracts/advanced/PrivateKYC.sol",
@@ -81,7 +81,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Private KYC - verify identity without revealing personal data!",
     category: "Advanced",
     docsOutput: "docs/advanced/private-kyc.md",
-    title: "Private KYC",
+    title: "Private KYC"
   },
   "private-payroll": {
     contract: "contracts/advanced/PrivatePayroll.sol",
@@ -90,7 +90,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Private Payroll system - salaries stay encrypted, only employees see their own!",
     category: "Advanced",
     docsOutput: "docs/advanced/private-payroll.md",
-    title: "Private Payroll",
+    title: "Private Payroll"
   },
   "public-decrypt-multiple-values": {
     contract: "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
@@ -99,7 +99,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/public-decrypt-multiple-values.md",
-    title: "Public Decrypt Multiple Values",
+    title: "Public Decrypt Multiple Values"
   },
   "public-decrypt-single-value": {
     contract: "contracts/basic/decryption/PublicDecryptSingleValue.sol",
@@ -108,15 +108,16 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Implements a simple Heads or Tails game demonstrating public, permissionless decryption",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/public-decrypt-single-value.md",
-    title: "Public Decrypt Single Value",
+    title: "Public Decrypt Single Value"
   },
   "user-decrypt-multiple-values": {
     contract: "contracts/basic/decryption/UserDecryptMultipleValues.sol",
     test: "test/basic/decryption/UserDecryptMultipleValues.ts",
-    description: "Demonstrates user decryption of multiple encrypted values",
+    description:
+      "Demonstrates user decryption of multiple encrypted values",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/user-decrypt-multiple-values.md",
-    title: "User Decrypt Multiple Values",
+    title: "User Decrypt Multiple Values"
   },
   "user-decrypt-single-value": {
     contract: "contracts/basic/decryption/UserDecryptSingleValue.sol",
@@ -125,7 +126,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Demonstrates the FHE decryption mechanism and highlights common pitfalls",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/user-decrypt-single-value.md",
-    title: "User Decrypt Single Value",
+    title: "User Decrypt Single Value"
   },
   "encrypt-multiple-values": {
     contract: "contracts/basic/encryption/EncryptMultipleValues.sol",
@@ -134,7 +135,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Encrypting and handling multiple values in a single transaction efficiently.",
     category: "Basic - Encryption",
     docsOutput: "docs/basic/encryption/encrypt-multiple-values.md",
-    title: "Encrypt Multiple Values",
+    title: "Encrypt Multiple Values"
   },
   "encrypt-single-value": {
     contract: "contracts/basic/encryption/EncryptSingleValue.sol",
@@ -143,7 +144,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "FHE encryption mechanism with single values, including common pitfalls and best practices for developers.",
     category: "Basic - Encryption",
     docsOutput: "docs/basic/encryption/encrypt-single-value.md",
-    title: "Encrypt Single Value",
+    title: "Encrypt Single Value"
   },
   "fhe-counter": {
     contract: "contracts/basic/encryption/FHECounter.sol",
@@ -152,15 +153,16 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.",
     category: "Basic - Encryption",
     docsOutput: "docs/basic/encryption/fhe-counter.md",
-    title: "FHE Counter",
+    title: "FHE Counter"
   },
   "fhe-add": {
     contract: "contracts/basic/fhe-operations/FHEAdd.sol",
     test: "test/basic/fhe-operations/FHEAdd.ts",
-    description: "Simple example: adding two encrypted values (a + b)",
+    description:
+      "Simple example: adding two encrypted values (a + b)",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-add.md",
-    title: "FHE Add",
+    title: "FHE Add"
   },
   "fhe-arithmetic": {
     contract: "contracts/basic/fhe-operations/FHEArithmetic.sol",
@@ -169,7 +171,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Demonstrates all FHE arithmetic operations on encrypted integers",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-arithmetic.md",
-    title: "FHE Arithmetic",
+    title: "FHE Arithmetic"
   },
   "fhe-comparison": {
     contract: "contracts/basic/fhe-operations/FHEComparison.sol",
@@ -178,7 +180,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Demonstrates all FHE comparison operations on encrypted integers",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-comparison.md",
-    title: "FHE Comparison",
+    title: "FHE Comparison"
   },
   "fhe-if-then-else": {
     contract: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
@@ -187,7 +189,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Demonstrates conditional logic: max(a, b) using encrypted comparison",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-if-then-else.md",
-    title: "FHE If Then Else",
+    title: "FHE If Then Else"
   },
   "fhe-access-control": {
     contract: "contracts/concepts/FHEAccessControl.sol",
@@ -196,7 +198,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient. Includes common mistakes and correct implementations.",
     category: "Concepts",
     docsOutput: "docs/concepts/fhe-access-control.md",
-    title: "FHE Access Control",
+    title: "FHE Access Control"
   },
   "fhe-anti-patterns": {
     contract: "contracts/concepts/FHEAntiPatterns.sol",
@@ -205,7 +207,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.",
     category: "Concepts",
     docsOutput: "docs/concepts/fhe-anti-patterns.md",
-    title: "FHE Anti Patterns",
+    title: "FHE Anti Patterns"
   },
   "fhe-handles": {
     contract: "contracts/concepts/FHEHandles.sol",
@@ -214,7 +216,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Understanding FHE handles: creation, computation, immutability, and symbolic execution in mock mode.",
     category: "Concepts",
     docsOutput: "docs/concepts/fhe-handles.md",
-    title: "FHE Handles",
+    title: "FHE Handles"
   },
   "fhe-input-proof": {
     contract: "contracts/concepts/FHEInputProof.sol",
@@ -223,7 +225,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Explains input proof validation in FHEVM: what proofs are, why they are needed, and how to use them correctly with single and batched inputs.",
     category: "Concepts",
     docsOutput: "docs/concepts/fhe-input-proof.md",
-    title: "FHE Input Proof",
+    title: "FHE Input Proof"
   },
   "encrypted-lottery": {
     contract: "contracts/gaming/EncryptedLottery.sol",
@@ -232,15 +234,16 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Encrypted Lottery with private ticket numbers - fair and verifiable!",
     category: "Gaming",
     docsOutput: "docs/gaming/encrypted-lottery.md",
-    title: "Encrypted Lottery",
+    title: "Encrypted Lottery"
   },
   "encrypted-poker": {
     contract: "contracts/gaming/EncryptedPoker.sol",
     test: "test/gaming/EncryptedPoker.ts",
-    description: "Encrypted Poker - Texas Hold'em with hidden hole cards!",
+    description:
+      "Encrypted Poker - Texas Hold'em with hidden hole cards!",
     category: "Gaming",
     docsOutput: "docs/gaming/encrypted-poker.md",
-    title: "Encrypted Poker",
+    title: "Encrypted Poker"
   },
   "rock-paper-scissors": {
     contract: "contracts/gaming/RockPaperScissors.sol",
@@ -249,75 +252,85 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "Rock-Paper-Scissors game with encrypted moves - fair play guaranteed!",
     category: "Gaming",
     docsOutput: "docs/gaming/rock-paper-scissors.md",
-    title: "Rock Paper Scissors",
+    title: "Rock Paper Scissors"
   },
-  erc7984: {
+  "erc7984": {
     contract: "contracts/openzeppelin/ERC7984.sol",
     test: "test/openzeppelin/ERC7984.ts",
     npmDependencies: {
       "@openzeppelin/contracts": "^5.4.0",
-      "@openzeppelin/confidential-contracts": "^0.3.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
     },
-    description: "Confidential token using OpenZeppelin's ERC7984 standard",
+    description:
+      "Confidential token using OpenZeppelin's ERC7984 standard",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/erc7984.md",
-    title: "ERC7984",
+    title: "ERC7984"
   },
   "erc7984-erc20-wrapper": {
     contract: "contracts/openzeppelin/ERC7984ERC20Wrapper.sol",
     test: "test/openzeppelin/ERC7984ERC20Wrapper.ts",
     npmDependencies: {
       "@openzeppelin/contracts": "^5.4.0",
-      "@openzeppelin/confidential-contracts": "^0.3.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
     },
-    dependencies: ["contracts/openzeppelin/mocks/ERC20Mock.sol"],
-    description: "Wraps ERC20 tokens into confidential ERC7984 tokens",
+    dependencies: [
+      "contracts/openzeppelin/mocks/ERC20Mock.sol"
+    ],
+    description:
+      "Wraps ERC20 tokens into confidential ERC7984 tokens",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
-    title: "ERC7984 ERC20 Wrapper",
+    title: "ERC7984 ERC20 Wrapper"
   },
   "swap-erc7984-to-erc20": {
     contract: "contracts/openzeppelin/SwapERC7984ToERC20.sol",
     test: "test/openzeppelin/SwapERC7984ToERC20.ts",
     npmDependencies: {
       "@openzeppelin/contracts": "^5.4.0",
-      "@openzeppelin/confidential-contracts": "^0.3.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
     },
     dependencies: [
       "contracts/openzeppelin/mocks/ERC20Mock.sol",
-      "contracts/openzeppelin/ERC7984.sol",
+      "contracts/openzeppelin/ERC7984.sol"
     ],
-    description: "Swap confidential ERC7984 tokens to regular ERC20 tokens",
+    description:
+      "Swap confidential ERC7984 tokens to regular ERC20 tokens",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
-    title: "Swap ERC7984 To ERC20",
+    title: "Swap ERC7984 To ERC20"
   },
   "swap-erc7984-to-erc7984": {
     contract: "contracts/openzeppelin/SwapERC7984ToERC7984.sol",
     test: "test/openzeppelin/SwapERC7984ToERC7984.ts",
     npmDependencies: {
-      "@openzeppelin/confidential-contracts": "^0.3.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
     },
-    dependencies: ["contracts/openzeppelin/ERC7984.sol"],
-    description: "Fully confidential swap between two ERC7984 tokens",
+    dependencies: [
+      "contracts/openzeppelin/ERC7984.sol"
+    ],
+    description:
+      "Fully confidential swap between two ERC7984 tokens",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
-    title: "Swap ERC7984 To ERC7984",
+    title: "Swap ERC7984 To ERC7984"
   },
   "vesting-wallet": {
     contract: "contracts/openzeppelin/VestingWallet.sol",
     test: "test/openzeppelin/VestingWallet.ts",
     npmDependencies: {
       "@openzeppelin/contracts": "^5.4.0",
-      "@openzeppelin/confidential-contracts": "^0.3.0",
+      "@openzeppelin/confidential-contracts": "^0.3.0"
     },
-    dependencies: ["contracts/openzeppelin/ERC7984.sol"],
+    dependencies: [
+      "contracts/openzeppelin/ERC7984.sol"
+    ],
     description:
       "Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/vesting-wallet.md",
-    title: "Vesting Wallet",
-  },
+    title: "Vesting Wallet"
+  }
 };
 
 // =============================================================================
@@ -347,7 +360,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/advanced/PrivatePayroll.sol",
         test: "test/advanced/PrivatePayroll.ts",
-      },
+      }
     ],
   },
   basicdecryption: {
@@ -368,7 +381,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/decryption/UserDecryptSingleValue.sol",
         test: "test/basic/decryption/UserDecryptSingleValue.ts",
-      },
+      }
     ],
   },
   basicencryption: {
@@ -385,7 +398,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/encryption/FHECounter.sol",
         test: "test/basic/encryption/FHECounter.ts",
-      },
+      }
     ],
   },
   basicfheoperations: {
@@ -406,7 +419,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
         test: "test/basic/fhe-operations/FHEIfThenElse.ts",
-      },
+      }
     ],
   },
   concepts: {
@@ -427,7 +440,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/concepts/FHEInputProof.sol",
         test: "test/concepts/FHEInputProof.ts",
-      },
+      }
     ],
   },
   gaming: {
@@ -444,7 +457,7 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/gaming/RockPaperScissors.sol",
         test: "test/gaming/RockPaperScissors.ts",
-      },
+      }
     ],
   },
   openzeppelin: {
@@ -469,9 +482,9 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/openzeppelin/VestingWallet.sol",
         test: "test/openzeppelin/VestingWallet.ts",
-      },
+      }
     ],
-  },
+  }
 };
 
 // =============================================================================

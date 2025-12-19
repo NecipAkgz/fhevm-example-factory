@@ -16,24 +16,21 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
-// Config
 import { EXAMPLES, CATEGORIES } from "./config";
 
-// Utilities
 import {
   cloneTemplate,
   initSubmodule,
   log,
+  handleError,
   ERROR_MESSAGES,
   validateExample,
   validateCategory,
   validateDirectoryNotExists,
 } from "./utils";
 
-// Builders
 import { createSingleExample, createCategoryProject } from "./builders";
 
-// UI (Prompts + Commands)
 import {
   promptSelectCategory,
   promptSelectExampleFromCategory,
@@ -42,79 +39,93 @@ import {
   runInstallAndTest,
 } from "./ui";
 
-// Add Mode
 import { runAddMode } from "./add-mode";
+import { handleInteractiveDocs as runDocGeneration } from "./generate-docs";
 
 // =============================================================================
 // INTERACTIVE MODE
 // =============================================================================
 
-async function runInteractiveMode(): Promise<void> {
-  console.clear();
-  p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory ")));
+/** Project configuration from interactive prompts */
+interface ProjectConfig {
+  mode: "single" | "category";
+  name: string;
+  outputDir: string;
+}
+
+/** Prompts user to select mode and returns project configuration */
+async function getProjectConfig(): Promise<ProjectConfig | null> {
+  // Build options - docs only available in local dev mode
+  const options = [
+    {
+      value: "single",
+      label: "Create a single example project",
+      hint: "One example contract with tests",
+    },
+    {
+      value: "category",
+      label: "Create a category-based project",
+      hint: "Bundle all examples from a category",
+    },
+  ];
+
+  // Add docs option only in local dev mode (npm run create)
+  if (process.env.LOCAL_DEV === "1") {
+    options.push({
+      value: "docs",
+      label: "Generate documentation",
+      hint: "Generate GitBook docs for examples",
+    });
+  }
 
   const mode = await p.select({
     message: "What would you like to create?",
-    options: [
-      {
-        value: "single",
-        label: "Single example",
-        hint: "One example contract with tests",
-      },
-      {
-        value: "category",
-        label: "Category project",
-        hint: "Multiple examples by category",
-      },
-    ],
+    options,
   });
 
   if (p.isCancel(mode)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return null;
   }
 
-  let exampleName: string | symbol = "";
-  let categoryName: string | symbol = "";
-  let projectName: string | symbol = "";
+  let name: string;
 
   if (mode === "single") {
-    const selectedCategory = await promptSelectCategory();
-    if (p.isCancel(selectedCategory)) {
+    const category = await promptSelectCategory();
+    if (p.isCancel(category)) {
       p.cancel("Operation cancelled.");
-      process.exit(0);
+      return null;
     }
 
-    exampleName = await promptSelectExampleFromCategory(
-      selectedCategory as string
-    );
-    if (p.isCancel(exampleName)) {
+    const example = await promptSelectExampleFromCategory(category as string);
+    if (p.isCancel(example)) {
       p.cancel("Operation cancelled.");
-      process.exit(0);
+      return null;
     }
 
-    projectName = await p.text({
-      message: "Project name:",
-      placeholder: `my-${exampleName}-project`,
-      defaultValue: `my-${exampleName}-project`,
-    });
+    name = example as string;
+  } else if (mode === "docs") {
+    // Handle docs mode - call generate-docs interactive
+    await runDocGeneration();
+    return null; // Exit after docs generation
   } else {
-    categoryName = await promptSelectCategoryProject();
-    if (p.isCancel(categoryName)) {
+    const category = await promptSelectCategoryProject();
+    if (p.isCancel(category)) {
       p.cancel("Operation cancelled.");
-      process.exit(0);
+      return null;
     }
 
-    projectName = await p.text({
-      message: "Project name:",
-      placeholder: `my-${categoryName}-project`,
-      defaultValue: `my-${categoryName}-project`,
-    });
+    name = category as string;
   }
 
+  const projectName = await p.text({
+    message: "Project name:",
+    placeholder: `my-${name}-project`,
+    defaultValue: `my-${name}-project`,
+  });
   if (p.isCancel(projectName)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return null;
   }
 
   const outputDir = await p.text({
@@ -122,13 +133,21 @@ async function runInteractiveMode(): Promise<void> {
     placeholder: `./${projectName}`,
     defaultValue: `./${projectName}`,
   });
-
   if (p.isCancel(outputDir)) {
     p.cancel("Operation cancelled.");
-    process.exit(0);
+    return null;
   }
 
-  const resolvedOutput = path.resolve(process.cwd(), outputDir as string);
+  return {
+    mode: mode as "single" | "category",
+    name,
+    outputDir: outputDir as string,
+  };
+}
+
+/** Scaffolds project and shows completion message */
+async function scaffoldProject(config: ProjectConfig): Promise<void> {
+  const resolvedOutput = path.resolve(process.cwd(), config.outputDir);
 
   if (fs.existsSync(resolvedOutput)) {
     p.log.error(`Directory already exists: ${resolvedOutput}`);
@@ -146,18 +165,10 @@ async function runInteractiveMode(): Promise<void> {
     await initSubmodule(tempRepoPath);
 
     s.message("Scaffolding your confidential project...");
-    if (mode === "single") {
-      await createSingleExample(
-        exampleName as string,
-        resolvedOutput,
-        tempRepoPath
-      );
+    if (config.mode === "single") {
+      await createSingleExample(config.name, resolvedOutput, tempRepoPath);
     } else {
-      await createCategoryProject(
-        categoryName as string,
-        resolvedOutput,
-        tempRepoPath
-      );
+      await createCategoryProject(config.name, resolvedOutput, tempRepoPath);
     }
 
     s.stop("🎉 Project scaffolded successfully!");
@@ -165,15 +176,15 @@ async function runInteractiveMode(): Promise<void> {
     const relativePath = path.relative(process.cwd(), resolvedOutput);
     p.log.success(`📁 Created: ${pc.cyan(relativePath)}`);
 
-    if (mode === "single") {
-      const exampleConfig = EXAMPLES[exampleName as string];
+    if (config.mode === "single") {
+      const exampleConfig = EXAMPLES[config.name];
       p.log.info(
-        `📝 Example: ${pc.yellow(exampleConfig?.title || exampleName)}`
+        `📝 Example: ${pc.yellow(exampleConfig?.title || config.name)}`
       );
     } else {
-      const categoryConfig = CATEGORIES[categoryName as string];
+      const categoryConfig = CATEGORIES[config.name];
       p.log.info(
-        `📦 Category: ${pc.yellow(categoryConfig?.name || categoryName)}`
+        `📦 Category: ${pc.yellow(categoryConfig?.name || config.name)}`
       );
       p.log.info(
         `📄 Contracts: ${pc.green(
@@ -196,8 +207,19 @@ async function runInteractiveMode(): Promise<void> {
   p.outro(pc.green("✅ Setup complete. Happy encrypting!"));
 }
 
+/** Main interactive mode entry point */
+async function runInteractiveMode(): Promise<void> {
+  console.clear();
+  p.intro(pc.bgCyan(pc.black(" ⚡ FHEVM Example Factory ")));
+
+  const config = await getProjectConfig();
+  if (!config) return;
+
+  await scaffoldProject(config);
+}
+
 // =============================================================================
-// DIRECT MODE (CLI Arguments)
+// QUICK MODE (CLI Arguments)
 // =============================================================================
 
 function showHelp(): void {
@@ -315,12 +337,11 @@ async function runDirectMode(args: string[]): Promise<void> {
   if (!exampleName && !categoryName) {
     log.error(ERROR_MESSAGES.EXAMPLE_REQUIRED);
     showHelp();
-    process.exit(1);
+    handleError("Missing required argument");
   }
 
   if (exampleName && categoryName) {
-    log.error(ERROR_MESSAGES.BOTH_SPECIFIED);
-    process.exit(1);
+    handleError(ERROR_MESSAGES.BOTH_SPECIFIED);
   }
 
   const mode = exampleName ? "example" : "category";
@@ -333,12 +354,11 @@ async function runDirectMode(args: string[]): Promise<void> {
       validateCategory(name);
     }
   } catch (error) {
-    log.error(error instanceof Error ? error.message : String(error));
     log.message(
       "Available: " +
         Object.keys(mode === "example" ? EXAMPLES : CATEGORIES).join(", ")
     );
-    process.exit(1);
+    handleError(error);
   }
 
   const defaultOutput =
@@ -349,8 +369,7 @@ async function runDirectMode(args: string[]): Promise<void> {
   try {
     validateDirectoryNotExists(resolved);
   } catch (error) {
-    log.error(error instanceof Error ? error.message : String(error));
-    process.exit(1);
+    handleError(error);
   }
 
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
@@ -382,8 +401,7 @@ async function runDirectMode(args: string[]): Promise<void> {
       );
     }
   } catch (error) {
-    log.error(error instanceof Error ? error.message : String(error));
-    process.exit(1);
+    handleError(error);
   } finally {
     if (fs.existsSync(tempDir)) {
       fs.rmSync(tempDir, { recursive: true, force: true });
@@ -406,8 +424,5 @@ async function main(): Promise<void> {
 }
 
 main().catch((error) => {
-  log.error(
-    "Fatal error: " + (error instanceof Error ? error.message : String(error))
-  );
-  process.exit(1);
+  handleError(error);
 });

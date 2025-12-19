@@ -9,11 +9,18 @@
 
 import * as fs from "fs";
 import * as path from "path";
+import {
+  toKebabCase,
+  contractNameToExampleName,
+  contractNameToTitle,
+  formatCategoryName,
+  log,
+} from "./utils";
 
 const ROOT_DIR = path.resolve(__dirname, "..");
 const CONTRACTS_DIR = path.join(ROOT_DIR, "contracts");
 const TEST_DIR = path.join(ROOT_DIR, "test");
-const OUTPUT_FILE = path.join(ROOT_DIR, "cli/config.ts");
+const OUTPUT_FILE = path.join(ROOT_DIR, "scripts/config.ts");
 
 interface ContractInfo {
   name: string;
@@ -25,36 +32,6 @@ interface ContractInfo {
   docsOutput: string;
   npmDependencies?: Record<string, string>;
   dependencies?: string[];
-}
-
-// =============================================================================
-// Naming Utilities
-// =============================================================================
-
-function toKebabCase(str: string): string {
-  return str
-    .replace(/([a-z])([A-Z])/g, "$1-$2")
-    .replace(/([0-9])([A-Z])/g, "$1-$2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1-$2")
-    .toLowerCase();
-}
-
-function contractNameToExampleName(contractName: string): string {
-  return toKebabCase(contractName);
-}
-
-function contractNameToTitle(contractName: string): string {
-  return contractName
-    .replace(/([a-z])([A-Z])/g, "$1 $2")
-    .replace(/([0-9])([A-Z])/g, "$1 $2")
-    .replace(/([A-Z]+)([A-Z][a-z])/g, "$1 $2");
-}
-
-function formatCategoryName(folderName: string): string {
-  return folderName
-    .replace(/\bfhe\b/gi, "FHE")
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 // =============================================================================
@@ -286,7 +263,6 @@ export interface CategoryConfig {
 
 export const REPO_URL = "https://github.com/NecipAkgz/fhevm-example-factory";
 export const REPO_BRANCH = "main";
-export const TEMPLATE_SUBMODULE_PATH = "fhevm-hardhat-template";
 
 // =============================================================================
 // Example Configurations
@@ -346,28 +322,28 @@ export function getDocsFileName(exampleName: string): string {
 // =============================================================================
 
 function main() {
-  console.log("🔍 Scanning contracts...\n");
+  log.info("🔍 Scanning contracts...\n");
 
   const contracts = scanContracts();
 
-  console.log(`✅ Found ${contracts.length} contracts\n`);
+  log.success(`✅ Found ${contracts.length} contracts\n`);
 
   const categoryCount: Record<string, number> = {};
   for (const c of contracts) {
     categoryCount[c.category] = (categoryCount[c.category] || 0) + 1;
   }
 
-  console.log("📊 By category:");
+  log.message("📊 By category:");
   for (const [category, count] of Object.entries(categoryCount)) {
-    console.log(`   ${category}: ${count}`);
+    log.message(`   ${category}: ${count}`);
   }
 
-  console.log("\n📝 Generating config...");
+  log.message("\n📝 Generating config...");
   const configContent = generateConfigFile(contracts);
 
   fs.writeFileSync(OUTPUT_FILE, configContent);
 
-  console.log(`✅ Config generated: ${path.relative(ROOT_DIR, OUTPUT_FILE)}`);
+  log.success(`✅ Config generated: ${path.relative(ROOT_DIR, OUTPUT_FILE)}`);
 }
 
 const isMainModule = process.argv[1]?.includes("generate-config");
