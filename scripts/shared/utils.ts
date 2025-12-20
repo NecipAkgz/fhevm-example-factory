@@ -104,8 +104,16 @@ export function handleError(error: unknown, exitCode = 1): never {
 // File System Utilities
 // =============================================================================
 
-/** Resolves root directory of the project (from scripts/shared/) */
+/** Resolves root directory by finding package.json */
 export function getRootDir(): string {
+  let dir = __dirname;
+  while (dir !== path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, "package.json"))) {
+      return dir;
+    }
+    dir = path.dirname(dir);
+  }
+  // Fallback
   return path.resolve(__dirname, "../..");
 }
 
