@@ -1,13 +1,16 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.3.3",
+  "version": "1.4.0",
   "description": "Create FHEVM example projects with a single command - A comprehensive toolkit for building privacy-preserving smart contracts",
   "bin": {
     "create-fhevm-example": "./dist/scripts/index.js"
   },
   "main": "./dist/scripts/index.js",
   "files": [
-    "dist"
+    "dist",
+    "contracts",
+    "test",
+    "fhevm-hardhat-template"
   ],
   "scripts": {
     "build": "tsc",

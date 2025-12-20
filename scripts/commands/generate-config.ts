@@ -259,13 +259,6 @@ export interface CategoryConfig {
 }
 
 // =============================================================================
-// GitHub Repository Configuration
-// =============================================================================
-
-export const REPO_URL = "https://github.com/NecipAkgz/fhevm-example-factory";
-export const REPO_BRANCH = "main";
-
-// =============================================================================
 // Example Configurations
 // =============================================================================
 

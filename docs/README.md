@@ -264,7 +264,7 @@ Node.js **v18.0.0** or higher is required. We recommend using the latest LTS ver
 <details>
 <summary><strong>Can I use this offline?</strong></summary>
 
-The CLI downloads templates from GitHub, so an internet connection is required for the initial scaffold. After that, your project works fully offline.
+Yes! All example files are bundled in the package. Scaffolding works fully offline — only `npm install` requires internet to download dependencies.
 </details>
 
 <details>

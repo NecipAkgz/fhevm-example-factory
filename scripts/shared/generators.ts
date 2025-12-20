@@ -1,15 +1,14 @@
 /**
- * Generators - Template processing, code generation, and Git operations.
+ * Generators - Template processing and code generation utilities.
  *
  * Contains functions for scaffolding templates, generating deploy scripts,
- * creating documentation, and interacting with GitHub.
+ * and creating documentation.
  */
 
 import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
-import { REPO_URL, REPO_BRANCH } from "./config";
-import { TEST_TYPES_CONTENT, TEMPLATE_DIR_NAME } from "./utils";
+import { TEST_TYPES_CONTENT } from "./utils";
 
 // =============================================================================
 // Template & Scaffolding Utilities
@@ -311,108 +310,4 @@ export function extractErrorMessage(output: string): string {
 
   const nonEmptyLines = lines.filter((l) => l.trim().length > 0);
   return nonEmptyLines.slice(-5).join("\n");
-}
-
-// =============================================================================
-// GitHub Repository Utilities
-// =============================================================================
-
-/**
- * Downloads a file from GitHub repository
- */
-export async function downloadFileFromGitHub(
-  filePath: string,
-  outputPath: string
-): Promise<void> {
-  const urlParts = REPO_URL.replace("https://github.com/", "").split("/");
-  const owner = urlParts[0];
-  const repo = urlParts[1];
-
-  const url = `https://raw.githubusercontent.com/${owner}/${repo}/${REPO_BRANCH}/${filePath}`;
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Failed to download ${filePath}: ${response.statusText}`);
-  }
-
-  const content = await response.text();
-
-  const dir = path.dirname(outputPath);
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-
-  fs.writeFileSync(outputPath, content);
-}
-
-/**
- * Clones the template repository to temp directory
- */
-export async function cloneTemplate(tempDir: string): Promise<string> {
-  const templatePath = path.join(tempDir, "template");
-
-  return new Promise((resolve, reject) => {
-    const cloneUrl = `${REPO_URL}.git`;
-    const args = [
-      "clone",
-      "--depth=1",
-      "--branch",
-      REPO_BRANCH,
-      "--single-branch",
-      cloneUrl,
-      templatePath,
-    ];
-
-    const child = spawn("git", args, {
-      stdio: "pipe",
-    });
-
-    let stderr = "";
-
-    child.stderr?.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    child.on("close", (code) => {
-      if (code === 0) {
-        resolve(templatePath);
-      } else {
-        reject(new Error(`Git clone failed: ${stderr}`));
-      }
-    });
-
-    child.on("error", reject);
-  });
-}
-
-/**
- * Initializes git submodule for the template
- */
-export async function initSubmodule(repoPath: string): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const child = spawn(
-      "git",
-      ["submodule", "update", "--init", "--recursive", TEMPLATE_DIR_NAME],
-      {
-        cwd: repoPath,
-        stdio: "pipe",
-      }
-    );
-
-    let stderr = "";
-
-    child.stderr?.on("data", (data) => {
-      stderr += data.toString();
-    });
-
-    child.on("close", (code) => {
-      if (code === 0) {
-        resolve();
-      } else {
-        reject(new Error(`Submodule init failed: ${stderr}`));
-      }
-    });
-
-    child.on("error", reject);
-  });
 }

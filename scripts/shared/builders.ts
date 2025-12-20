@@ -9,7 +9,6 @@ import * as fs from "fs";
 import * as path from "path";
 import { EXAMPLES, CATEGORIES } from "./config";
 import {
-  TEMPLATE_DIR_NAME,
   copyDirectoryRecursive,
   getContractName,
   getRootDir,
@@ -17,8 +16,6 @@ import {
   TEST_TYPES_CONTENT,
 } from "./utils";
 import {
-  downloadFileFromGitHub,
-  runCommand,
   generateDeployScript,
   cleanupTemplate,
   updateProjectPackageJson,
@@ -29,13 +26,12 @@ import {
 // =============================================================================
 
 /**
- * Downloads contract dependencies to the output directory
+ * Copies contract dependencies from package to output directory
  */
-async function downloadDependencies(
-  dependencies: string[],
-  outputDir: string
-): Promise<void> {
+function copyDependencies(dependencies: string[], outputDir: string): void {
+  const rootDir = getRootDir();
   for (const depPath of dependencies) {
+    const sourcePath = path.join(rootDir, depPath);
     const relativePath = depPath.replace(/^contracts\//, "");
     const depDestPath = path.join(outputDir, "contracts", relativePath);
     const depDestDir = path.dirname(depDestPath);
@@ -44,17 +40,22 @@ async function downloadDependencies(
       fs.mkdirSync(depDestDir, { recursive: true });
     }
 
-    await downloadFileFromGitHub(depPath, depDestPath);
+    if (fs.existsSync(sourcePath)) {
+      fs.copyFileSync(sourcePath, depDestPath);
+    }
   }
 }
 
 /**
  * Initializes git repository (optional, fails silently)
  */
-async function initGitRepo(outputDir: string): Promise<void> {
+function initGitRepo(outputDir: string): void {
   try {
-    await runCommand("git", ["init"], outputDir);
-  } catch (error) {
+    require("child_process").execSync("git init", {
+      cwd: outputDir,
+      stdio: "ignore",
+    });
+  } catch {
     // Git init is optional
   }
 }
@@ -66,17 +67,17 @@ async function initGitRepo(outputDir: string): Promise<void> {
 /**
  * Creates a single example project from the template
  */
-export async function createSingleExample(
+export function createSingleExample(
   exampleName: string,
-  outputDir: string,
-  tempRepoPath: string
-): Promise<void> {
+  outputDir: string
+): void {
   const example = EXAMPLES[exampleName];
   if (!example) {
     throw new Error(`Unknown example: ${exampleName}`);
   }
 
-  const templateDir = path.join(tempRepoPath, TEMPLATE_DIR_NAME);
+  const rootDir = getRootDir();
+  const templateDir = getTemplateDir();
   const contractName = getContractName(example.contract);
   if (!contractName) {
     throw new Error("Could not extract contract name");
@@ -86,23 +87,26 @@ export async function createSingleExample(
   copyDirectoryRecursive(templateDir, outputDir);
   cleanupTemplate(outputDir);
 
-  // 2. Download example contract and dependencies
-  await downloadFileFromGitHub(
-    example.contract,
+  // 2. Copy example contract from package
+  const contractSource = path.join(rootDir, example.contract);
+  fs.copyFileSync(
+    contractSource,
     path.join(outputDir, "contracts", `${contractName}.sol`)
   );
 
+  // 3. Copy dependencies
   if (example.dependencies) {
-    await downloadDependencies(example.dependencies, outputDir);
+    copyDependencies(example.dependencies, outputDir);
   }
 
-  // 3. Download test file
-  await downloadFileFromGitHub(
-    example.test,
+  // 4. Copy test file
+  const testSource = path.join(rootDir, example.test);
+  fs.copyFileSync(
+    testSource,
     path.join(outputDir, "test", path.basename(example.test))
   );
 
-  // 4. Update deploy script and package.json
+  // 5. Update deploy script and package.json
   fs.writeFileSync(
     path.join(outputDir, "deploy", "deploy.ts"),
     generateDeployScript(contractName)
@@ -115,47 +119,53 @@ export async function createSingleExample(
     example.npmDependencies
   );
 
-  await initGitRepo(outputDir);
+  initGitRepo(outputDir);
 }
 
 /**
  * Creates a category project with multiple examples
  */
-export async function createCategoryProject(
+export function createCategoryProject(
   categoryName: string,
-  outputDir: string,
-  tempRepoPath: string
-): Promise<void> {
+  outputDir: string
+): void {
   const category = CATEGORIES[categoryName];
   if (!category) {
     throw new Error(`Unknown category: ${categoryName}`);
   }
 
-  const templateDir = path.join(tempRepoPath, TEMPLATE_DIR_NAME);
+  const rootDir = getRootDir();
+  const templateDir = getTemplateDir();
 
   // 1. Copy template and clean up
   copyDirectoryRecursive(templateDir, outputDir);
   cleanupTemplate(outputDir);
 
-  // 2. Download all contracts and tests
+  // 2. Copy all contracts and tests from package
   for (const item of category.contracts) {
     const contractName = getContractName(item.sol);
     if (contractName) {
-      await downloadFileFromGitHub(
-        item.sol,
-        path.join(outputDir, "contracts", `${contractName}.sol`)
-      );
+      const contractSource = path.join(rootDir, item.sol);
+      if (fs.existsSync(contractSource)) {
+        fs.copyFileSync(
+          contractSource,
+          path.join(outputDir, "contracts", `${contractName}.sol`)
+        );
+      }
     }
 
     if (item.test) {
-      await downloadFileFromGitHub(
-        item.test,
-        path.join(outputDir, "test", path.basename(item.test))
-      );
+      const testSource = path.join(rootDir, item.test);
+      if (fs.existsSync(testSource)) {
+        fs.copyFileSync(
+          testSource,
+          path.join(outputDir, "test", path.basename(item.test))
+        );
+      }
     }
   }
 
-  // 3. Collect and download dependencies
+  // 3. Collect and copy dependencies
   const allDependencies = new Set<string>();
   const allNpmDependencies: Record<string, string> = {};
 
@@ -178,7 +188,7 @@ export async function createCategoryProject(
   }
 
   if (allDependencies.size > 0) {
-    await downloadDependencies(Array.from(allDependencies), outputDir);
+    copyDependencies(Array.from(allDependencies), outputDir);
   }
 
   // 4. Update package.json
@@ -189,7 +199,7 @@ export async function createCategoryProject(
     allNpmDependencies
   );
 
-  await initGitRepo(outputDir);
+  initGitRepo(outputDir);
 }
 
 // =============================================================================

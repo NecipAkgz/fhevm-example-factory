@@ -10,8 +10,11 @@ import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 import { EXAMPLES } from "../shared/config";
-import { getContractName, FHEVM_DEPENDENCIES } from "../shared/utils";
-import { downloadFileFromGitHub } from "../shared/generators";
+import {
+  getContractName,
+  FHEVM_DEPENDENCIES,
+  getRootDir,
+} from "../shared/utils";
 
 // =============================================================================
 // PROJECT DETECTION
@@ -125,101 +128,62 @@ function updateHardhatConfig(targetDir: string): void {
 /**
  * Adds example contract and test files to the project
  */
-async function addExampleFiles(
-  exampleName: string,
-  targetDir: string
-): Promise<void> {
+function addExampleFiles(exampleName: string, targetDir: string): void {
   const example = EXAMPLES[exampleName];
   if (!example) {
     throw new Error(`Unknown example: ${exampleName}`);
   }
 
+  const rootDir = getRootDir();
   const contractName = getContractName(example.contract);
   if (!contractName) {
     throw new Error("Could not extract contract name");
   }
 
+  const contractSource = path.join(rootDir, example.contract);
+  const testSource = path.join(rootDir, example.test);
+
   // Handle contract file
   let contractDest = path.join(targetDir, "contracts", `${contractName}.sol`);
+  const contractsDir = path.join(targetDir, "contracts");
+
+  if (!fs.existsSync(contractsDir)) {
+    fs.mkdirSync(contractsDir, { recursive: true });
+  }
 
   if (fs.existsSync(contractDest)) {
-    const action = await p.select({
-      message: `${contractName}.sol already exists. What do you want to do?`,
-      options: [
-        { value: "skip", label: "Skip contract" },
-        { value: "overwrite", label: "Overwrite existing file" },
-        {
-          value: "rename",
-          label: `Rename to ${contractName}_fhevm.sol`,
-        },
-      ],
-    });
-
-    if (p.isCancel(action)) {
-      throw new Error("Operation cancelled");
-    }
-
-    if (action === "skip") {
-      p.log.info(`Skipped: ${contractName}.sol`);
-    } else if (action === "rename") {
-      contractDest = path.join(
-        targetDir,
-        "contracts",
-        `${contractName}_fhevm.sol`
-      );
-      await downloadFileFromGitHub(example.contract, contractDest);
-      p.log.success(`Added: ${contractName}_fhevm.sol`);
-    } else {
-      await downloadFileFromGitHub(example.contract, contractDest);
-      p.log.success(`Overwritten: ${contractName}.sol`);
-    }
+    // File exists - will be handled by caller with prompts
+    fs.copyFileSync(contractSource, contractDest);
+    p.log.success(`Overwritten: ${contractName}.sol`);
   } else {
-    const contractsDir = path.join(targetDir, "contracts");
-    if (!fs.existsSync(contractsDir)) {
-      fs.mkdirSync(contractsDir, { recursive: true });
-    }
-    await downloadFileFromGitHub(example.contract, contractDest);
+    fs.copyFileSync(contractSource, contractDest);
     p.log.success(`Added: ${contractName}.sol`);
   }
 
   // Handle test file
   const testFileName = path.basename(example.test);
-  let testDest = path.join(targetDir, "test", testFileName);
+  const testDest = path.join(targetDir, "test", testFileName);
+  const testDir = path.join(targetDir, "test");
+
+  if (!fs.existsSync(testDir)) {
+    fs.mkdirSync(testDir, { recursive: true });
+  }
 
   if (fs.existsSync(testDest)) {
-    const action = await p.select({
-      message: `${testFileName} already exists. What do you want to do?`,
-      options: [
-        { value: "skip", label: "Skip test" },
-        { value: "overwrite", label: "Overwrite existing file" },
-      ],
-    });
-
-    if (p.isCancel(action)) {
-      throw new Error("Operation cancelled");
-    }
-
-    if (action === "skip") {
-      p.log.info(`Skipped: ${testFileName}`);
-    } else {
-      await downloadFileFromGitHub(example.test, testDest);
-      p.log.success(`Overwritten: ${testFileName}`);
-    }
+    fs.copyFileSync(testSource, testDest);
+    p.log.success(`Overwritten: ${testFileName}`);
   } else {
-    const testDir = path.join(targetDir, "test");
-    if (!fs.existsSync(testDir)) {
-      fs.mkdirSync(testDir, { recursive: true });
-    }
-    await downloadFileFromGitHub(example.test, testDest);
+    fs.copyFileSync(testSource, testDest);
     p.log.success(`Added: ${testFileName}`);
   }
 
   // Handle contract dependencies
   if (example.dependencies) {
     p.log.message("");
-    p.log.message(pc.bold("Downloading contract dependencies..."));
+    p.log.message(pc.bold("Copying contract dependencies..."));
 
     for (const depPath of example.dependencies) {
+      const depSource = path.join(rootDir, depPath);
       const relativePath = depPath.replace(/^contracts\//, "");
       const depDestPath = path.join(targetDir, "contracts", relativePath);
       const depDestDir = path.dirname(depDestPath);
@@ -231,8 +195,8 @@ async function addExampleFiles(
 
       if (fs.existsSync(depDestPath)) {
         p.log.info(`Skipped (exists): ${depName}`);
-      } else {
-        await downloadFileFromGitHub(depPath, depDestPath);
+      } else if (fs.existsSync(depSource)) {
+        fs.copyFileSync(depSource, depDestPath);
         p.log.success(`Added: ${depName}`);
       }
     }
@@ -337,7 +301,7 @@ export async function runAddMode(targetDir?: string): Promise<void> {
   p.log.message("");
   p.log.message(pc.bold("Adding example files..."));
   try {
-    await addExampleFiles(exampleName as string, absoluteDir);
+    addExampleFiles(exampleName as string, absoluteDir);
   } catch (error) {
     p.log.error("Failed to add example files");
     throw error;

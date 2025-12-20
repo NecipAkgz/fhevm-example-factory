@@ -101,7 +101,7 @@ Published as `create-fhevm-example` on NPM, this package allows you to create FH
 
 **Advantages:**
 - 🚀 **No Repository Clone** - Install and run directly via `npx`
-- 📦 **Always Up-to-Date** - Automatically downloads latest examples from GitHub
+- ⚡ **Offline Capable** - All files bundled, no network needed during scaffolding
 - 🔧 **Works Anywhere** - No local dependencies or setup required
 - 🎯 **Production Ready** - Ideal for scaffolding new dApps or integrating into existing projects
 
@@ -231,7 +231,7 @@ For local development, the repository provides automation tools:
 Creates a production-ready Hardhat environment tailored for a single example:
 
 - 🏗️ **Scaffolds** a new clean project using the official `fhevm-hardhat-template`
-- 📋 **Downloads** the specific contract and test from GitHub
+- 📋 **Copies** contracts and tests from the bundled package
 - ⚙️ **Configures** Hardhat and generates deployment scripts automatically
 - 🔧 **Handles** contract dependencies and npm packages automatically
 

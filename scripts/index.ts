@@ -14,7 +14,6 @@ import * as p from "@clack/prompts";
 import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
-import * as os from "os";
 
 import { EXAMPLES, CATEGORIES } from "./shared/config";
 
@@ -26,8 +25,6 @@ import {
   validateCategory,
   validateDirectoryNotExists,
 } from "./shared/utils";
-
-import { cloneTemplate, initSubmodule } from "./shared/generators";
 
 import { createSingleExample, createCategoryProject } from "./shared/builders";
 
@@ -164,21 +161,15 @@ async function scaffoldProject(config: ProjectConfig): Promise<void> {
     process.exit(1);
   }
 
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
   const s = p.spinner();
 
   try {
-    s.start("Downloading template...");
-    const tempRepoPath = await cloneTemplate(tempDir);
+    s.start("Scaffolding your confidential project...");
 
-    s.message("Initializing submodules...");
-    await initSubmodule(tempRepoPath);
-
-    s.message("Scaffolding your confidential project...");
     if (config.mode === "single") {
-      await createSingleExample(config.name, resolvedOutput, tempRepoPath);
+      createSingleExample(config.name, resolvedOutput);
     } else {
-      await createCategoryProject(config.name, resolvedOutput, tempRepoPath);
+      createCategoryProject(config.name, resolvedOutput);
     }
 
     s.stop("🎉 Project scaffolded successfully!");
@@ -218,10 +209,6 @@ async function scaffoldProject(config: ProjectConfig): Promise<void> {
     s.stop(pc.red("Failed to create project"));
     p.log.error(error instanceof Error ? error.message : String(error));
     process.exit(1);
-  } finally {
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
   }
 
   p.outro(pc.green("✅ Setup complete. Happy encrypting!"));
@@ -318,23 +305,15 @@ async function runDirectMode(args: string[]): Promise<void> {
     handleError(error);
   }
 
-  const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "fhevm-"));
-
   try {
     log.info(`\n🚀 Creating ${mode}: ${pc.yellow(name)}`);
     log.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
-    log.dim("Downloading template...");
-
-    const tempRepoPath = await cloneTemplate(tempDir);
-
-    log.dim("Initializing submodules...");
-    await initSubmodule(tempRepoPath);
-
     log.dim("Building project...");
+
     if (mode === "example") {
-      await createSingleExample(name, resolved, tempRepoPath);
+      createSingleExample(name, resolved);
     } else {
-      await createCategoryProject(name, resolved, tempRepoPath);
+      createCategoryProject(name, resolved);
     }
 
     log.success(`\n✨ Successfully created: ${pc.cyan(output)}`);
@@ -351,10 +330,6 @@ async function runDirectMode(args: string[]): Promise<void> {
     }
   } catch (error) {
     handleError(error);
-  } finally {
-    if (fs.existsSync(tempDir)) {
-      fs.rmSync(tempDir, { recursive: true, force: true });
-    }
   }
 }
 

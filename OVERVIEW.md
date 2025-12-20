@@ -77,13 +77,13 @@ fhevm-example-factory/
 
 ## Architecture Decisions
 
-### Why Download from GitHub?
+### Why Bundle Files in Package?
 
-The NPM package is **intentionally lightweight** (~50KB):
-- Contains only the compiled CLI code (`dist/`)
-- Contract files would add ~2MB to package size
-- Users always get the **latest examples** without updating the package
-- Development happens on GitHub, users consume via NPM
+The NPM package includes all example files (~180KB compressed):
+- **Offline capable** - No network required during scaffolding
+- **Fast scaffolding** - Local file copy instead of GitHub downloads
+- **Reliable** - No dependency on GitHub availability
+- Contains: `contracts/`, `test/`, `fhevm-hardhat-template/`
 
 ### Why Git Submodule for Template?
 
@@ -158,9 +158,9 @@ This is the core engine that creates projects. It has three main functions:
 ```
 1. Copy fhevm-hardhat-template → output directory
 2. Remove template-specific files (FHECounter.sol, old tests)
-3. Download the selected contract from GitHub
-4. Download the test file from GitHub
-5. Download any dependencies (other .sol files)
+3. Copy the selected contract from package
+4. Copy the test file from package
+5. Copy any dependencies (other .sol files)
 6. Generate a deploy script for the contract
 7. Update package.json with project name & npm deps
 8. Run 'git init' in the new project
@@ -178,13 +178,12 @@ Constants, logging, and helper functions:
 
 ### `shared/generators.ts` - Template & Code Generation
 
-Template processing and external operations:
+Template processing and command execution:
 
 - `cleanupTemplate()` - Prepares scaffolded project
 - `generateDeployScript()` - Creates Hardhat deploy script
 - `runCommand()` - Executes shell commands
-- `downloadFileFromGitHub()` - Fetches files from GitHub
-- `cloneTemplate()` - Clones the repository
+- `updateProjectPackageJson()` - Updates package.json with dependencies
 
 ### `shared/ui.ts` - Interactive Prompts
 
