@@ -14,8 +14,8 @@ import * as path from "path";
 import { execSync } from "child_process";
 import * as p from "@clack/prompts";
 import pc from "picocolors";
-import { log, getRootDir } from "./utils";
-import { ExampleConfig, EXAMPLES } from "./config";
+import { getRootDir } from "../shared/utils";
+import { ExampleConfig, EXAMPLES } from "../shared/config";
 
 // =============================================================================
 // Helper Types & Utils

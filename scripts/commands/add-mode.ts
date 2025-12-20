@@ -9,12 +9,9 @@ import * as p from "@clack/prompts";
 import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
-import { EXAMPLES } from "./config";
-import {
-  downloadFileFromGitHub,
-  getContractName,
-  FHEVM_DEPENDENCIES,
-} from "./utils";
+import { EXAMPLES } from "../shared/config";
+import { getContractName, FHEVM_DEPENDENCIES } from "../shared/utils";
+import { downloadFileFromGitHub } from "../shared/generators";
 
 // =============================================================================
 // PROJECT DETECTION

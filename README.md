@@ -336,14 +336,18 @@ npm run test:all fhe-counter,fhe-add
 │
 ├── 📁 scripts/                   # CLI source code
 │   ├── index.ts                  # Main CLI entry point
-│   ├── config.ts                 # Auto-generated example configurations
-│   ├── utils.ts                  # Utilities & validation
-│   ├── ui.ts                     # Interactive prompts
-│   ├── builders.ts               # Project scaffolding logic
-│   ├── add-mode.ts               # Add FHEVM to existing projects
-│   ├── maintenance.ts            # Test all examples runner
-│   ├── generate-docs.ts          # Documentation generator
-│   └── generate-config.ts        # Auto-discover contracts
+│   ├── shared/                   # Shared utilities
+│   │   ├── config.ts             # Auto-generated example registry
+│   │   ├── utils.ts              # Core utilities (logging, naming)
+│   │   ├── generators.ts         # Template & code generation
+│   │   ├── builders.ts           # Project scaffolding logic
+│   │   └── ui.ts                 # Interactive prompts
+│   └── commands/                 # CLI commands
+│       ├── add-mode.ts           # Add FHEVM to existing projects
+│       ├── doctor.ts             # Environment health checker
+│       ├── generate-config.ts    # Auto-discover contracts
+│       ├── generate-docs.ts      # Documentation generator
+│       └── maintenance.ts        # Test all examples runner
 │
 └── README.md                     # This file
 ```
@@ -389,7 +393,7 @@ For contributors adding new examples:
    npm run generate:config  # Scans contracts, extracts @notice tags
    ```
 
-   > 📝 **Note**: If your example requires external dependencies, manually add them to `scripts/config.ts`:
+   > 📝 **Note**: If your example requires external dependencies, manually add them to `scripts/shared/config.ts`:
    >
    > ```typescript
    > "your-example": {

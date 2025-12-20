@@ -55,7 +55,20 @@ fhevm-example-factory/
 │
 ├── docs/                       # 📚 Generated GitBook documentation
 │
-├── scripts/                    # 🔧 CLI source code (explained below)
+├── scripts/                    # 🔧 CLI source code
+│   ├── index.ts               # Main CLI entry point
+│   ├── shared/                # Shared utilities
+│   │   ├── config.ts          # Auto-generated example registry
+│   │   ├── utils.ts           # Core utilities (logging, naming, validation)
+│   │   ├── generators.ts      # Template & code generation
+│   │   ├── builders.ts        # Project scaffolding logic
+│   │   └── ui.ts              # CLI prompts & interaction
+│   └── commands/              # CLI commands
+│       ├── add-mode.ts        # --add feature
+│       ├── doctor.ts          # Health checker
+│       ├── generate-config.ts # Config auto-generator
+│       ├── generate-docs.ts   # Docs generator
+│       └── maintenance.ts     # Test runner
 │
 └── fhevm-hardhat-template/    # 📦 Official Zama template (git submodule)
 ```
@@ -92,9 +105,12 @@ The project is written in TypeScript but published as JavaScript:
 
 ## Understanding the Scripts
 
-The `scripts/` folder contains all the CLI logic. Here's what each file does:
+The `scripts/` folder is organized into two subfolders:
 
-### 1. `index.ts` - The Main Entry Point
+- **`shared/`** - Reusable utilities (config, builders, utils, generators, ui)
+- **`commands/`** - Individual CLI commands (add-mode, doctor, generate-*, maintenance)
+
+### `scripts/index.ts` - The Main Entry Point
 
 This is where everything starts. When you run `npx create-fhevm-example`, this file handles:
 
@@ -102,7 +118,7 @@ This is where everything starts. When you run `npx create-fhevm-example`, this f
 - **Quick Mode**: Parses `--example`, `--category`, `--add` flags
 - **Help Display**: Shows different help based on developer vs end-user context
 
-### 2. `config.ts` - The Example Registry
+### `shared/config.ts` - The Example Registry
 
 **⚠️ Auto-generated - don't edit manually!**
 
@@ -127,7 +143,7 @@ Why is this important?
 - Stores npm/contract dependencies for each example
 - Used for category grouping
 
-### 3. `builders.ts` - Project Scaffolding Logic
+### `shared/builders.ts` - Project Scaffolding Logic
 
 This is the core engine that creates projects. It has three main functions:
 
@@ -150,31 +166,27 @@ This is the core engine that creates projects. It has three main functions:
 8. Run 'git init' in the new project
 ```
 
-### 4. `utils.ts` - Shared Utilities
+### `shared/utils.ts` - Core Utilities
 
-A collection of helper functions used throughout the project:
+Constants, logging, and helper functions:
 
-**File Operations:**
-- `copyDirectoryRecursive()` - Copies folders, excluding node_modules etc.
-- `downloadFileFromGitHub()` - Fetches files from raw.githubusercontent.com
-- `cloneTemplate()` - Clones this repository to a temp folder
-- `initSubmodule()` - Initializes the Hardhat template submodule
+- `log` - Colored console output (`log.success()`, `log.error()`, etc.)
+- `handleError()` - Standardized error handler with exit
+- `getContractName()` - Extracts contract name from source file
+- `toKebabCase()` - Converts `"FHECounter"` → `"fhe-counter"`
+- Validation functions for examples, categories, and paths
 
-**Naming Helpers:**
-- `toKebabCase("FHECounter")` → `"fhe-counter"`
-- `contractNameToTitle("FHECounter")` → `"FHE Counter"`
-- `getContractName(path)` - Extracts contract name from source file
+### `shared/generators.ts` - Template & Code Generation
 
-**Command Execution:**
-- `runCommand()` - Runs shell commands and returns output
-- `runCommandWithStatus()` - Returns `{success, output}` for error handling
+Template processing and external operations:
 
-**Template Helpers:**
-- `cleanupTemplate()` - Removes old template files from scaffolded project
-- `generateDeployScript()` - Creates Hardhat deploy script code
-- `generateGitBookMarkdown()` - Creates documentation markdown
+- `cleanupTemplate()` - Prepares scaffolded project
+- `generateDeployScript()` - Creates Hardhat deploy script
+- `runCommand()` - Executes shell commands
+- `downloadFileFromGitHub()` - Fetches files from GitHub
+- `cloneTemplate()` - Clones the repository
 
-### 5. `ui.ts` - Interactive Prompts
+### `shared/ui.ts` - Interactive Prompts
 
 Provides the beautiful CLI interface using `@clack/prompts`:
 
@@ -182,7 +194,7 @@ Provides the beautiful CLI interface using `@clack/prompts`:
 - `promptSelectExampleFromCategory()` - Shows examples in a category
 - `runInstallAndTest()` - Runs npm install/compile/test with spinners
 
-### 6. `add-mode.ts` - Add to Existing Projects
+### `commands/add-mode.ts` - Add to Existing Projects
 
 The `--add` feature allows injecting FHEVM into an existing Hardhat project:
 
@@ -195,9 +207,9 @@ The `--add` feature allows injecting FHEVM into an existing Hardhat project:
 6. Handle file conflicts (skip/overwrite/rename)
 ```
 
-### 7. `generate-config.ts` - Auto-Discovery Engine
+### `commands/generate-config.ts` - Auto-Discovery Engine
 
-Scans `contracts/` and automatically generates `config.ts`:
+Scans `contracts/` and automatically generates `shared/config.ts`:
 
 ```
 1. Walk through all .sol files in contracts/
@@ -216,7 +228,7 @@ Scans `contracts/` and automatically generates `config.ts`:
 contract MyExample {
 ```
 
-### 8. `generate-docs.ts` - Documentation Generator
+### `commands/generate-docs.ts` - Documentation Generator
 
 Creates GitBook-compatible markdown from source:
 
@@ -227,7 +239,7 @@ Creates GitBook-compatible markdown from source:
 4. Save to docs/ folder
 ```
 
-### 9. `maintenance.ts` - Test Runner
+### `commands/maintenance.ts` - Test Runner
 
 Tests multiple examples efficiently:
 
@@ -239,7 +251,7 @@ Tests multiple examples efficiently:
 5. Clean up temp project
 ```
 
-### 10. `doctor.ts` - Health Checker
+### `commands/doctor.ts` - Health Checker
 
 Validates your development environment:
 - ✅ Node.js >= 20

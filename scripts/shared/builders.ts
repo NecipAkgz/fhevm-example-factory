@@ -12,15 +12,17 @@ import {
   TEMPLATE_DIR_NAME,
   copyDirectoryRecursive,
   getContractName,
+  getRootDir,
+  getTemplateDir,
+  TEST_TYPES_CONTENT,
+} from "./utils";
+import {
   downloadFileFromGitHub,
   runCommand,
   generateDeployScript,
   cleanupTemplate,
   updateProjectPackageJson,
-  getRootDir,
-  getTemplateDir,
-  TEST_TYPES_CONTENT,
-} from "./utils";
+} from "./generators";
 
 // =============================================================================
 // Helper Functions

@@ -16,15 +16,14 @@ import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 
-import { EXAMPLES, getExampleNames } from "./config";
+import { EXAMPLES, getExampleNames } from "../shared/config";
+import { getRootDir, log } from "../shared/utils";
 import {
-  getRootDir,
-  log,
   runCommandWithStatus,
   extractErrorMessage,
   extractTestResults,
-} from "./utils";
-import { createLocalTestProject } from "./builders";
+} from "../shared/generators";
+import { createLocalTestProject } from "../shared/builders";
 
 // =============================================================================
 // Types

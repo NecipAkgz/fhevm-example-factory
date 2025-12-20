@@ -1,6 +1,6 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "Create FHEVM example projects with a single command - A comprehensive toolkit for building privacy-preserving smart contracts",
   "bin": {
     "create-fhevm-example": "./dist/scripts/index.js"
@@ -14,13 +14,13 @@
     "create": "LOCAL_DEV=1 npx ts-node scripts/index.ts",
     "create:example": "npx ts-node scripts/index.ts --example",
     "create:category": "npx ts-node scripts/index.ts --category",
-    "create:docs": "npx ts-node scripts/generate-docs.ts",
-    "test:all": "npx ts-node scripts/maintenance.ts test-all",
-    "generate:config": "npx ts-node scripts/generate-config.ts",
-    "doctor": "npx ts-node scripts/doctor.ts",
+    "create:docs": "npx ts-node scripts/commands/generate-docs.ts",
+    "test:all": "npx ts-node scripts/commands/maintenance.ts test-all",
+    "generate:config": "npx ts-node scripts/commands/generate-config.ts",
+    "doctor": "npx ts-node scripts/commands/doctor.ts",
     "help:create": "LOCAL_DEV=1 npx ts-node scripts/index.ts --help",
-    "help:docs": "npx ts-node scripts/generate-docs.ts --help",
-    "help:test": "npx ts-node scripts/maintenance.ts test-all --help",
+    "help:docs": "npx ts-node scripts/commands/generate-docs.ts --help",
+    "help:test": "npx ts-node scripts/commands/maintenance.ts test-all --help",
 
     "prepare": "git submodule update --init --recursive || true",
     "prepublishOnly": "npm run build",

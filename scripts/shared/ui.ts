@@ -8,13 +8,8 @@
 import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { EXAMPLES, CATEGORIES } from "./config";
-import {
-  CATEGORY_ICON,
-  CATEGORY_ORDER,
-  MAX_DESCRIPTION_LENGTH,
-  runCommand,
-  extractTestResults,
-} from "./utils";
+import { CATEGORY_ICON, CATEGORY_ORDER, MAX_DESCRIPTION_LENGTH } from "./utils";
+import { runCommand, extractTestResults } from "./generators";
 
 // =============================================================================
 // Category Helpers

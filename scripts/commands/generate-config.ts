@@ -15,13 +15,13 @@ import {
   contractNameToTitle,
   formatCategoryName,
   log,
-} from "./utils";
+} from "../shared/utils";
 import pc from "picocolors";
 
-const ROOT_DIR = path.resolve(__dirname, "..");
+const ROOT_DIR = path.resolve(__dirname, "../..");
 const CONTRACTS_DIR = path.join(ROOT_DIR, "contracts");
 const TEST_DIR = path.join(ROOT_DIR, "test");
-const OUTPUT_FILE = path.join(ROOT_DIR, "scripts/config.ts");
+const OUTPUT_FILE = path.join(ROOT_DIR, "scripts/shared/config.ts");
 
 interface ContractInfo {
   name: string;

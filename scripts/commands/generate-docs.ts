@@ -12,14 +12,9 @@ import pc from "picocolors";
 import * as fs from "fs";
 import * as path from "path";
 
-import { EXAMPLES, getDocsFileName } from "./config";
-import {
-  getRootDir,
-  getContractName,
-  generateGitBookMarkdown,
-  log,
-  handleError,
-} from "./utils";
+import { EXAMPLES, getDocsFileName } from "../shared/config";
+import { getRootDir, getContractName, log, handleError } from "../shared/utils";
+import { generateGitBookMarkdown } from "../shared/generators";
 
 // =============================================================================
 // Documentation Generator

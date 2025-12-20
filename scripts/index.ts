@@ -16,30 +16,30 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
-import { EXAMPLES, CATEGORIES } from "./config";
+import { EXAMPLES, CATEGORIES } from "./shared/config";
 
 import {
-  cloneTemplate,
-  initSubmodule,
   log,
   handleError,
   ERROR_MESSAGES,
   validateExample,
   validateCategory,
   validateDirectoryNotExists,
-} from "./utils";
+} from "./shared/utils";
 
-import { createSingleExample, createCategoryProject } from "./builders";
+import { cloneTemplate, initSubmodule } from "./shared/generators";
+
+import { createSingleExample, createCategoryProject } from "./shared/builders";
 
 import {
   promptSelectCategory,
   promptSelectExampleFromCategory,
   promptSelectCategoryProject,
   runInstallAndTest,
-} from "./ui";
+} from "./shared/ui";
 
-import { runAddMode } from "./add-mode";
-import { handleInteractiveDocs as runDocGeneration } from "./generate-docs";
+import { runAddMode } from "./commands/add-mode";
+import { handleInteractiveDocs as runDocGeneration } from "./commands/generate-docs";
 
 // =============================================================================
 // INTERACTIVE MODE
@@ -373,9 +373,15 @@ ${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━�
 
 ${pc.cyan(pc.bold("📋 CREATE COMMANDS"))}
 
-  ${pc.green("npm run create")}              Interactive mode ${pc.yellow("(recommended)")}
-  ${pc.green("npm run create:example")} ${pc.dim("<name>")}  Create single example
-  ${pc.green("npm run create:category")} ${pc.dim("<name>")} Create category project
+  ${pc.green("npm run create")}              Interactive mode ${pc.yellow(
+      "(recommended)"
+    )}
+  ${pc.green("npm run create:example")} ${pc.dim(
+      "<name>"
+    )}  Create single example
+  ${pc.green("npm run create:category")} ${pc.dim(
+      "<name>"
+    )} Create category project
   ${pc.green("npm run create:docs")}         Generate documentation
 
 ${pc.cyan(pc.bold("🛠️  MAINTENANCE"))}
@@ -400,10 +406,18 @@ ${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━�
 
 ${pc.cyan(pc.bold("📋 USAGE"))}
 
-  ${pc.dim("$")} npx create-fhevm-example                    ${pc.dim("→")} Interactive ${pc.yellow("(recommended)")}
-  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--example")} ${pc.yellow("<name>")}   ${pc.dim("→")} Single example
-  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--category")} ${pc.yellow("<name>")}  ${pc.dim("→")} Category project
-  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--add")}                ${pc.dim("→")} Add to existing project
+  ${pc.dim("$")} npx create-fhevm-example                    ${pc.dim(
+      "→"
+    )} Interactive ${pc.yellow("(recommended)")}
+  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--example")} ${pc.yellow(
+      "<name>"
+    )}   ${pc.dim("→")} Single example
+  ${pc.dim("$")} npx create-fhevm-example ${pc.green("--category")} ${pc.yellow(
+      "<name>"
+    )}  ${pc.dim("→")} Category project
+  ${pc.dim("$")} npx create-fhevm-example ${pc.green(
+      "--add"
+    )}                ${pc.dim("→")} Add to existing project
 
 ${pc.cyan(pc.bold("⚙️  OPTIONS"))}
 
@@ -422,11 +436,17 @@ ${pc.cyan(pc.bold("⚡ EXAMPLES"))}
 
 ${pc.cyan(pc.bold("📦 AVAILABLE"))}
 
-  Examples: ${pc.dim(Object.keys(EXAMPLES).slice(0, 5).join(", "))} ${pc.dim("...")} (${Object.keys(EXAMPLES).length} total)
-  Categories: ${Object.keys(CATEGORIES).map((c) => pc.yellow(c)).join(", ")}
+  Examples: ${pc.dim(Object.keys(EXAMPLES).slice(0, 5).join(", "))} ${pc.dim(
+      "..."
+    )} (${Object.keys(EXAMPLES).length} total)
+  Categories: ${Object.keys(CATEGORIES)
+    .map((c) => pc.yellow(c))
+    .join(", ")}
 
 ${pc.dim("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")}
-${pc.dim("📚 Docs:")} ${pc.blue("https://github.com/NecipAkgz/fhevm-example-factory")}
+${pc.dim("📚 Docs:")} ${pc.blue(
+      "https://github.com/NecipAkgz/fhevm-example-factory"
+    )}
 `);
   }
 }
