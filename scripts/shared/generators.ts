@@ -8,7 +8,7 @@
 import * as fs from "fs";
 import * as path from "path";
 import { spawn } from "child_process";
-import { TEST_TYPES_CONTENT } from "./utils";
+import { TEST_TYPES_CONTENT, GITIGNORE_CONTENT } from "./utils";
 
 // =============================================================================
 // Template & Scaffolding Utilities
@@ -66,6 +66,12 @@ export function cleanupTemplate(outputDir: string): void {
     path.join(outputDir, "test", "types.ts"),
     TEST_TYPES_CONTENT
   );
+
+  // Create .gitignore (npm ignores .gitignore files during publish)
+  const gitignorePath = path.join(outputDir, ".gitignore");
+  if (!fs.existsSync(gitignorePath)) {
+    fs.writeFileSync(gitignorePath, GITIGNORE_CONTENT);
+  }
 }
 
 // =============================================================================

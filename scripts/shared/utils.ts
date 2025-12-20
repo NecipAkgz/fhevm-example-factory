@@ -35,6 +35,34 @@ export const EXCLUDE_DIRS = [
   ".git",
 ];
 
+/** Gitignore content for scaffolded projects (npm ignores .gitignore during publish) */
+export const GITIGNORE_CONTENT = `# fhevm
+fhevmTemp
+
+# directories
+.coverage_artifacts
+.coverage_cache
+.coverage_contracts
+artifacts
+build
+cache
+coverage
+dist
+node_modules
+types
+deployments
+tmp
+
+# files
+*.env
+*.log
+.DS_Store
+.pnp.*
+coverage.json
+pnpm-lock.yaml
+yarn.lock
+`;
+
 /** FHEVM package versions for --add mode */
 export const FHEVM_DEPENDENCIES = {
   dependencies: {
