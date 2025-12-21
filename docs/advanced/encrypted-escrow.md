@@ -40,24 +40,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Encrypted Escrow service - amounts hidden until release!
  *
- * @dev Demonstrates secure escrow with FHE:
- *      - Escrow amounts remain encrypted
- *      - Conditions verified without revealing values
- *      - Multi-party agreement pattern
- *      - Dispute resolution with arbiter
- *
- * Flow:
- * 1. Buyer creates escrow with encrypted amount
- * 2. Buyer deposits funds
- * 3. Seller delivers goods/services
- * 4. Buyer releases funds OR disputes
- * 5. Arbiter resolves disputes if needed
- *
- * ⚠️ IMPORTANT: Amount revealed only on release/refund
+ * @dev Flow: createEscrow() → fundEscrow() → release()/requestRefund()/raiseDispute()
+ *      Multi-party agreement with arbiter for disputes.
  */
 contract EncryptedEscrow is ZamaEthereumConfig {
-    // ==================== TYPES ====================
-
     enum EscrowState {
         Created, // Escrow created, awaiting deposit
         Funded, // Funds deposited
@@ -77,8 +63,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
         uint256 deadline;
     }
 
-    // ==================== STATE ====================
-
     /// Contract owner
     address public owner;
 
@@ -90,8 +74,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
 
     /// Arbiter fee percentage (default 1%)
     uint256 public arbiterFeePercent;
-
-    // ==================== EVENTS ====================
 
     /// @notice Emitted when escrow is created
     /// @param escrowId ID of the escrow
@@ -128,8 +110,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
     /// @param winner Address favored in resolution
     event DisputeResolved(uint256 indexed escrowId, address indexed winner);
 
-    // ==================== CONSTRUCTOR ====================
-
     /// @notice Creates the escrow contract
     /// @param _arbiterFeePercent Fee percentage for arbiter (0-10)
     constructor(uint256 _arbiterFeePercent) {
@@ -137,8 +117,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
         owner = msg.sender;
         arbiterFeePercent = _arbiterFeePercent;
     }
-
-    // ==================== ESCROW CREATION ====================
 
     /// @notice Create a new escrow with encrypted amount
     /// @param seller Address of the seller
@@ -200,8 +178,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
         emit EscrowFunded(escrowId, msg.value);
     }
 
-    // ==================== RELEASE / REFUND ====================
-
     /// @notice Release funds to seller
     /// @dev Only buyer can release after delivery
     /// @param escrowId ID of escrow to release
@@ -238,8 +214,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
 
         emit FundsRefunded(escrowId, escrow.buyer);
     }
-
-    // ==================== DISPUTE RESOLUTION ====================
 
     /// @notice Raise a dispute
     /// @param escrowId ID of escrow
@@ -291,8 +265,6 @@ contract EncryptedEscrow is ZamaEthereumConfig {
 
         emit DisputeResolved(escrowId, winner);
     }
-
-    // ==================== VIEW FUNCTIONS ====================
 
     /// @notice Get escrow details
     function getEscrow(

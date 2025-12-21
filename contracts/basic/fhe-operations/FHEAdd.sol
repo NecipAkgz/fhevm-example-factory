@@ -5,21 +5,19 @@ import {FHE, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Simple example: adding two encrypted values (a + b)
- *
- * @dev Demonstrates the most basic FHE operation and permission flow.
+ * @notice Simple example demonstrating addition of two encrypted values (a + b)
+
+ * @dev Shows the most basic FHE operation and permission flow.
+ *      ⚡ Gas: FHE.add() costs ~100k gas (coprocessor call)
  */
 contract FHEAdd is ZamaEthereumConfig {
     euint8 private _a;
     euint8 private _b;
     euint8 private _result;
 
-    constructor() {}
-
     /// @notice Set the first operand (encrypted)
     function setA(externalEuint8 inputA, bytes calldata inputProof) external {
         _a = FHE.fromExternal(inputA, inputProof);
-        // Only contract needs permission to use this for computation
         FHE.allowThis(_a);
     }
 
@@ -30,21 +28,17 @@ contract FHEAdd is ZamaEthereumConfig {
     }
 
     /// @notice Compute a + b on encrypted values
-    /// @dev The contract computes on ciphertexts - it never sees actual values!
+    /// @dev Contract operates on ciphertexts - never sees actual values!
     function computeAPlusB() external {
-        // 🔐 Addition on encrypted values
-        // Neither the contract nor anyone else knows what a, b, or result are
+        // 🧮 Homomorphic: operates on encrypted data without decrypting
         _result = FHE.add(_a, _b);
 
-        // 📋 PERMISSION FLOW:
-        // During this function, contract has "ephemeral" permission on _result
-        // When function ends, ephemeral permission is revoked
-        // We need PERMANENT permissions for future access:
-        FHE.allowThis(_result); // Contract can use result later
-        FHE.allow(_result, msg.sender); // Caller can decrypt result
+        // 🔑 Why both? allowThis = contract can use it, allow = user can decrypt
+        FHE.allowThis(_result);
+        FHE.allow(_result, msg.sender);
     }
 
-    /// @notice Returns the encrypted result
+    /// @notice Returns the encrypted result handle
     function result() public view returns (euint8) {
         return _result;
     }

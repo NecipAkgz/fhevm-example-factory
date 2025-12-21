@@ -45,24 +45,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Private Payroll system - salaries stay encrypted, only employees see their own!
  *
- * @dev Demonstrates confidential enterprise use case:
- *      - Employee salaries stored encrypted
- *      - Bulk payments without revealing individual amounts
- *      - Each employee can decrypt only their own salary
- *      - Total payroll visible to employer for budgeting
- *
- * Flow:
- * 1. Employer adds employees with encrypted salaries
- * 2. Employer funds the contract
- * 3. Employer calls payAll() to process all salaries
- * 4. Employees can view (decrypt) their own salary
- *
- * ⚠️ IMPORTANT: Uses cumulative encrypted sum for total payroll tracking
+ * @dev Flow: addEmployee() → fund() → processPayment()
+ *      Each employee can decrypt only their own salary.
  */
 contract PrivatePayroll is ZamaEthereumConfig {
-    // ==================== STATE ====================
-
-    /// Contract owner (employer)
     address public employer;
 
     /// List of employee addresses
@@ -83,9 +69,7 @@ contract PrivatePayroll is ZamaEthereumConfig {
     /// Payment period in seconds (default: 30 days)
     uint256 public paymentPeriod;
 
-    // ==================== EVENTS ====================
-
-    /// @notice Emitted when a new employee is added
+    /// Emitted when a new employee is added
     /// @param employee Address of the employee
     event EmployeeAdded(address indexed employee);
 
@@ -106,8 +90,6 @@ contract PrivatePayroll is ZamaEthereumConfig {
     /// @param amount Amount funded
     event ContractFunded(uint256 amount);
 
-    // ==================== MODIFIERS ====================
-
     modifier onlyEmployer() {
         require(msg.sender == employer, "Only employer");
         _;
@@ -118,18 +100,12 @@ contract PrivatePayroll is ZamaEthereumConfig {
         _;
     }
 
-    // ==================== CONSTRUCTOR ====================
-
-    /// @notice Creates a new private payroll contract
-    /// @param _paymentPeriod Time between payments in seconds
     constructor(uint256 _paymentPeriod) {
         employer = msg.sender;
         paymentPeriod = _paymentPeriod > 0 ? _paymentPeriod : 30 days;
         _totalSalaries = FHE.asEuint64(0);
         FHE.allowThis(_totalSalaries);
     }
-
-    // ==================== EMPLOYEE MANAGEMENT ====================
 
     /// @notice Add a new employee with encrypted salary
     /// @param employee Address of the employee
@@ -223,8 +199,6 @@ contract PrivatePayroll is ZamaEthereumConfig {
         emit EmployeeRemoved(employee);
     }
 
-    // ==================== PAYMENTS ====================
-
     /// @notice Fund the contract for payroll
     function fund() external payable onlyEmployer {
         require(msg.value > 0, "Must send funds");
@@ -264,9 +238,7 @@ contract PrivatePayroll is ZamaEthereumConfig {
         emit PaymentProcessed(employee, block.timestamp);
     }
 
-    // ==================== VIEW FUNCTIONS ====================
-
-    /// @notice Get encrypted salary handle for an employee
+    /// @notice Get encrypted salary handle for employee
     /// @dev Only callable by the employee themselves
     function getMySalary() external view onlyEmployee returns (euint64) {
         return _salaries[msg.sender];
@@ -308,8 +280,6 @@ contract PrivatePayroll is ZamaEthereumConfig {
     {
         return (employees.length, address(this).balance, paymentPeriod);
     }
-
-    // ==================== RECEIVE ====================
 
     /// @notice Accept ETH deposits
     receive() external payable {

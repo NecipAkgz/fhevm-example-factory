@@ -47,23 +47,11 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Encrypted Poker - Texas Hold'em with hidden hole cards!
  *
- * @dev Demonstrates multi-player FHE game mechanics:
- *      - Each player's hole cards remain encrypted until showdown
- *      - Hand strength computed via FHE without revealing cards
- *      - Winner determined by encrypted comparison
- *      - Only winning hand revealed, loser's cards stay private
- *
- * Simplified rules for demo:
- * - 2 players (heads-up)
- * - Cards encoded as 1-13 (Ace=1, King=13)
- * - Hand strength = card1 + card2 (simplified for demo)
- * - Higher total wins
- *
- * ⚠️ IMPORTANT: Production poker would need proper hand rankings!
+ * @dev Flow: joinGame() → bet()/fold() → showdown() → revealWinner()
+ *      Hand strength = card1 + card2 (simplified for demo)
+ *      ⚠️ Production needs proper hand rankings (flush, straight, etc.)
  */
 contract EncryptedPoker is ZamaEthereumConfig {
-    // ==================== TYPES ====================
-
     enum GameState {
         WaitingForPlayers, // Waiting for 2 players
         CardsDealt, // Both players have cards
@@ -80,8 +68,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         uint256 bet;
         bool folded;
     }
-
-    // ==================== STATE ====================
 
     /// Game state
     GameState public state;
@@ -103,8 +89,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
 
     /// Encrypted comparison result (true if player 0 wins)
     ebool private _player0Wins;
-
-    // ==================== EVENTS ====================
 
     /// @notice Emitted when a player joins
     /// @param player Address of joining player
@@ -131,8 +115,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
     /// @param pot Total pot won
     event GameWon(address indexed winner, uint256 pot);
 
-    // ==================== CONSTRUCTOR ====================
-
     /// @notice Creates a new poker game
     /// @param _minBet Minimum bet amount in wei
     constructor(uint256 _minBet) {
@@ -141,8 +123,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         gameId = 1;
         state = GameState.WaitingForPlayers;
     }
-
-    // ==================== JOIN GAME ====================
 
     /// @notice Join the game with encrypted hole cards
     /// @param encCard1 First encrypted card (1-13)
@@ -207,8 +187,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         emit PlayerJoined(msg.sender, seat);
     }
 
-    // ==================== BETTING ====================
-
     /// @notice Place a bet
     function bet() external payable {
         require(
@@ -253,8 +231,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         emit PlayerFolded(msg.sender);
         emit GameWon(winner, winnings);
     }
-
-    // ==================== SHOWDOWN ====================
 
     /// @notice Initiate showdown - compare hands using FHE
     function showdown() external {
@@ -310,8 +286,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         emit GameWon(winner, winnings);
     }
 
-    // ==================== RESET ====================
-
     /// @notice Reset for a new game
     function resetGame() external {
         require(state == GameState.Finished, "Game not finished");
@@ -323,8 +297,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         state = GameState.WaitingForPlayers;
         gameId++;
     }
-
-    // ==================== VIEW FUNCTIONS ====================
 
     /// @notice Get game info
     function getGameInfo()
@@ -360,8 +332,6 @@ contract EncryptedPoker is ZamaEthereumConfig {
         uint8 seat = _getSeat(msg.sender);
         return (_players[seat].card1, _players[seat].card2);
     }
-
-    // ==================== INTERNAL ====================
 
     function _getSeat(address player) internal view returns (uint8) {
         if (_players[0].addr == player) return 0;

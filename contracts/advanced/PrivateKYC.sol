@@ -14,22 +14,11 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Private KYC - verify identity without revealing personal data!
  *
- * @dev Demonstrates identity verification using FHE predicates:
- *      - Users submit encrypted KYC attributes (age, country, credit score)
- *      - Verifiers check conditions without seeing actual values
- *      - Only boolean results revealed: "Is 18+?", "Is from allowed country?"
- *      - Personal data never leaves encrypted form
- *
- * Verification types:
- * 1. Age verification: isAbove18(), isAbove21()
- * 2. Country check: isFromAllowedCountry()
- * 3. Credit score: hasCreditScoreAbove(threshold)
- *
- * ⚠️ IMPORTANT: This is a demo - production KYC needs trusted attesters!
+ * @dev Flow: submitKYC() → verifyAge18()/verifyGoodCredit()/etc.
+ *      Returns encrypted booleans: "Is 18+?", "Good credit?" without revealing actual values.
+ *      ⚠️ Production KYC needs trusted attesters!
  */
 contract PrivateKYC is ZamaEthereumConfig {
-    // ==================== TYPES ====================
-
     struct Identity {
         euint8 age; // 0-255 years
         euint8 countryCode; // ISO 3166-1 numeric (1-255)
@@ -37,8 +26,6 @@ contract PrivateKYC is ZamaEthereumConfig {
         bool isVerified; // Has submitted KYC
         uint256 verifiedAt; // Timestamp of verification
     }
-
-    // ==================== STATE ====================
 
     /// Contract owner (KYC admin)
     address public owner;
@@ -55,8 +42,6 @@ contract PrivateKYC is ZamaEthereumConfig {
 
     /// Minimum credit score for "good" rating
     uint16 public constant MIN_CREDIT_GOOD = 700;
-
-    // ==================== EVENTS ====================
 
     /// @notice Emitted when user submits KYC
     /// @param user Address of user
@@ -76,8 +61,6 @@ contract PrivateKYC is ZamaEthereumConfig {
     /// @param minAge Minimum age required
     event AgeVerificationRequested(address indexed user, uint8 minAge);
 
-    // ==================== MODIFIERS ====================
-
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner");
         _;
@@ -87,8 +70,6 @@ contract PrivateKYC is ZamaEthereumConfig {
         require(_identities[user].isVerified, "No KYC submitted");
         _;
     }
-
-    // ==================== CONSTRUCTOR ====================
 
     /// @notice Creates the KYC contract
     /// @param _allowedCountryCodes Initial list of allowed country codes
@@ -100,8 +81,6 @@ contract PrivateKYC is ZamaEthereumConfig {
             allowedCountries[_allowedCountryCodes[i]] = true;
         }
     }
-
-    // ==================== KYC SUBMISSION ====================
 
     /// @notice Submit encrypted KYC data
     /// @param encAge Encrypted age
@@ -146,8 +125,6 @@ contract PrivateKYC is ZamaEthereumConfig {
         delete _identities[msg.sender];
         emit KYCRevoked(msg.sender);
     }
-
-    // ==================== VERIFICATION FUNCTIONS ====================
 
     /// @notice Check if user is 18 or older
     /// @param user Address to verify
@@ -232,8 +209,6 @@ contract PrivateKYC is ZamaEthereumConfig {
         return result;
     }
 
-    // ==================== DECRYPTABLE VERIFICATION ====================
-
     /// @notice Request age verification with public result
     /// @dev Makes the result publicly decryptable
     /// @param user Address to verify
@@ -251,8 +226,6 @@ contract PrivateKYC is ZamaEthereumConfig {
         emit AgeVerificationRequested(user, minAge);
         return result;
     }
-
-    // ==================== ADMIN FUNCTIONS ====================
 
     /// @notice Update country allowlist
     /// @param countryCode Country code to update
@@ -277,8 +250,6 @@ contract PrivateKYC is ZamaEthereumConfig {
             emit CountryAllowlistUpdated(countryCodes[i], allowed);
         }
     }
-
-    // ==================== VIEW FUNCTIONS ====================
 
     /// @notice Check if user has submitted KYC
     function hasSubmittedKYC(address user) external view returns (bool) {

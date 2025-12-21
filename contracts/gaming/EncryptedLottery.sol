@@ -13,23 +13,11 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Encrypted Lottery with private ticket numbers - fair and verifiable!
  *
- * @dev Demonstrates FHE random selection and encrypted matching:
- *      - Players purchase tickets with encrypted numbers
- *      - Winning number generated using block randomness + FHE
- *      - Winners identified via FHE.eq without revealing ticket numbers
- *      - Only winner's ticket revealed at end
- *
- * Flow:
- * 1. Lottery created with ticket price and duration
- * 2. Players buy tickets with encrypted numbers
- * 3. Owner draws winning number at end
- * 4. Winners can claim prizes
- *
- * ⚠️ IMPORTANT: Block randomness is predictable - use VRF in production!
+ * @dev Flow: buyTicket() → startDrawing() → checkAndClaim() → revealWinner()
+ *      ⚡ Gas: Loop in checkAndClaim can be expensive with many tickets!
+ *      ⚠️ Block randomness is predictable - use VRF in production!
  */
 contract EncryptedLottery is ZamaEthereumConfig {
-    // ==================== TYPES ====================
-
     enum LotteryState {
         Open, // Accepting tickets
         Drawing, // Drawing in progress
@@ -41,9 +29,6 @@ contract EncryptedLottery is ZamaEthereumConfig {
         euint64 number;
     }
 
-    // ==================== STATE ====================
-
-    /// Lottery owner
     address public owner;
 
     /// Current lottery state
@@ -73,9 +58,7 @@ contract EncryptedLottery is ZamaEthereumConfig {
     /// Lottery round number
     uint256 public roundNumber;
 
-    // ==================== EVENTS ====================
-
-    /// @notice Emitted when a ticket is purchased
+    /// Emitted when a ticket is purchased
     /// @param buyer Address of ticket buyer
     /// @param ticketIndex Index of the ticket
     event TicketPurchased(address indexed buyer, uint256 indexed ticketIndex);
@@ -94,18 +77,11 @@ contract EncryptedLottery is ZamaEthereumConfig {
     /// @param rollover Amount rolled to next round
     event NoWinner(uint256 indexed roundNumber, uint256 rollover);
 
-    // ==================== MODIFIERS ====================
-
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner");
         _;
     }
 
-    // ==================== CONSTRUCTOR ====================
-
-    /// @notice Creates a new encrypted lottery
-    /// @param _ticketPrice Price per ticket in wei
-    /// @param _duration Duration in seconds
     constructor(uint256 _ticketPrice, uint256 _duration) {
         require(_ticketPrice > 0, "Ticket price must be > 0");
         require(_duration > 0, "Duration must be > 0");
@@ -117,9 +93,7 @@ contract EncryptedLottery is ZamaEthereumConfig {
         roundNumber = 1;
     }
 
-    // ==================== TICKET PURCHASE ====================
-
-    /// @notice Purchase a lottery ticket with an encrypted number
+    /// @notice Purchase a lottery ticket with encrypted number
     /// @param encryptedNumber Your encrypted ticket number
     /// @param inputProof Proof validating the encrypted input
     function buyTicket(
@@ -130,7 +104,7 @@ contract EncryptedLottery is ZamaEthereumConfig {
         require(block.timestamp < endTime, "Lottery ended");
         require(msg.value >= ticketPrice, "Insufficient payment");
 
-        // 🔐 Convert external encrypted input
+        // Convert and store encrypted ticket number
         euint64 ticketNumber = FHE.fromExternal(encryptedNumber, inputProof);
 
         // ✅ Grant contract permission
@@ -145,8 +119,6 @@ contract EncryptedLottery is ZamaEthereumConfig {
 
         emit TicketPurchased(msg.sender, ticketIndex);
     }
-
-    // ==================== DRAWING ====================
 
     /// @notice Start the drawing process
     /// @dev Only owner can call after lottery ends
@@ -261,9 +233,6 @@ contract EncryptedLottery is ZamaEthereumConfig {
         // prizePool carries over if no winner
     }
 
-    // ==================== VIEW FUNCTIONS ====================
-
-    /// @notice Get total number of tickets sold
     function getTicketCount() external view returns (uint256) {
         return _tickets.length;
     }

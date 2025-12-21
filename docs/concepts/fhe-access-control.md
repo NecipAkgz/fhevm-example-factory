@@ -36,20 +36,14 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient. Includes common mistakes and correct implementations.
- *
- * @dev Key functions:
- *      FHE.allow(handle, address) - permanent permission
- *      FHE.allowThis(handle)      - permission for contract itself
- *      FHE.allowTransient(handle, address) - temporary, expires at tx end
+ * @notice Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient with common mistakes.
+
+ * @dev allow() = permanent, allowThis() = contract permission, allowTransient() = expires at TX end
+ *      Both allowThis + allow required for user decryption!
  */
 contract FHEAccessControl is ZamaEthereumConfig {
     euint32 private _secretValue;
     mapping(address => bool) public hasAccess;
-
-    constructor() {}
-
-    // ==================== CORRECT PATTERN ====================
 
     /// @notice ✅ CORRECT: Full access pattern for user decryption
     function storeWithFullAccess(
@@ -58,13 +52,12 @@ contract FHEAccessControl is ZamaEthereumConfig {
     ) external {
         _secretValue = FHE.fromExternal(input, inputProof);
 
-        // ⚠️ CRITICAL: BOTH are required for user decryption!
-        FHE.allowThis(_secretValue); // Contract can operate on it
-        FHE.allow(_secretValue, msg.sender); // User can decrypt it
-
-        // ❓ Why allowThis is needed for user decryption?
-        // User decryption = re-encryption for user's key
-        // This requires contract's permission to "release" the value
+        // Why BOTH allowThis + allow?
+        // - allowThis: Contract authorizes "releasing" the encrypted value
+        // - allow(user): User can request decryption for their key
+        // Missing either = decryption fails!
+        FHE.allowThis(_secretValue);
+        FHE.allow(_secretValue, msg.sender);
 
         hasAccess[msg.sender] = true;
     }
@@ -73,7 +66,8 @@ contract FHEAccessControl is ZamaEthereumConfig {
     function grantAccess(address user) external {
         require(hasAccess[msg.sender], "Caller has no access to grant");
 
-        // ✅ Works because contract has allowThis permission
+        // Why this works: Contract already has allowThis from storeWithFullAccess
+        // We only need to grant allow(user) for the new user
         FHE.allow(_secretValue, user);
         hasAccess[user] = true;
     }
@@ -82,8 +76,6 @@ contract FHEAccessControl is ZamaEthereumConfig {
         return _secretValue;
     }
 
-    // ==================== WRONG PATTERNS (EDUCATIONAL) ====================
-
     /// @notice ❌ WRONG: Missing allowThis → user decryption FAILS
     function storeWithoutAllowThis(
         externalEuint32 input,
@@ -91,8 +83,9 @@ contract FHEAccessControl is ZamaEthereumConfig {
     ) external {
         _secretValue = FHE.fromExternal(input, inputProof);
 
-        // ❌ Missing: FHE.allowThis(_secretValue)
-        // User has permission, but decryption will FAIL!
+        // ❌ Common mistake: Only allow(user) without allowThis
+        // Result: User has permission but can't decrypt!
+        // Why? Decryption needs contract to authorize the release
         FHE.allow(_secretValue, msg.sender);
     }
 
@@ -103,21 +96,23 @@ contract FHEAccessControl is ZamaEthereumConfig {
     ) external {
         _secretValue = FHE.fromExternal(input, inputProof);
 
+        // ❌ Another mistake: Only allowThis without allow(user)
+        // Result: Contract can compute but no one can decrypt!
         FHE.allowThis(_secretValue);
-        // ❌ Missing: FHE.allow(_secretValue, msg.sender)
-        // Contract can operate, but no one can decrypt!
     }
 
-    // ==================== TRANSIENT ACCESS ====================
-
     /// @notice Temporary access - expires at end of transaction
-    /// @dev Use for: passing values between contracts in same tx
+    /// @dev ⚡ Gas: allowTransient ~50% cheaper than allow!
+    ///      Use for passing values between contracts in same TX
     function computeAndShareTransient(
         address recipient
     ) external returns (euint32) {
         euint32 computed = FHE.add(_secretValue, FHE.asEuint32(1));
 
-        // 💨 Transient = cheaper than permanent, auto-expires
+        // Why allowTransient instead of allow?
+        // - Cheaper: ~50% less gas than permanent allow
+        // - Auto-cleanup: Expires at TX end (no storage pollution)
+        // - Use case: Passing values between contracts in same transaction
         FHE.allowTransient(computed, recipient);
 
         return computed;

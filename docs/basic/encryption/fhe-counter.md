@@ -10,7 +10,7 @@ This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
 <details>
-<summary>🔐 FHE API Reference (7 items)</summary>
+<summary>🔐 FHE API Reference (8 items)</summary>
 
 **Types:** `euint32` · `externalEuint32`
 
@@ -19,6 +19,7 @@ This ensures Hardhat can compile and test your contracts as expected.
 - `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
 - `FHE.allowThis()` - Grants contract permission to operate on ciphertext
 - `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.select()` - Encrypted if-then-else: select(cond, a, b) → returns a if true, b if false
 - `FHE.sub()` - Homomorphic subtraction: result = a - b (underflow wraps)
 
 </details>
@@ -36,46 +37,45 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.
- *
- * @dev Demonstrates basic FHE operations: encryption, computation, and permission management.
- *      Shows how to work with encrypted values without ever revealing the underlying data.
+
+ * @dev Demonstrates basic FHE workflow: fromExternal() → compute → allow permissions.
+ *      All arithmetic happens on encrypted values without revealing the count.
  */
 contract FHECounter is ZamaEthereumConfig {
-    // 🔐 The count is always encrypted - no one can see the actual value
     euint32 private _count;
 
-    /// @notice Returns the encrypted count handle (not the actual value!)
     function getCount() external view returns (euint32) {
         return _count;
     }
 
-    /// @notice Increments the counter by an encrypted value
+    /// @notice Increments counter by encrypted amount
+    /// @dev Why allowThis + allow? Contract needs permission to store,
+    ///      user needs permission to decrypt. Both required!
     function increment(
         externalEuint32 inputEuint32,
         bytes calldata inputProof
     ) external {
-        // Convert external encrypted input to internal handle
-        // The proof is verified automatically
+        // 🔐 Why proof? Ensures valid ciphertext encrypted for THIS contract
         euint32 encryptedValue = FHE.fromExternal(inputEuint32, inputProof);
 
-        // Add encrypted values - computation happens on ciphertexts
-        // Neither the contract nor anyone else sees the actual numbers
+        // 🧮 Homomorphic add: works on encrypted data
         _count = FHE.add(_count, encryptedValue);
 
-        // ⚠️ CRITICAL: Both permissions required for user decryption!
-        FHE.allowThis(_count); // Contract can continue using this value
-        FHE.allow(_count, msg.sender); // Caller can decrypt it
+        // 🔑 Both needed: allowThis = contract stores, allow = user decrypts
+        FHE.allowThis(_count);
+        FHE.allow(_count, msg.sender);
     }
 
-    /// @notice Decrements the counter by an encrypted value
+    /// @notice Decrements counter by encrypted amount
+    /// @dev ⚠️ No underflow protection! FHE.sub wraps around at 0.
+    ///      ❌ WRONG: Checking result < 0 reveals information
+    ///      ✅ CORRECT: Use application-level balance tracking or FHE.select()
     function decrement(
         externalEuint32 inputEuint32,
         bytes calldata inputProof
     ) external {
         euint32 encryptedValue = FHE.fromExternal(inputEuint32, inputProof);
 
-        // Subtract encrypted values
-        // ⚠️ No underflow protection here - add checks in production!
         _count = FHE.sub(_count, encryptedValue);
 
         FHE.allowThis(_count);

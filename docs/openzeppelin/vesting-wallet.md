@@ -47,19 +47,17 @@ import {
 } from "@openzeppelin/confidential-contracts/interfaces/IERC7984.sol";
 
 /**
- * @notice Linear vesting wallet for ERC7984 tokens - amounts stay encrypted!
- *
- * @dev Timeline: |--START--|---VESTING---|--END--|
- *                 0%        linear        100%
- *
- * All vesting calculations are performed on encrypted values using FHE operations.
+ * @notice Linear vesting wallet for ERC7984 tokens with fully encrypted amounts and schedules.
+
+ * @dev Timeline: |--START--|---VESTING---|--END--| (0% → linear → 100%)
+ *      All vesting calculations performed on encrypted values using FHE.
+ *      ⚡ Gas: FHE.div/mul operations are expensive (~200k gas each)
  */
 contract VestingWalletExample is
     Ownable,
     ReentrancyGuardTransient,
     ZamaEthereumConfig
 {
-    // 🔐 Track released amounts per token (encrypted)
     mapping(address token => euint128) private _tokenReleased;
     uint64 private _start;
     uint64 private _duration;
@@ -84,8 +82,6 @@ contract VestingWalletExample is
         _start = startTimestamp;
         _duration = durationSeconds;
     }
-
-    // ==================== VIEW FUNCTIONS ====================
 
     function start() public view virtual returns (uint64) {
         return _start;
@@ -112,9 +108,7 @@ contract VestingWalletExample is
         euint128 vestedAmount_ = vestedAmount(token, uint48(block.timestamp));
         euint128 releasedAmount = released(token);
 
-        // 🔀 FHE.select: encrypted if-else
-        // If vested >= released: return (vested - released)
-        // Else: return 0
+        // Encrypted comparison: if vested >= released → return difference, else 0
         ebool canRelease = FHE.ge(vestedAmount_, releasedAmount);
         return
             FHE.select(
@@ -124,11 +118,10 @@ contract VestingWalletExample is
             );
     }
 
-    /// @notice Release vested tokens to beneficiary
     function release(address token) public virtual nonReentrant {
         euint64 amount = releasable(token);
 
-        // Transfer encrypted amount to owner
+        // Transfer encrypted amount using allowTransient (cheaper!)
         FHE.allowTransient(amount, token);
         euint64 amountSent = IERC7984(token).confidentialTransfer(
             owner(),
@@ -157,8 +150,6 @@ contract VestingWalletExample is
         return _vestingSchedule(totalAllocation, timestamp);
     }
 
-    // ==================== INTERNAL ====================
-
     /// @dev Linear vesting: (total * elapsed) / duration
     function _vestingSchedule(
         euint128 totalAllocation,
@@ -171,7 +162,7 @@ contract VestingWalletExample is
             // After end: 100% vested
             return totalAllocation;
         } else {
-            // During vesting: linear unlock
+            // ⚡ Gas warning: FHE.mul + FHE.div cost ~400k gas combined!
             return
                 FHE.div(
                     FHE.mul(totalAllocation, (timestamp - start())),

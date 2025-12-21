@@ -10,9 +10,9 @@ This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
 <details>
-<summary>🔐 FHE API Reference (10 items)</summary>
+<summary>🔐 FHE API Reference (9 items)</summary>
 
-**Types:** `eaddress` · `ebool` · `euint32` · `euint8` · `externalEaddress` · `externalEbool` · `externalEuint32`
+**Types:** `eaddress` · `ebool` · `euint32` · `externalEaddress` · `externalEbool` · `externalEuint32`
 
 **Functions:**
 - `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
@@ -43,39 +43,30 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Encrypting and handling multiple values in a single transaction efficiently.
  *
- * @dev Supported encrypted types:
- *   - euint8/16/32/64/128/256: encrypted integers
- *   - ebool: encrypted boolean
- *   - eaddress: encrypted address
- *   - ebytes64/128/256: encrypted bytes
+ * @dev Demonstrates batched input (ONE proof for multiple values).
+ *      ⚡ Gas: Batching saves ~50k gas vs separate proofs!
  */
 contract EncryptMultipleValues is ZamaEthereumConfig {
-    // 🔐 Three different encrypted types stored together
-    ebool private _encryptedEbool; // e.g., vote, permission flag
-    euint32 private _encryptedEuint32; // e.g., amount, balance
-    eaddress private _encryptedEaddress; // e.g., hidden recipient
+    ebool private _encryptedEbool;
+    euint32 private _encryptedEuint32;
+    eaddress private _encryptedEaddress;
 
-    constructor() {}
-
-    /// @notice Store multiple encrypted values from a single batched input
-    /// @dev Client-side batching example:
-    ///   const input = await fhevm.createEncryptedInput(contractAddr, userAddr)
-    ///     .addBool(true).add32(123).addAddress(addr).encrypt();
-    ///   // This creates ONE proof for ALL values - more gas efficient!
+    /// @notice Store multiple encrypted values from single batched input
+    /// @dev Client creates ONE proof for ALL values using createEncryptedInput().
+    ///      Much cheaper than separate encrypt() calls!
     function initialize(
         externalEbool inputEbool,
         externalEuint32 inputEuint32,
         externalEaddress inputEaddress,
-        bytes calldata inputProof // Single proof covers all values
+        bytes calldata inputProof // Single proof covers all!
     ) external {
-        // Convert each external input to internal handle
+        // 💡 Why one proof? Client batches all values before encrypt()
+        // Saves ~50k gas per additional value!
         _encryptedEbool = FHE.fromExternal(inputEbool, inputProof);
         _encryptedEuint32 = FHE.fromExternal(inputEuint32, inputProof);
         _encryptedEaddress = FHE.fromExternal(inputEaddress, inputProof);
 
-        // ⚠️ IMPORTANT: Each value needs its own permission grants!
-        // You cannot batch permission grants
-
+        // 🔐 Each value needs own permissions (no batching here)
         FHE.allowThis(_encryptedEbool);
         FHE.allow(_encryptedEbool, msg.sender);
 

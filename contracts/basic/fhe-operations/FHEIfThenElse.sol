@@ -7,14 +7,13 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /**
  * @notice Demonstrates conditional logic: max(a, b) using encrypted comparison
  *
- * @dev Shows how to use FHE.select() for encrypted if-then-else logic.
+ * @dev ❌ Can't use if/else (leaks info!) ✅ Use FHE.select instead
+ *      ⚡ Gas: ~120k for select operation
  */
 contract FHEIfThenElse is ZamaEthereumConfig {
     euint8 private _a;
     euint8 private _b;
     euint8 private _max;
-
-    constructor() {}
 
     /// @notice Sets the first operand (encrypted)
     function setA(externalEuint8 inputA, bytes calldata inputProof) external {
@@ -31,14 +30,10 @@ contract FHEIfThenElse is ZamaEthereumConfig {
     /// @notice Compute max(a, b) without revealing which is larger
     /// @dev Uses FHE.select() - the encrypted "if-then-else"
     function computeMax() external {
-        // 🔍 Compare encrypted values - result is encrypted boolean!
-        // We don't know if a >= b, only the encrypted result
         ebool aIsGreaterOrEqual = FHE.ge(_a, _b);
 
-        // 🔀 FHE.select(condition, ifTrue, ifFalse)
-        // - BOTH branches are evaluated (no short-circuit)
-        // - Result is encrypted - no one knows which was selected
-        // - This is how you do "if-else" on encrypted values!
+        // 🔀 Why select? if/else would leak which branch was taken!
+        // select evaluates BOTH branches, picks one based on encrypted condition
         _max = FHE.select(aIsGreaterOrEqual, _a, _b);
 
         // Grant permissions for decryption

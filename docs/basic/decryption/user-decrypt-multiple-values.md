@@ -37,33 +37,25 @@ import {FHE, ebool, euint32, euint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates user decryption of multiple encrypted values
+ * @notice Demonstrates user decryption of multiple encrypted values with different types.
  *
- * @dev Shows how to create encrypted values from plaintext and grant permissions
- *      for multiple values of different types (ebool, euint32, euint64).
+ * @dev Each value needs separate permission grants (no batching).
+ *      ⚠️ Cannot batch permission grants - must call allow() for each value!
  */
 contract UserDecryptMultipleValues is ZamaEthereumConfig {
-    // 🔐 Multiple encrypted values of different types
     ebool private _encryptedBool;
     euint32 private _encryptedUint32;
     euint64 private _encryptedUint64;
 
-    constructor() {}
-
-    /// @notice Initialize multiple encrypted values from plaintext
-    /// @dev Uses FHE.asEuintX() to create encrypted constants from plaintext
-    ///      (The plaintext IS visible on-chain, but result is encrypted)
+    /// @notice Initialize multiple values from plaintext
+    /// @dev FHE.asEuintX() creates encrypted constants from plaintext
     function initialize(bool a, uint32 b, uint64 c) external {
-        // Create encrypted values from plaintext constants
-        // FHE.asEbool(a) encrypts a boolean value
+        // Create encrypted values from plaintext
         _encryptedBool = FHE.xor(FHE.asEbool(a), FHE.asEbool(false));
-
-        // FHE.asEuint32(b) + 1 creates an encrypted (b + 1)
         _encryptedUint32 = FHE.add(FHE.asEuint32(b), FHE.asEuint32(1));
         _encryptedUint64 = FHE.add(FHE.asEuint64(c), FHE.asEuint64(1));
 
-        // ⚠️ CRITICAL: Grant permissions for EACH value separately
-        // You cannot batch permission grants!
+        // ⚠️ Why separate? No batching for permissions - each needs individual allow()
         FHE.allowThis(_encryptedBool);
         FHE.allowThis(_encryptedUint32);
         FHE.allowThis(_encryptedUint64);
@@ -73,20 +65,14 @@ contract UserDecryptMultipleValues is ZamaEthereumConfig {
         FHE.allow(_encryptedUint64, msg.sender);
     }
 
-    /// @notice Returns the encrypted boolean value
-    /// @dev Client decrypts with: fhevm.userDecrypt(FhevmType.ebool, handle, ...)
     function encryptedBool() public view returns (ebool) {
         return _encryptedBool;
     }
 
-    /// @notice Returns the encrypted uint32 value
-    /// @dev Client decrypts with: fhevm.userDecrypt(FhevmType.euint32, handle, ...)
     function encryptedUint32() public view returns (euint32) {
         return _encryptedUint32;
     }
 
-    /// @notice Returns the encrypted uint64 value
-    /// @dev Client decrypts with: fhevm.userDecrypt(FhevmType.euint64, handle, ...)
     function encryptedUint64() public view returns (euint64) {
         return _encryptedUint64;
     }

@@ -47,27 +47,14 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Common FHE mistakes and their correct alternatives. Covers: branching, permissions, require/revert, re-encryption, loops, noise, and deprecated APIs.
+ * @notice Common FHE mistakes and correct alternatives: branching, permissions, require, loops, noise, deprecated APIs.
  *
- * @dev This contract demonstrates 9 critical anti-patterns in FHE development:
- *      1. Branching on encrypted values (causes decryption!)
- *      2. Returning encrypted values without permissions
- *      3. Using require/revert with encrypted conditions
- *      4. Encrypted computation without permission grants
- *      5. Leaking information through gas/timing
- *      6. Unauthenticated re-encryption (security critical!)
- *      7. Encrypted loop iterations (gas/timing leak)
- *      8. Too many chained operations (noise accumulation)
- *      9. Using deprecated FHEVM APIs
- *
- *      Each anti-pattern shows both ❌ WRONG and ✅ CORRECT implementations.
+ * @dev Covers 9 critical anti-patterns with ❌ WRONG and ✅ CORRECT examples.
+ *      This is an educational contract - study each pattern before building production code!
  */
 contract FHEAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretBalance;
     euint32 private _threshold;
-
-    // solhint-disable-next-line no-empty-blocks
-    constructor() {}
 
     /// @notice Initialize the contract with encrypted balance and threshold values
     /// @dev Both values are encrypted and permissions are granted to the caller
@@ -85,9 +72,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         FHE.allow(_threshold, msg.sender);
     }
 
-    // ========================================================================
     // ANTI-PATTERN 1: Branching on encrypted values
-    // ========================================================================
 
     /**
      * ❌ WRONG: if/else on encrypted value causes decryption
@@ -127,9 +112,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         FHE.allow(_secretBalance, msg.sender);
     }
 
-    // ========================================================================
     // ANTI-PATTERN 2: View function returning encrypted without permissions
-    // ========================================================================
 
     /**
      * @notice ❌ WRONG: Returns encrypted value but caller can't decrypt
@@ -150,9 +133,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         return _secretBalance;
     }
 
-    // ========================================================================
     // ANTI-PATTERN 3: Using require/revert with encrypted conditions
-    // ========================================================================
 
     /**
      * ❌ WRONG: Cannot use require with encrypted values
@@ -178,9 +159,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         return hasEnough;
     }
 
-    // ========================================================================
     // ANTI-PATTERN 4: Encrypted computation without permission grants
-    // ========================================================================
 
     /**
      * @notice ❌ WRONG: Compute but forget to grant permissions
@@ -203,9 +182,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         FHE.allow(_secretBalance, msg.sender);
     }
 
-    // ========================================================================
     // ANTI-PATTERN 5: Leaking information through gas/timing
-    // ========================================================================
 
     /**
      * @notice ⚠️ CAUTION: Be aware of side-channel attacks
@@ -221,9 +198,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         return "Be aware of gas/timing side channels";
     }
 
-    // ========================================================================
     // ANTI-PATTERN 6: Unauthenticated Re-encryption (SECURITY CRITICAL)
-    // ========================================================================
 
     /**
      * @notice ❌ WRONG: Re-encrypt for any provided public key
@@ -258,9 +233,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
             "Use fhevm.js userDecrypt which handles this automatically.";
     }
 
-    // ========================================================================
     // ANTI-PATTERN 7: Encrypted Loop Iterations (GAS/TIMING LEAK)
-    // ========================================================================
 
     /// ❌ WRONG: Using encrypted value as loop count
     /// @dev Loop count is visible through gas consumption and timing
@@ -301,9 +274,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
         FHE.allow(accumulator, msg.sender);
     }
 
-    // ========================================================================
     // ANTI-PATTERN 8: Too Many Chained Operations (Noise Accumulation)
-    // ========================================================================
 
     /// @notice ⚠️ CAUTION: FHE operations accumulate "noise"
     /// @dev Each FHE operation adds noise to the ciphertext. After too many
@@ -322,9 +293,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
             "If you need many operations, consider batching or restructuring logic.";
     }
 
-    // ========================================================================
     // ANTI-PATTERN 9: Using Deprecated FHEVM APIs
-    // ========================================================================
 
     /**
      * @notice Caution about deprecated FHEVM APIs
@@ -343,9 +312,7 @@ contract FHEAntiPatterns is ZamaEthereumConfig {
             "or userDecrypt pattern via fhevm.js for user decryption.";
     }
 
-    // ========================================================================
-    // SUMMARY: Key Rules (Always check before deploying!)
-    // ========================================================================
+    // SUMMARY: Key Rules
 
     /**
      * @notice Quick reference for FHE best practices

@@ -1,39 +1,23 @@
 // SPDX-License-Identifier: BSD-3-Clause-Clear
 pragma solidity ^0.8.24;
 
-import {
-    FHE,
-    euint8,
-    ebool,
-    externalEuint8
-} from "@fhevm/solidity/lib/FHE.sol";
+import {FHE, euint8, ebool, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Rock-Paper-Scissors game with encrypted moves - fair play guaranteed!
- *
- * @dev Demonstrates FHE commit-reveal pattern without trusted third party:
- *      - Players submit encrypted moves (0=Rock, 1=Paper, 2=Scissors)
- *      - FHE comparison determines winner without revealing moves
- *      - Loser's move revealed only after game concludes
- *
- * Move encoding: 0 = Rock, 1 = Paper, 2 = Scissors
- * Win logic: (move1 - move2 + 3) % 3 → 1 = player1 wins, 2 = player2 wins
- *
- * ⚠️ IMPORTANT: Uses FHE.rem for modulo - computationally expensive but secure
+ * @notice Rock-Paper-Scissors game with encrypted moves - fair play guaranteed using FHE!
+
+ * @dev Commit-reveal pattern without trusted third party.
+ *      Move encoding: 0=Rock, 1=Paper, 2=Scissors
+ *      ⚡ Gas: FHE.rem() is computationally expensive (~300k gas)
  */
 contract RockPaperScissors is ZamaEthereumConfig {
-    // ==================== TYPES ====================
-
     enum GameState {
         WaitingForPlayers, // 0 or 1 player joined
-        BothMoved,         // Both players submitted moves
-        Revealed           // Winner determined and revealed
+        BothMoved, // Both players submitted moves
+        Revealed // Winner determined and revealed
     }
 
-    // ==================== STATE ====================
-
-    /// Player 1 address
     address public player1;
 
     /// Player 2 address
@@ -52,9 +36,7 @@ contract RockPaperScissors is ZamaEthereumConfig {
     /// Game ID for tracking multiple games
     uint256 public gameId;
 
-    // ==================== EVENTS ====================
-
-    /// @notice Emitted when a player joins
+    /// Emitted when a player joins
     /// @param player Address of joining player
     /// @param playerNumber 1 or 2
     event PlayerJoined(address indexed player, uint8 playerNumber);
@@ -67,34 +49,29 @@ contract RockPaperScissors is ZamaEthereumConfig {
     /// @param gameId Current game ID
     event GameResult(address indexed winner, uint256 indexed gameId);
 
-    // ==================== CONSTRUCTOR ====================
-
-    /// @notice Creates a new Rock-Paper-Scissors game
     constructor() {
         gameId = 1;
         state = GameState.WaitingForPlayers;
     }
 
-    // ==================== PLAY FUNCTIONS ====================
-
     /// @notice Submit an encrypted move to play
     /// @dev Move must be 0 (Rock), 1 (Paper), or 2 (Scissors)
-    /// @param encryptedMove Encrypted move value (0-2)
     /// @param inputProof Proof validating the encrypted input
     function play(
         externalEuint8 encryptedMove,
         bytes calldata inputProof
     ) external {
-        require(state == GameState.WaitingForPlayers, "Game not accepting moves");
+        require(
+            state == GameState.WaitingForPlayers,
+            "Game not accepting moves"
+        );
         require(
             msg.sender != player1 && msg.sender != player2,
             "Already in this game"
         );
 
-        // 🔐 Convert external encrypted input to internal euint8
+        // Convert and validate encrypted move
         euint8 move = FHE.fromExternal(encryptedMove, inputProof);
-
-        // ✅ Grant contract permission to operate on this value
         FHE.allowThis(move);
 
         if (player1 == address(0)) {
@@ -117,30 +94,24 @@ contract RockPaperScissors is ZamaEthereumConfig {
     function determineWinner() external {
         require(state == GameState.BothMoved, "Not ready to determine winner");
 
-        // 🎯 Winner calculation using FHE
-        // Formula: (move1 - move2 + 3) % 3
-        // Result: 0 = tie, 1 = player1 wins, 2 = player2 wins
+        // Winner calculation: (move1 - move2 + 3) % 3
+        // 0=tie, 1=player1 wins, 2=player2 wins
+        euint8 diff = FHE.add(
+            FHE.add(_move1, FHE.asEuint8(3)),
+            FHE.neg(_move2)
+        );
 
-        // Convert moves to computation: add 3 to avoid negative numbers
-        // move1 + 3 - move2 = (move1 - move2 + 3)
-        euint8 diff = FHE.add(FHE.add(_move1, FHE.asEuint8(3)), FHE.neg(_move2));
-
-        // Modulo 3 to get result (0, 1, or 2)
+        // 🎲 Why rem? Modulo keeps result in 0-2 range (tie/p1 wins/p2 wins)
+        // ⚡ rem is expensive (~300k gas) - consider alternatives for production
         euint8 result = FHE.rem(diff, 3);
 
-        // 🔍 Check outcomes
+        // Compare results to determine outcome
         ebool isTie = FHE.eq(result, FHE.asEuint8(0));
         ebool player1Wins = FHE.eq(result, FHE.asEuint8(1));
 
-        // 📊 Encode winner as address bits (simplified for demo)
-        // In production, use public decryption pattern
-
-        // Make result publicly decryptable
+        // 🌐 Why makePubliclyDecryptable? Anyone can decrypt result with KMS proof
         FHE.allowThis(result);
         FHE.makePubliclyDecryptable(result);
-
-        // Store encrypted result for later reveal
-        // For this demo, we'll use select to pick winner
 
         state = GameState.Revealed;
 
@@ -157,7 +128,10 @@ contract RockPaperScissors is ZamaEthereumConfig {
         require(state == GameState.Revealed, "Game not ready for reveal");
 
         // Build ciphertext list for verification
-        euint8 diff = FHE.add(FHE.add(_move1, FHE.asEuint8(3)), FHE.neg(_move2));
+        euint8 diff = FHE.add(
+            FHE.add(_move1, FHE.asEuint8(3)),
+            FHE.neg(_move2)
+        );
         euint8 result = FHE.rem(diff, 3);
 
         bytes32[] memory cts = new bytes32[](1);
@@ -193,16 +167,17 @@ contract RockPaperScissors is ZamaEthereumConfig {
         gameId++;
     }
 
-    // ==================== VIEW FUNCTIONS ====================
-
-    /// @notice Get current game state
-    function getGameState() external view returns (
-        address p1,
-        address p2,
-        GameState currentState,
-        address currentWinner,
-        uint256 currentGameId
-    ) {
+    function getGameState()
+        external
+        view
+        returns (
+            address p1,
+            address p2,
+            GameState currentState,
+            address currentWinner,
+            uint256 currentGameId
+        )
+    {
         return (player1, player2, state, winner, gameId);
     }
 

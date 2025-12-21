@@ -34,14 +34,12 @@ import {FHE, euint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption
+ * @notice 8-sided die roll game demonstrating public decryption of multiple encrypted values.
  *
- * @dev Uses FHE.makePubliclyDecryptable feature to allow anyone to decrypt the game results.
- *      Inherits from ZamaEthereumConfig to access FHE functions like FHE.randEuint8() and FHE.checkSignatures().
+ * @dev Uses FHE.randEuint8() + FHE.makePubliclyDecryptable() for both dice rolls.
+ *      ⚠️ Order matters in cts[] array for checkSignatures!
  */
 contract HighestDieRoll is ZamaEthereumConfig {
-    constructor() {}
-
     // Simple counter to assign a unique ID to each new game.
     uint256 private counter = 0;
 
@@ -97,7 +95,8 @@ contract HighestDieRoll is ZamaEthereumConfig {
             revealed: false
         });
 
-        // We make the results publicly decryptable.
+        // 🌐 Both values marked for public decryption
+        // Anyone can decrypt with valid KMS proof
         FHE.makePubliclyDecryptable(playerAEncryptedDieRoll);
         FHE.makePubliclyDecryptable(playerBEncryptedDieRoll);
 
@@ -148,13 +147,7 @@ contract HighestDieRoll is ZamaEthereumConfig {
     ) public {
         require(!games[gameId].revealed, "Game already revealed");
 
-        // 1. FHE Verification: Build the list of ciphertexts (handles) and verify the proof.
-        //    The verification checks that 'abiEncodedClearGameResult' is the true decryption
-        //    of the '(playerAEncryptedDieRoll, playerBEncryptedDieRoll)' handle pair using
-        //    the provided 'decryptionProof'.
-
-        // Creating the list of handles in the right order! In this case the order does not matter since the proof
-        // only involves 1 single handle.
+        // Verify KMS proof - ORDER MATTERS!
         bytes32[] memory cts = new bytes32[](2);
         cts[0] = FHE.toBytes32(games[gameId].playerAEncryptedDieRoll);
         cts[1] = FHE.toBytes32(games[gameId].playerBEncryptedDieRoll);
@@ -162,9 +155,8 @@ contract HighestDieRoll is ZamaEthereumConfig {
         // This FHE call reverts the transaction if the decryption proof is invalid.
         FHE.checkSignatures(cts, abiEncodedClearGameResult, decryptionProof);
 
-        // 2. Decode the clear result and determine the winner's address.
-        //    In this very specific case, the function argument `abiEncodedClearGameResult` could have been replaced by two
-        //    `uint8` instead of an abi-encoded uint8 pair. In this case, we should have to compute abi.encode on-chain
+        // Decode both decrypted die rolls
+        // Note: Using abi.decode here, but could also accept two uint8 parameters
         (
             uint8 decodedClearPlayerADieRoll,
             uint8 decodedClearPlayerBDieRoll
@@ -182,7 +174,7 @@ contract HighestDieRoll is ZamaEthereumConfig {
                     : address(0)
             );
 
-        // 3. Store the revealed flag
+        // Store game result
         games[gameId].revealed = true;
         games[gameId].winner = winner;
     }

@@ -34,14 +34,12 @@ import {FHE, ebool} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Implements a simple Heads or Tails game demonstrating public, permissionless decryption
+ * @notice Simple Heads or Tails game demonstrating public, permissionless decryption with FHE.
  *
- * @dev Uses FHE.makePubliclyDecryptable feature to allow anyone to decrypt the game results.
- *      Inherits from ZamaEthereumConfig to access FHE functions like FHE.randEbool() and FHE.checkSignatures().
+ * @dev Uses FHE.randEbool() for random result + FHE.makePubliclyDecryptable() for revealing.
+ *      Anyone can decrypt results with valid KMS proof.
  */
 contract HeadsOrTails is ZamaEthereumConfig {
-    constructor() {}
-
     /// Simple counter to assign a unique ID to each new game.
     uint256 private counter = 0;
 
@@ -95,7 +93,8 @@ contract HeadsOrTails is ZamaEthereumConfig {
             winner: address(0)
         });
 
-        // We make the result publicly decryptable.
+        // 🌐 Why makePubliclyDecryptable? Allows ANYONE to decrypt (not just allowed users)
+        // Use case: Public game results, lottery winners, voting tallies
         FHE.makePubliclyDecryptable(headsOrTailsResult);
 
         // You can catch the event to get the gameId and the encryptedHasHeadsWon handle
@@ -142,21 +141,15 @@ contract HeadsOrTails is ZamaEthereumConfig {
             "Game winner already revealed"
         );
 
-        // 1. FHE Verification: Build the list of ciphertexts (handles) and verify the proof.
-        //    The verification checks that 'abiEncodedClearGameResult' is the true decryption
-        //    of the 'encryptedHasHeadsWon' handle using the provided 'decryptionProof'.
-
-        // Creating the list of handles in the right order! In this case the order does not matter since the proof
-        // only involves 1 single handle.
+        // Verify KMS decryption proof
         bytes32[] memory cts = new bytes32[](1);
         cts[0] = FHE.toBytes32(games[gameId].encryptedHasHeadsWon);
 
         // This FHE call reverts the transaction if the decryption proof is invalid.
         FHE.checkSignatures(cts, abiEncodedClearGameResult, decryptionProof);
 
-        // 2. Decode the clear result and determine the winner's address.
-        //    In this very specific case, the function argument `abiEncodedClearGameResult` could have been a simple
-        //    `bool` instead of an abi-encoded bool. In this case, we should have compute abi.encode on-chain
+        // Decode the decrypted result to determine winner
+        // Note: Using abi.decode here, but could also accept plain bool parameter
         bool decodedClearGameResult = abi.decode(
             abiEncodedClearGameResult,
             (bool)
@@ -165,7 +158,7 @@ contract HeadsOrTails is ZamaEthereumConfig {
             ? games[gameId].headsPlayer
             : games[gameId].tailsPlayer;
 
-        // 3. Store the winner
+        // Store the winner
         games[gameId].winner = winner;
     }
 }

@@ -5,54 +5,35 @@ import {FHE, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates the FHE decryption mechanism and highlights common pitfalls
+ * @notice Demonstrates FHE decryption mechanism and highlights the critical permission pattern.
  *
- * @dev This trivial example shows correct vs incorrect permission granting patterns.
- *      Emphasizes that BOTH FHE.allowThis() and FHE.allow(user) are required for user decryption.
+ * @dev Shows CORRECT vs INCORRECT permission granting.
+ *      ⚠️ Both allowThis + allow required for user decryption!
  */
 contract UserDecryptSingleValue is ZamaEthereumConfig {
     euint32 private _trivialEuint32;
 
-    // solhint-disable-next-line no-empty-blocks
-    constructor() {}
-
-    /// @notice Initialize with a trivial formula (value + 1)
-    /// @dev Demonstrates correct permission granting
+    /// @notice ✅ CORRECT: Proper permission pattern
     function initializeUint32(uint32 value) external {
-        // Compute a trivial FHE formula _trivialEuint32 = value + 1
         _trivialEuint32 = FHE.add(FHE.asEuint32(value), FHE.asEuint32(1));
 
-        // Grant FHE permissions to:
-        // ✅ The contract caller (`msg.sender`): allows them to decrypt `_trivialEuint32`.
-        // ✅ The contract itself (`address(this)`): allows it to operate on `_trivialEuint32` and
-        //    also enables the caller to perform user decryption.
-        //
-        // Note: If you forget to call `FHE.allowThis(_trivialEuint32)`, the user will NOT be able
-        //       to user decrypt the value! Both the contract and the caller must have FHE permissions
-        //       for user decryption to succeed.
+        // 🔑 Why both needed?
+        // - allowThis: Contract authorizes releasing the value
+        // - allow: User can request decryption
         FHE.allowThis(_trivialEuint32);
         FHE.allow(_trivialEuint32, msg.sender);
     }
 
-    /// @notice Demonstrate INCORRECT permission granting (Anti-pattern)
-    /// @dev Missing FHE.allowThis() causes user decryption to fail
+    /// @notice ❌ WRONG: Missing allowThis causes decryption to FAIL!
+    /// @dev Common mistake - user gets permission but decryption still fails
     function initializeUint32Wrong(uint32 value) external {
-        // Compute a trivial FHE formula _trivialEuint32 = value + 1
         _trivialEuint32 = FHE.add(FHE.asEuint32(value), FHE.asEuint32(1));
 
-        // ❌ Common FHE permission mistake:
-        // ================================================================
-        // We grant FHE permissions to the contract caller (`msg.sender`),
-        // expecting they will be able to user decrypt the encrypted value later.
-        //
-        // However, this will fail! 💥
-        // The contract itself (`address(this)`) also needs FHE permissions to allow user decryption.
-        // Without granting the contract access using `FHE.allowThis(...)`,
-        // the user decryption attempt by the user will not succeed.
+        // ❌ Missing allowThis → user can't decrypt!
+        // Why? Decryption needs contract authorization to release
         FHE.allow(_trivialEuint32, msg.sender);
     }
 
-    /// @notice Returns the encrypted uint32 value
     function encryptedUint32() public view returns (euint32) {
         return _trivialEuint32;
     }

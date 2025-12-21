@@ -44,32 +44,18 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Blind Auction with encrypted bids - only the winning price is revealed
- *
- * @dev Demonstrates advanced FHE patterns:
- *      - Encrypted bid storage and comparison
- *      - FHE.gt() and FHE.select() for finding maximum
- *      - FHE.makePubliclyDecryptable() for revealing results
- *      - FHE.checkSignatures() for proof verification
- *
- * Flow:
- * 1. Owner creates auction with end time and minimum bid
- * 2. Bidders submit encrypted bids (one per address)
- * 3. Owner ends auction → winner computed via FHE.gt/select
- * 4. Anyone can reveal winner after decryption proof is ready
- *
- * ⚠️ IMPORTANT: Losing bids remain encrypted forever!
+ * @notice Blind Auction with encrypted bids - only the winning price is revealed after bidding ends
+
+ * @dev Flow: bid() → endAuction() → revealWinner()
+ *      Uses FHE.gt/select to find winner without revealing losing bids.
+ *      Losing bids remain encrypted forever!
  */
 contract BlindAuction is ZamaEthereumConfig {
-    // ==================== TYPES ====================
-
     enum AuctionState {
         Open, // Accepting bids
         Closed, // Bidding ended, pending reveal
         Revealed // Winner revealed on-chain
     }
-
-    // ==================== STATE ====================
 
     /// Auction owner (deployer)
     address public owner;
@@ -104,8 +90,6 @@ contract BlindAuction is ZamaEthereumConfig {
     /// Revealed winning amount (set after reveal)
     uint64 public winningAmount;
 
-    // ==================== EVENTS ====================
-
     /// @notice Emitted when a new bid is placed
     /// @param bidder Address of the bidder
     event BidPlaced(address indexed bidder);
@@ -123,15 +107,11 @@ contract BlindAuction is ZamaEthereumConfig {
     /// @param amount Winning bid amount
     event WinnerRevealed(address indexed winner, uint64 amount);
 
-    // ==================== MODIFIERS ====================
-
     /// @dev Restricts function to owner only
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call");
         _;
     }
-
-    // ==================== CONSTRUCTOR ====================
 
     /// @notice Creates a new blind auction
     /// @param _endTime Unix timestamp when bidding ends
@@ -144,11 +124,8 @@ contract BlindAuction is ZamaEthereumConfig {
         auctionState = AuctionState.Open;
     }
 
-    // ==================== BIDDING ====================
-
     /// @notice Submit an encrypted bid to the auction
     /// @dev Each address can only bid once
-    /// @param encryptedBid The encrypted bid amount
     /// @param inputProof Proof validating the encrypted input
     function bid(
         externalEuint64 encryptedBid,
@@ -158,13 +135,11 @@ contract BlindAuction is ZamaEthereumConfig {
         require(block.timestamp < endTime, "Auction has ended");
         require(!hasBid[msg.sender], "Already placed a bid");
 
-        // 🔐 Convert external encrypted input to internal euint64
+        // Convert external encrypted input to internal handle (proof verified)
         euint64 bidAmount = FHE.fromExternal(encryptedBid, inputProof);
-
-        // ✅ Grant contract permission to operate on this value
         FHE.allowThis(bidAmount);
 
-        // 📋 Store the bid
+        // Store bid - amount stays encrypted
         _bids[msg.sender] = bidAmount;
         hasBid[msg.sender] = true;
         bidders.push(msg.sender);
@@ -172,30 +147,24 @@ contract BlindAuction is ZamaEthereumConfig {
         emit BidPlaced(msg.sender);
     }
 
-    // ==================== END AUCTION ====================
-
     /// @notice End the auction and compute the winner
+    /// @dev ⚡ Gas: O(n) loop with FHE.gt/select. ~200k gas per bidder!
     /// @dev Only owner can call after end time
     function endAuction() external onlyOwner {
         require(auctionState == AuctionState.Open, "Auction not open");
         require(block.timestamp >= endTime, "Auction not yet ended");
         require(bidders.length > 0, "No bids placed");
 
-        // 🏆 Find the winning bid using encrypted comparisons
-
-        // Initialize with first bidder
+        // Find winner using encrypted comparisons (no bids revealed!)
         euint64 currentMax = _bids[bidders[0]];
         euint64 currentWinnerIdx = FHE.asEuint64(0);
 
-        // 🔄 Iterate through remaining bidders
         for (uint256 i = 1; i < bidders.length; i++) {
             euint64 candidateBid = _bids[bidders[i]];
 
-            // 🔍 Compare: is candidate > currentMax?
-            // Note: If equal, first bidder wins (no update)
+            // 🔀 Why select? if/else would leak which bid is higher!
+            // Losing bids remain encrypted forever
             ebool isGreater = FHE.gt(candidateBid, currentMax);
-
-            // 🔀 Select the higher bid and its index
             currentMax = FHE.select(isGreater, candidateBid, currentMax);
             currentWinnerIdx = FHE.select(
                 isGreater,
@@ -204,14 +173,12 @@ contract BlindAuction is ZamaEthereumConfig {
             );
         }
 
-        // 📊 Check minimum bid threshold
+        // Check minimum bid (comparison stays encrypted)
         ebool meetsMinimum = FHE.ge(currentMax, FHE.asEuint64(minimumBid));
-
-        // If no one meets minimum, winner stays at index 0 but amount becomes 0
         _winningBid = FHE.select(meetsMinimum, currentMax, FHE.asEuint64(0));
         _winnerIndex = currentWinnerIdx;
 
-        // 🔓 Make results publicly decryptable
+        // Mark for public decryption via KMS relayer
         FHE.allowThis(_winningBid);
         FHE.allowThis(_winnerIndex);
         FHE.makePubliclyDecryptable(_winningBid);
@@ -223,36 +190,32 @@ contract BlindAuction is ZamaEthereumConfig {
     }
 
     /// @notice Reveal the winner with KMS decryption proof
-    /// @dev Anyone can call with valid decryption proof
-    /// @param abiEncodedResults ABI-encoded (uint64 amount, uint64 index)
-    /// @param decryptionProof KMS signature proving decryption
+    /// @dev Anyone can call once relayer provides proof.
+    ///      ⚠️ Order matters! cts[] must match abi.decode() order.
     function revealWinner(
         bytes memory abiEncodedResults,
         bytes memory decryptionProof
     ) external {
         require(auctionState == AuctionState.Closed, "Auction not closed");
 
-        // 🔐 Build ciphertext list for verification
-        // Order MUST match abiEncodedResults encoding order!
+        // Build handle array - order must match abi.decode() below!
         bytes32[] memory cts = new bytes32[](2);
         cts[0] = FHE.toBytes32(_winningBid);
         cts[1] = FHE.toBytes32(_winnerIndex);
 
-        // 🔍 Verify the decryption proof (reverts if invalid)
+        // Verify KMS signatures (reverts if proof invalid)
         FHE.checkSignatures(cts, abiEncodedResults, decryptionProof);
 
-        // 📤 Decode the verified results
+        // Decode verified plaintext results
         (uint64 revealedAmount, uint64 winnerIdx) = abi.decode(
             abiEncodedResults,
             (uint64, uint64)
         );
 
-        // 🏆 Look up winner address
         if (revealedAmount >= minimumBid && winnerIdx < bidders.length) {
             winner = bidders[winnerIdx];
             winningAmount = revealedAmount;
         } else {
-            // No valid winner (all bids below minimum)
             winner = address(0);
             winningAmount = 0;
         }
@@ -261,8 +224,6 @@ contract BlindAuction is ZamaEthereumConfig {
 
         emit WinnerRevealed(winner, winningAmount);
     }
-
-    // ==================== VIEW FUNCTIONS ====================
 
     /// @notice Get the number of bidders
     function getBidderCount() external view returns (uint256) {
