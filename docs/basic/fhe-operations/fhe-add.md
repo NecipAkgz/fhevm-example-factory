@@ -1,4 +1,4 @@
-Simple example: adding two encrypted values (a + b)
+Introduction to homomorphic addition on encrypted values. Demonstrates the most fundamental FHE operation: adding two encrypted numbers without decrypting them. Shows the complete flow from receiving encrypted inputs, performing the addition, and granting permissions for both contract storage and user decryption.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -34,7 +34,11 @@ import {FHE, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Simple example demonstrating addition of two encrypted values (a + b)
+ * @notice Introduction to homomorphic addition on encrypted values.
+ *         Demonstrates the most fundamental FHE operation: adding two encrypted
+ *         numbers without decrypting them. Shows the complete flow from receiving
+ *         encrypted inputs, performing the addition, and granting permissions
+ *         for both contract storage and user decryption.
 
  * @dev Shows the most basic FHE operation and permission flow.
  *      ⚡ Gas: FHE.add() costs ~100k gas (coprocessor call)

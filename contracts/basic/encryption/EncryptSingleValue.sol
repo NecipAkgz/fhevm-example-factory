@@ -5,7 +5,10 @@ import {FHE, externalEuint32, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice FHE encryption mechanism with single values, including common pitfalls and best practices.
+ * @notice Single value encryption with proof validation.
+ *         Shows how to receive encrypted data from users, validate proofs,
+ *         and grant proper permissions. Includes examples of common mistakes
+ *         and the correct permission pattern (allowThis + allow).
 
  * @dev Shows the complete flow: receiving encrypted input from user, validating proof,
  *      storing the encrypted value, and granting permissions for decryption.
@@ -20,7 +23,8 @@ contract EncryptSingleValue is ZamaEthereumConfig {
         externalEuint32 inputEuint32,
         bytes calldata inputProof
     ) external {
-        // 🔐 Why proof? Prevents: replay attacks, wrong contract, invalid ciphertext
+        // 🔐 Why proof?
+        // Prevents: replay attacks, wrong contract, invalid ciphertext
         _encryptedEuint32 = FHE.fromExternal(inputEuint32, inputProof);
 
         // 🔑 Why both?

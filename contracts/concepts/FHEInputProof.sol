@@ -11,7 +11,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Explains input proof validation in FHEVM: why proofs matter and how to batch inputs efficiently.
+ * @notice Input proof validation and batching strategies in FHEVM.
+ *         Explains why proofs are essential (prevent garbage data, wrong types,
+ *         and replay attacks) and demonstrates the gas-efficient batching pattern
+ *         where one proof validates multiple encrypted inputs, saving ~50k gas
+ *         per additional value.
  *
  * @dev Proofs ensure: valid ciphertext + correct range + proof of knowledge.
  *      ⚡ Gas: Batching multiple values in ONE proof saves ~50k gas vs separate proofs!

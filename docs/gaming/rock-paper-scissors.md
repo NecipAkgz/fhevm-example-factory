@@ -1,4 +1,4 @@
-Rock-Paper-Scissors game with encrypted moves - fair play guaranteed!
+Fair Rock-Paper-Scissors game with encrypted moves. Players submit encrypted moves (0=Rock, 1=Paper, 2=Scissors) ensuring neither player can see the other's choice before committing. Winner is determined using FHE operations and revealed publicly. No trusted third party needed - cryptography guarantees fairness.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -40,7 +40,11 @@ import {FHE, euint8, ebool, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Rock-Paper-Scissors game with encrypted moves - fair play guaranteed using FHE!
+ * @notice Fair Rock-Paper-Scissors game with encrypted moves.
+ *         Players submit encrypted moves (0=Rock, 1=Paper, 2=Scissors) ensuring
+ *         neither player can see the other's choice before committing. Winner is
+ *         determined using FHE operations and revealed publicly. No trusted third
+ *         party needed - cryptography guarantees fairness.
 
  * @dev Commit-reveal pattern without trusted third party.
  *      Move encoding: 0=Rock, 1=Paper, 2=Scissors

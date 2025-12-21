@@ -1,4 +1,4 @@
-Encrypted Poker - Texas Hold'em with hidden hole cards!
+On-chain Texas Hold'em poker with encrypted hole cards. Two players receive encrypted hole cards that remain hidden throughout the game. Hand strength is computed using FHE operations. Winner is determined by comparing encrypted hand strengths. Demonstrates complex game logic with multiple encrypted states and conditional operations.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -45,7 +45,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Encrypted Poker - Texas Hold'em with hidden hole cards!
+ * @notice On-chain Texas Hold'em poker with encrypted hole cards.
+ *         Two players receive encrypted hole cards that remain hidden throughout
+ *         the game. Hand strength is computed using FHE operations. Winner is
+ *         determined by comparing encrypted hand strengths. Demonstrates complex
+ *         game logic with multiple encrypted states and conditional operations.
  *
  * @dev Flow: joinGame() → bet()/fold() → showdown() → revealWinner()
  *      Hand strength = card1 + card2 (simplified for demo)

@@ -1,4 +1,4 @@
-Demonstrates user decryption of multiple encrypted values
+Decrypting multiple encrypted values of different types for a user. Shows how to handle ebool, euint32, and euint64 in one contract. Each value requires individual permission grants - there's no batching for permissions (unlike input proofs). Demonstrates the pattern of granting allowThis() for each value separately.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -37,7 +37,11 @@ import {FHE, ebool, euint32, euint64} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates user decryption of multiple encrypted values with different types.
+ * @notice Decrypting multiple encrypted values of different types for a user.
+ *         Shows how to handle ebool, euint32, and euint64 in one contract.
+ *         Each value requires individual permission grants - there's no batching
+ *         for permissions (unlike input proofs). Demonstrates the pattern of
+ *         granting allowThis() for each value separately.
  *
  * @dev Each value needs separate permission grants (no batching).
  *      ⚠️ Cannot batch permission grants - must call allow() for each value!

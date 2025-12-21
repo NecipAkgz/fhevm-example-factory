@@ -1,4 +1,4 @@
-Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient. Includes common mistakes and correct implementations.
+Master class for FHE permission patterns and access control. Explains the three permission types: allow() for permanent access, allowThis() for contract operations, and allowTransient() for temporary cross-contract calls. Includes correct and incorrect usage examples to prevent common decryption failures.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -36,9 +36,14 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Critical access control patterns in FHEVM: FHE.allow, FHE.allowThis, FHE.allowTransient with common mistakes.
+ * @notice Master class for FHE permission patterns and access control.
+ *         Explains the three permission types: allow() for permanent access,
+ *         allowThis() for contract operations, and allowTransient() for
+ *         temporary cross-contract calls. Includes correct and incorrect
+ *         usage examples to prevent common decryption failures.
 
- * @dev allow() = permanent, allowThis() = contract permission, allowTransient() = expires at TX end
+ * @dev allow() = permanent, allowThis() = contract permission,
+ *      allowTransient() = expires at TX end
  *      Both allowThis + allow required for user decryption!
  */
 contract FHEAccessControl is ZamaEthereumConfig {

@@ -1,4 +1,4 @@
-Blind Auction with encrypted bids - only the winning price is revealed
+Blind auction where bids remain encrypted until the end. Bidders submit encrypted amounts. The contract finds the highest bid using FHE.gt and FHE.select without ever decrypting losing bids. Only the winning bid amount is revealed after the auction closes. Losing bids remain private forever, ensuring true bid confidentiality.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -44,7 +44,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Blind Auction with encrypted bids - only the winning price is revealed after bidding ends
+ * @notice Blind auction where bids remain encrypted until the end.
+ *         Bidders submit encrypted amounts. The contract finds the highest bid
+ *         using FHE.gt and FHE.select without ever decrypting losing bids.
+ *         Only the winning bid amount is revealed after the auction closes.
+ *         Losing bids remain private forever, ensuring true bid confidentiality.
 
  * @dev Flow: bid() → endAuction() → revealWinner()
  *      Uses FHE.gt/select to find winner without revealing losing bids.

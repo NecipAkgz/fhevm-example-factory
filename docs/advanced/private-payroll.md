@@ -1,4 +1,4 @@
-Private Payroll system - salaries stay encrypted, only employees see their own!
+Confidential payroll system with encrypted salaries. Employers can add employees with encrypted salary amounts. Each employee can decrypt only their own salary - other salaries remain hidden. Demonstrates selective decryption permissions where different users see different encrypted values. Perfect for privacy-preserving HR systems.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -43,7 +43,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Private Payroll system - salaries stay encrypted, only employees see their own!
+ * @notice Confidential payroll system with encrypted salaries.
+ *         Employers can add employees with encrypted salary amounts. Each employee
+ *         can decrypt only their own salary - other salaries remain hidden.
+ *         Demonstrates selective decryption permissions where different users
+ *         see different encrypted values. Perfect for privacy-preserving HR systems.
  *
  * @dev Flow: addEmployee() → fund() → processPayment()
  *      Each employee can decrypt only their own salary.

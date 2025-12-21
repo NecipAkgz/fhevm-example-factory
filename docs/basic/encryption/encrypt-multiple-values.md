@@ -1,4 +1,4 @@
-Encrypting and handling multiple values in a single transaction efficiently.
+Efficient handling of multiple encrypted values in one transaction. Demonstrates batched input validation where a single proof covers multiple encrypted values (ebool, euint32, eaddress), saving ~50k gas per additional value compared to separate proofs.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -41,7 +41,10 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Encrypting and handling multiple values in a single transaction efficiently.
+ * @notice Efficient handling of multiple encrypted values in one transaction.
+ *         Demonstrates batched input validation where a single proof covers
+ *         multiple encrypted values (ebool, euint32, eaddress), saving ~50k gas
+ *         per additional value compared to separate proofs.
  *
  * @dev Demonstrates batched input (ONE proof for multiple values).
  *      ⚡ Gas: Batching saves ~50k gas vs separate proofs!

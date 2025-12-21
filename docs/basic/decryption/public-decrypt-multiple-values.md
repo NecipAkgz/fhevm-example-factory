@@ -1,4 +1,4 @@
-Implements a simple 8-sided Die Roll game demonstrating public, permissionless decryption
+Highest die roll game with public decryption of multiple values. Two players roll encrypted 8-sided dice, results are made publicly decryptable. Demonstrates handling multiple encrypted values in checkSignatures() where ORDER MATTERS - the cts[] array must match the order of values in the ABI-encoded result.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -34,7 +34,11 @@ import {FHE, euint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice 8-sided die roll game demonstrating public decryption of multiple encrypted values.
+ * @notice Highest die roll game with public decryption of multiple values.
+ *         Two players roll encrypted 8-sided dice, results are made publicly
+ *         decryptable. Demonstrates handling multiple encrypted values in
+ *         checkSignatures() where ORDER MATTERS - the cts[] array must match
+ *         the order of values in the ABI-encoded result.
  *
  * @dev Uses FHE.randEuint8() + FHE.makePubliclyDecryptable() for both dice rolls.
  *      ⚠️ Order matters in cts[] array for checkSignatures!
@@ -58,7 +62,8 @@ contract HighestDieRoll is ZamaEthereumConfig {
     // Mapping to store all game states, accessible by a unique game ID.
     mapping(uint256 gameId => Game game) public games;
 
-    /// @notice Emitted when a new game is started, providing the encrypted handle required for decryption
+    /// @notice Emitted when a new game is started,
+    ///         providing the encrypted handle required for decryption
     /// @param gameId The unique identifier for the game
     /// @param playerA The address of playerA
     /// @param playerB The address of playerB
@@ -126,7 +131,8 @@ contract HighestDieRoll is ZamaEthereumConfig {
         return games[gameId].playerBEncryptedDieRoll;
     }
 
-    /// @notice Returns the address of the game winner. If the game is finalized, the function returns `address(0)`
+    /// @notice Returns the address of the game winner.
+    ///         If the game is finalized, the function returns `address(0)`
     /// @notice if the game is a draw.
     function getWinner(uint256 gameId) public view returns (address) {
         require(games[gameId].revealed, "Game winner not yet revealed");
@@ -138,8 +144,8 @@ contract HighestDieRoll is ZamaEthereumConfig {
         return games[gameId].revealed;
     }
 
-    /// @notice Verifies the provided (decryption proof, ABI-encoded clear values) pair against the stored ciphertext,
-    /// @notice and then stores the winner of the game.
+    /// @notice Verifies the provided (decryption proof, ABI-encoded clear values)
+    ///         pair against the stored ciphertext, and then stores the winner of the game.
     function recordAndVerifyWinner(
         uint256 gameId,
         bytes memory abiEncodedClearGameResult,

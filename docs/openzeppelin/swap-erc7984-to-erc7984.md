@@ -1,4 +1,4 @@
-Fully confidential swap between two ERC7984 tokens
+Fully private atomic swap between two confidential ERC7984 tokens. Both input and output amounts remain encrypted throughout the entire swap process. No decryption needed - amounts stay private from start to finish. Perfect for confidential DEX operations where trade sizes must remain hidden. The ultimate privacy-preserving token exchange.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -35,7 +35,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Fully confidential swap between two ERC7984 tokens
+ * @notice Fully private atomic swap between two confidential ERC7984 tokens.
+ *         Both input and output amounts remain encrypted throughout the entire
+ *         swap process. No decryption needed - amounts stay private from start
+ *         to finish. Perfect for confidential DEX operations where trade sizes
+ *         must remain hidden. The ultimate privacy-preserving token exchange.
  *
  * @dev Both input and output amounts remain encrypted throughout the swap.
  */

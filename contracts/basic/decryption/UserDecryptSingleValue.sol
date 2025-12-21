@@ -5,7 +5,11 @@ import {FHE, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates FHE decryption mechanism and highlights the critical permission pattern.
+ * @notice User-controlled decryption with proper permission management.
+ *         Demonstrates the critical two-step permission pattern: allowThis()
+ *         grants the contract permission to store/compute, while allow() grants
+ *         the user permission to decrypt. Missing either step causes decryption
+ *         to fail. Includes examples of both correct and incorrect patterns.
  *
  * @dev Shows CORRECT vs INCORRECT permission granting.
  *      ⚠️ Both allowThis + allow required for user decryption!

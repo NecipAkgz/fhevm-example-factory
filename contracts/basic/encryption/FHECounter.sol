@@ -5,7 +5,10 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Confidential counter implementation using FHEVM, compared with a standard counter to highlight encryption benefits.
+ * @notice Confidential counter with encrypted increment/decrement operations.
+ *         Demonstrates the complete FHE workflow: encryption, computation,
+ *         and permission management. The counter value remains private,
+ *         only accessible through decryption by authorized users.
 
  * @dev Demonstrates basic FHE workflow: fromExternal() → compute → allow permissions.
  *      All arithmetic happens on encrypted values without revealing the count.

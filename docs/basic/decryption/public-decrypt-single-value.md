@@ -1,4 +1,4 @@
-Implements a simple Heads or Tails game demonstrating public, permissionless decryption
+Heads or Tails game with public, permissionless decryption. Demonstrates makePubliclyDecryptable() which allows ANYONE to decrypt the result (not just allowed users). Perfect for public game results, lottery winners, or voting tallies. Uses FHE.randEbool() for fair randomness and KMS-verified decryption proofs.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -34,7 +34,11 @@ import {FHE, ebool} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Simple Heads or Tails game demonstrating public, permissionless decryption with FHE.
+ * @notice Heads or Tails game with public, permissionless decryption.
+ *         Demonstrates makePubliclyDecryptable() which allows ANYONE to decrypt
+ *         the result (not just allowed users). Perfect for public game results,
+ *         lottery winners, or voting tallies. Uses FHE.randEbool() for fair
+ *         randomness and KMS-verified decryption proofs.
  *
  * @dev Uses FHE.randEbool() for random result + FHE.makePubliclyDecryptable() for revealing.
  *      Anyone can decrypt results with valid KMS proof.
@@ -56,7 +60,8 @@ contract HeadsOrTails is ZamaEthereumConfig {
     // Mapping to store all game states, accessible by a unique game ID.
     mapping(uint256 gameId => Game game) public games;
 
-    /// @notice Emitted when a new game is started, providing the encrypted handle required for decryption
+    /// @notice Emitted when a new game is started,
+    ///         providing the encrypted handle required for decryption
     /// @param gameId The unique identifier for the game
     /// @param headsPlayer The address choosing Heads
     /// @param tailsPlayer The address choosing Tails
@@ -126,10 +131,11 @@ contract HeadsOrTails is ZamaEthereumConfig {
         return games[gameId].winner;
     }
 
-    /// @notice Verifies the provided (decryption proof, ABI-encoded clear value) pair against the stored ciphertext,
-    /// @notice and then stores the winner of the game.
+    /// @notice Verifies the provided (decryption proof, ABI-encoded clear value)
+    ///         pair against the stored ciphertext, and then stores the winner of the game.
     /// @dev gameId: The ID of the game to settle.
-    ///      abiEncodedClearGameResult: The ABI-encoded clear value (bool) associated to the `decryptionProof`.
+    ///      abiEncodedClearGameResult: The ABI-encoded clear value (bool)
+    ///                                 associated to the `decryptionProof`.
     ///      decryptionProof: The proof that validates the decryption.
     function recordAndVerifyWinner(
         uint256 gameId,

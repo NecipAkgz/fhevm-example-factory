@@ -41,10 +41,28 @@ interface ContractInfo {
 
 function extractNotice(contractPath: string): string | null {
   const content = fs.readFileSync(contractPath, "utf-8");
-  const noticeRegex =
-    /\/\*\*[\s\S]*?@notice\s+([^\n*]+)[\s\S]*?\*\/[\s\S]*?contract\s+\w+/;
+
+  // Match @notice and capture everything until @dev or end of comment block
+  const noticeRegex = /\/\*\*[\s\S]*?@notice\s+([\s\S]*?)(?:@dev|@param|\*\/)/;
   const match = content.match(noticeRegex);
-  return match && match[1] ? match[1].trim() : null;
+
+  if (!match || !match[1]) {
+    return null;
+  }
+
+  // Clean up the extracted text:
+  // 1. Remove leading asterisks and whitespace from each line
+  // 2. Join lines with space
+  // 3. Collapse multiple spaces
+  const cleaned = match[1]
+    .split("\n")
+    .map((line) => line.replace(/^\s*\*\s?/, "").trim())
+    .filter((line) => line.length > 0)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  return cleaned || null;
 }
 
 function readExistingConfig(): Record<string, any> {
@@ -169,7 +187,7 @@ function generateExamplesConfig(contracts: ContractInfo[]): string {
     contract: "${c.contractPath}",
     test: "${c.testPath}",${npmDepsField}${depsField}
     description:
-      "${c.description}",
+      "${c.description.replace(/"/g, '\\"')}",
     category: "${c.category}",
     docsOutput: "${c.docsOutput}",
     title: "${c.title}"

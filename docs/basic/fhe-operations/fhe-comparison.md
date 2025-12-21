@@ -1,4 +1,4 @@
-Demonstrates all FHE comparison operations on encrypted integers
+Complete guide to encrypted comparisons and conditional selection. Covers all comparison operators (eq, ne, gt, lt, ge, le) that return encrypted booleans (ebool), and demonstrates FHE.select for branching without information leakage. Critical for implementing logic like "find maximum" or "check threshold" without revealing values.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -45,7 +45,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Demonstrates all FHE comparison operations: eq, ne, gt, lt, ge, le, select
+ * @notice Complete guide to encrypted comparisons and conditional selection.
+ *         Covers all comparison operators (eq, ne, gt, lt, ge, le) that return
+ *         encrypted booleans (ebool), and demonstrates FHE.select for branching
+ *         without information leakage. Critical for implementing logic like
+ *         "find maximum" or "check threshold" without revealing values.
  *
  * @dev Results are encrypted booleans (ebool) - comparisons reveal nothing!
  *      ⚡ Gas: Comparisons ~100k, select ~120k

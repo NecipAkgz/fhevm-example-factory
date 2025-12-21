@@ -1,4 +1,4 @@
-Hidden Voting with encrypted ballots and homomorphic tallying
+Private voting system with homomorphic vote tallying. Voters submit encrypted ballots (Yes/No). Votes are tallied using homomorphic addition WITHOUT decrypting individual ballots. Only the final tally is revealed - individual votes remain private forever. Perfect for DAO governance, elections, or any scenario requiring ballot secrecy.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -39,7 +39,11 @@ import {FHE, euint64, ebool, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Hidden Voting with encrypted ballots and homomorphic tallying - individual votes stay private forever!
+ * @notice Private voting system with homomorphic vote tallying.
+ *         Voters submit encrypted ballots (Yes/No). Votes are tallied using
+ *         homomorphic addition WITHOUT decrypting individual ballots. Only the
+ *         final tally is revealed - individual votes remain private forever.
+ *         Perfect for DAO governance, elections, or any scenario requiring ballot secrecy.
  *
  * @dev Flow: vote() → closeVoting() → revealResults()
  *      ⚡ Gas: Each vote costs ~200k gas (FHE.add + FHE.select operations)

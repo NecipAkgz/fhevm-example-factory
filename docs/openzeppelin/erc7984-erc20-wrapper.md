@@ -1,4 +1,4 @@
-Wraps ERC20 tokens into confidential ERC7984 tokens
+Bridge between public ERC20 and confidential ERC7984 tokens. Allows users to wrap regular ERC20 tokens into privacy-preserving ERC7984 tokens (public → private) and unwrap them back (private → public). Wrapping is instant, unwrapping requires decryption proof from KMS. Essential for bringing existing tokens into the confidential ecosystem.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -32,7 +32,11 @@ import {
 } from "@openzeppelin/confidential-contracts/token/ERC7984/extensions/ERC7984ERC20Wrapper.sol";
 
 /**
- * @notice Wraps ERC20 tokens into confidential ERC7984 tokens
+ * @notice Bridge between public ERC20 and confidential ERC7984 tokens.
+ *         Allows users to wrap regular ERC20 tokens into privacy-preserving
+ *         ERC7984 tokens (public → private) and unwrap them back (private → public).
+ *         Wrapping is instant, unwrapping requires decryption proof from KMS.
+ *         Essential for bringing existing tokens into the confidential ecosystem.
  *
  * @dev WRAP: ERC20 → ERC7984 (public → private)
  *      UNWRAP: ERC7984 → ERC20 (private → public, requires decryption)

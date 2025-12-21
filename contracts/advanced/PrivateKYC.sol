@@ -12,7 +12,12 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Private KYC - verify identity without revealing personal data!
+ * @notice Privacy-preserving identity verification using predicate proofs.
+ *         Users submit encrypted personal data (age, country, credit score).
+ *         Contract can verify predicates like "Is user 18+?" or "Good credit?"
+ *         without learning the actual values. Returns encrypted booleans that
+ *         prove compliance without revealing sensitive information. Revolutionary
+ *         for KYC/AML compliance while preserving user privacy.
  *
  * @dev Flow: submitKYC() → verifyAge18()/verifyGoodCredit()/etc.
  *      Returns encrypted booleans: "Is 18+?", "Good credit?" without revealing actual values.
