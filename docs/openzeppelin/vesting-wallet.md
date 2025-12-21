@@ -9,6 +9,25 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (13 items)</summary>
+
+**Types:** `ebool` · `euint128` · `euint64`
+
+**Functions:**
+- `FHE.add()` - Homomorphic addition: result = a + b (overflow wraps)
+- `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.allowTransient()` - Grants TEMPORARY permission (expires at tx end)
+- `FHE.asEuint64()` - Encrypts a plaintext uint64 value into euint64
+- `FHE.div()` - Homomorphic division: result = a / b (plaintext divisor only)
+- `FHE.ge()` - Encrypted greater-or-equal: returns ebool(a >= b)
+- `FHE.mul()` - Homomorphic multiplication: result = a * b
+- `FHE.select()` - Encrypted if-then-else: select(cond, a, b) → returns a if true, b if false
+- `FHE.sub()` - Homomorphic subtraction: result = a - b (underflow wraps)
+
+</details>
+
 {% tabs %}
 
 {% tab title="VestingWalletExample.sol" %}

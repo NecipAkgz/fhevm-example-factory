@@ -9,6 +9,20 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (7 items)</summary>
+
+**Types:** `euint64` · `externalEuint64`
+
+**Functions:**
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.allowTransient()` - Grants TEMPORARY permission (expires at tx end)
+- `FHE.checkSignatures()` - Verifies KMS decryption proof (reverts if invalid)
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+
+</details>
+
 {% tabs %}
 
 {% tab title="SwapERC7984ToERC20Example.sol" %}

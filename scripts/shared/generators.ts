@@ -117,6 +117,145 @@ func.tags = ["${contractName}"];
 `;
 }
 
+// =============================================================================
+// FHE API Reference (from @fhevm/solidity)
+// =============================================================================
+
+/** FHE Library Functions with developer-friendly descriptions */
+const FHE_FUNCTION_DESCRIPTIONS: Record<string, string> = {
+  // Type Conversion & Initialization
+  asEbool: "Encrypts a plaintext boolean into ebool",
+  asEuint8: "Encrypts a plaintext uint8 value into euint8",
+  asEuint16: "Encrypts a plaintext uint16 value into euint16",
+  asEuint32: "Encrypts a plaintext uint32 value into euint32",
+  asEuint64: "Encrypts a plaintext uint64 value into euint64",
+  asEuint128: "Encrypts a plaintext uint128 value into euint128",
+  asEuint256: "Encrypts a plaintext uint256 value into euint256",
+  asEaddress: "Encrypts a plaintext address into eaddress",
+  fromExternal:
+    "Validates and converts external encrypted input using inputProof",
+  isInitialized: "Checks if an encrypted value has been set (handle != 0)",
+
+  // Arithmetic Operations
+  add: "Homomorphic addition: result = a + b (overflow wraps)",
+  sub: "Homomorphic subtraction: result = a - b (underflow wraps)",
+  mul: "Homomorphic multiplication: result = a * b",
+  div: "Homomorphic division: result = a / b (plaintext divisor only)",
+  rem: "Homomorphic remainder: result = a % b (plaintext divisor only)",
+  neg: "Homomorphic negation (two's complement)",
+  min: "Returns smaller of two encrypted values",
+  max: "Returns larger of two encrypted values",
+
+  // Comparison Operations (return ebool)
+  eq: "Encrypted equality: returns ebool(a == b)",
+  ne: "Encrypted inequality: returns ebool(a != b)",
+  gt: "Encrypted greater-than: returns ebool(a > b)",
+  lt: "Encrypted less-than: returns ebool(a < b)",
+  ge: "Encrypted greater-or-equal: returns ebool(a >= b)",
+  le: "Encrypted less-or-equal: returns ebool(a <= b)",
+
+  // Bitwise Operations
+  and: "Homomorphic bitwise AND",
+  or: "Homomorphic bitwise OR",
+  xor: "Homomorphic bitwise XOR",
+  not: "Homomorphic bitwise NOT",
+  shl: "Homomorphic shift left",
+  shr: "Homomorphic shift right",
+  rotl: "Homomorphic rotate left",
+  rotr: "Homomorphic rotate right",
+
+  // Conditional Logic
+  select:
+    "Encrypted if-then-else: select(cond, a, b) → returns a if true, b if false",
+
+  // Random Number Generation
+  randEbool: "Generates random encrypted boolean",
+  randEuint8: "Generates random encrypted 8-bit integer",
+  randEuint16: "Generates random encrypted 16-bit integer",
+  randEuint32: "Generates random encrypted 32-bit integer",
+  randEuint64: "Generates random encrypted 64-bit integer",
+  randEuint128: "Generates random encrypted 128-bit integer",
+  randEuint256: "Generates random encrypted 256-bit integer",
+
+  // Access Control
+  allow: "Grants PERMANENT permission for address to decrypt/use value",
+  allowThis: "Grants contract permission to operate on ciphertext",
+  allowTransient: "Grants TEMPORARY permission (expires at tx end)",
+  isAllowed: "Checks if address has permission to use ciphertext",
+  isSenderAllowed: "Checks if msg.sender has permission",
+
+  // Decryption
+  makePubliclyDecryptable: "Marks ciphertext for public decryption via relayer",
+  isPubliclyDecryptable: "Checks if ciphertext is publicly decryptable",
+  checkSignatures: "Verifies KMS decryption proof (reverts if invalid)",
+  toBytes32: "Converts encrypted handle to bytes32 for proof arrays",
+
+  // Utility
+  cleanTransientStorage:
+    "Clears transient permissions (for AA bundled UserOps)",
+};
+
+/**
+ * Extracts FHE function names used in contract
+ */
+export function extractFHEFunctions(contractContent: string): string[] {
+  const pattern = /FHE\.([a-zA-Z0-9]+)\s*[(<]/g;
+  const matches = new Set<string>();
+  let match;
+  while ((match = pattern.exec(contractContent)) !== null) {
+    if (FHE_FUNCTION_DESCRIPTIONS[match[1]]) {
+      matches.add(match[1]);
+    }
+  }
+  return Array.from(matches).sort();
+}
+
+/**
+ * Extracts FHE types used in contract (from imports and declarations)
+ */
+export function extractFHETypes(contractContent: string): string[] {
+  const pattern =
+    /\b(ebool|euint(?:8|16|32|64|128|256)|eaddress|externalEbool|externalEuint(?:8|16|32|64|128|256)|externalEaddress)\b/g;
+  const matches = new Set<string>();
+  let match;
+  while ((match = pattern.exec(contractContent)) !== null) {
+    matches.add(match[1]);
+  }
+  return Array.from(matches).sort();
+}
+
+/**
+ * Generates FHE API Reference markdown section (collapsible format)
+ */
+export function generateFHEApiSection(
+  functions: string[],
+  types: string[]
+): string {
+  if (functions.length === 0 && types.length === 0) return "";
+
+  const totalCount = functions.length + types.length;
+  let section = `<details>\n`;
+  section += `<summary>🔐 FHE API Reference (${totalCount} items)</summary>\n\n`;
+
+  // Types
+  if (types.length > 0) {
+    section += `**Types:** ${types.map((t) => `\`${t}\``).join(" · ")}\n\n`;
+  }
+
+  // Functions as list
+  if (functions.length > 0) {
+    section += `**Functions:**\n`;
+    for (const f of functions) {
+      section += `- \`FHE.${f}()\` - ${FHE_FUNCTION_DESCRIPTIONS[f]}\n`;
+    }
+    section += `\n`;
+  }
+
+  section += `</details>\n\n`;
+
+  return section;
+}
+
 /**
  * Generates GitBook-compatible markdown documentation
  */
@@ -135,6 +274,11 @@ export function generateGitBookMarkdown(
   markdown += `- \`.ts\` file → \`<your-project-root-dir>/test/\`\n\n`;
   markdown += `This ensures Hardhat can compile and test your contracts as expected.\n`;
   markdown += `{% endhint %}\n\n`;
+
+  // Extract and add FHE API Reference section
+  const fheFunctions = extractFHEFunctions(contractContent);
+  const fheTypes = extractFHETypes(contractContent);
+  markdown += generateFHEApiSection(fheFunctions, fheTypes);
 
   markdown += `{% tabs %}\n\n`;
 
@@ -199,7 +343,8 @@ export function runCommand(
   cwd: string
 ): Promise<string> {
   return new Promise((resolve, reject) => {
-    const child = spawn(cmd, args, {
+    const fullCommand = [cmd, ...args].join(" ");
+    const child = spawn(fullCommand, [], {
       cwd,
       shell: true,
       stdio: "pipe",
@@ -241,7 +386,8 @@ export function runCommandWithStatus(
   return new Promise((resolve) => {
     let output = "";
 
-    const proc = spawn(cmd, args, {
+    const fullCommand = [cmd, ...args].join(" ");
+    const proc = spawn(fullCommand, [], {
       cwd,
       shell: true,
       stdio: ["ignore", "pipe", "pipe"],

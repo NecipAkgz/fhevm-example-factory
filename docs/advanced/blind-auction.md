@@ -9,6 +9,24 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (12 items)</summary>
+
+**Types:** `ebool` · `euint64` · `externalEuint64`
+
+**Functions:**
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.asEuint64()` - Encrypts a plaintext uint64 value into euint64
+- `FHE.checkSignatures()` - Verifies KMS decryption proof (reverts if invalid)
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.ge()` - Encrypted greater-or-equal: returns ebool(a >= b)
+- `FHE.gt()` - Encrypted greater-than: returns ebool(a > b)
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+- `FHE.select()` - Encrypted if-then-else: select(cond, a, b) → returns a if true, b if false
+- `FHE.toBytes32()` - Converts encrypted handle to bytes32 for proof arrays
+
+</details>
+
 {% tabs %}
 
 {% tab title="BlindAuction.sol" %}

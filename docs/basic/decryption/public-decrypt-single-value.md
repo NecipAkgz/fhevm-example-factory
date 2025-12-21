@@ -9,6 +9,19 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (5 items)</summary>
+
+**Types:** `ebool`
+
+**Functions:**
+- `FHE.checkSignatures()` - Verifies KMS decryption proof (reverts if invalid)
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+- `FHE.randEbool()` - Generates random encrypted boolean
+- `FHE.toBytes32()` - Converts encrypted handle to bytes32 for proof arrays
+
+</details>
+
 {% tabs %}
 
 {% tab title="HeadsOrTails.sol" %}

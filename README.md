@@ -260,6 +260,7 @@ npm run create
 Automatically builds GitBook-ready markdown files directly from your source code.
 
 - 🔍 **Extracts** code snippets from Contracts and Tests
+- 🔐 **Auto-generates** FHE API Reference (functions & types used)
 - 🎨 **Formats** content into clean, tabbed markdown views
 - 📑 **Updates** the documentation index (`SUMMARY.md`)
 

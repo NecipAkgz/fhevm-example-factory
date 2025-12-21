@@ -9,6 +9,13 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (1 items)</summary>
+
+**Types:** `euint64`
+
+</details>
+
 {% tabs %}
 
 {% tab title="ERC7984ERC20WrapperExample.sol" %}

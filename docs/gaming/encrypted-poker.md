@@ -9,6 +9,24 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (13 items)</summary>
+
+**Types:** `ebool` · `euint16` · `euint8` · `externalEuint8`
+
+**Functions:**
+- `FHE.add()` - Homomorphic addition: result = a + b (overflow wraps)
+- `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.asEuint16()` - Encrypts a plaintext uint16 value into euint16
+- `FHE.checkSignatures()` - Verifies KMS decryption proof (reverts if invalid)
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.gt()` - Encrypted greater-than: returns ebool(a > b)
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+- `FHE.toBytes32()` - Converts encrypted handle to bytes32 for proof arrays
+
+</details>
+
 {% tabs %}
 
 {% tab title="EncryptedPoker.sol" %}

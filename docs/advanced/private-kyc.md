@@ -9,6 +9,23 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (13 items)</summary>
+
+**Types:** `ebool` · `euint16` · `euint8` · `externalEuint16` · `externalEuint8`
+
+**Functions:**
+- `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.and()` - Homomorphic bitwise AND
+- `FHE.asEuint16()` - Encrypts a plaintext uint16 value into euint16
+- `FHE.asEuint8()` - Encrypts a plaintext uint8 value into euint8
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.ge()` - Encrypted greater-or-equal: returns ebool(a >= b)
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+
+</details>
+
 {% tabs %}
 
 {% tab title="PrivateKYC.sol" %}

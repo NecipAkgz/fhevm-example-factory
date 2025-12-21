@@ -9,6 +9,27 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (15 items)</summary>
+
+**Types:** `ebool` · `euint32` · `externalEuint32`
+
+**Functions:**
+- `FHE.add()` - Homomorphic addition: result = a + b (overflow wraps)
+- `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.asEuint32()` - Encrypts a plaintext uint32 value into euint32
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.ge()` - Encrypted greater-or-equal: returns ebool(a >= b)
+- `FHE.gt()` - Encrypted greater-than: returns ebool(a > b)
+- `FHE.lt()` - Encrypted less-than: returns ebool(a < b)
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+- `FHE.mul()` - Homomorphic multiplication: result = a * b
+- `FHE.select()` - Encrypted if-then-else: select(cond, a, b) → returns a if true, b if false
+- `FHE.sub()` - Homomorphic subtraction: result = a - b (underflow wraps)
+
+</details>
+
 {% tabs %}
 
 {% tab title="FHEAntiPatterns.sol" %}

@@ -9,6 +9,22 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (11 items)</summary>
+
+**Types:** `ebool` · `euint64` · `euint8` · `externalEuint64`
+
+**Functions:**
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.asEuint64()` - Encrypts a plaintext uint64 value into euint64
+- `FHE.checkSignatures()` - Verifies KMS decryption proof (reverts if invalid)
+- `FHE.eq()` - Encrypted equality: returns ebool(a == b)
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.makePubliclyDecryptable()` - Marks ciphertext for public decryption via relayer
+- `FHE.toBytes32()` - Converts encrypted handle to bytes32 for proof arrays
+
+</details>
+
 {% tabs %}
 
 {% tab title="EncryptedLottery.sol" %}

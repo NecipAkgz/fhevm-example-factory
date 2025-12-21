@@ -9,6 +9,22 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (10 items)</summary>
+
+**Types:** `ebool` · `euint32` · `euint64`
+
+**Functions:**
+- `FHE.add()` - Homomorphic addition: result = a + b (overflow wraps)
+- `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.asEbool()` - Encrypts a plaintext boolean into ebool
+- `FHE.asEuint32()` - Encrypts a plaintext uint32 value into euint32
+- `FHE.asEuint64()` - Encrypts a plaintext uint64 value into euint64
+- `FHE.xor()` - Homomorphic bitwise XOR
+
+</details>
+
 {% tabs %}
 
 {% tab title="UserDecryptMultipleValues.sol" %}

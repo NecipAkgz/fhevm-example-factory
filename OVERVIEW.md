@@ -178,10 +178,14 @@ Constants, logging, and helper functions:
 
 ### `shared/generators.ts` - Template & Code Generation
 
-Template processing and command execution:
+Template processing and documentation generation:
 
 - `cleanupTemplate()` - Prepares scaffolded project
 - `generateDeployScript()` - Creates Hardhat deploy script
+- `extractFHEFunctions()` - Parses contract for `FHE.xxx()` calls
+- `extractFHETypes()` - Parses contract for encrypted types (`euint32`, etc.)
+- `generateFHEApiSection()` - Creates collapsible API reference markdown
+- `generateGitBookMarkdown()` - Creates GitBook-compatible documentation
 - `runCommand()` - Executes shell commands
 - `updateProjectPackageJson()` - Updates package.json with dependencies
 
@@ -234,9 +238,15 @@ Creates GitBook-compatible markdown from source:
 ```
 1. Read contract source code
 2. Read test source code
-3. Combine into tabbed markdown with {% tabs %}
-4. Save to docs/ folder
+3. Extract FHE types and functions used (auto-generates API reference)
+4. Combine into tabbed markdown with {% tabs %}
+5. Save to docs/ folder
 ```
+
+Features:
+- **FHE API Reference**: Auto-detects `FHE.xxx()` calls and generates collapsible reference section
+- **Syntax Highlighting**: Solidity and TypeScript code blocks
+- **GitBook Hints**: Info boxes for usage instructions
 
 ### `commands/maintenance.ts` - Test Runner
 

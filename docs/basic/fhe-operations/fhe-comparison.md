@@ -9,6 +9,25 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (13 items)</summary>
+
+**Types:** `ebool` · `euint32` · `externalEuint32`
+
+**Functions:**
+- `FHE.allow()` - Grants PERMANENT permission for address to decrypt/use value
+- `FHE.allowThis()` - Grants contract permission to operate on ciphertext
+- `FHE.eq()` - Encrypted equality: returns ebool(a == b)
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+- `FHE.ge()` - Encrypted greater-or-equal: returns ebool(a >= b)
+- `FHE.gt()` - Encrypted greater-than: returns ebool(a > b)
+- `FHE.le()` - Encrypted less-or-equal: returns ebool(a <= b)
+- `FHE.lt()` - Encrypted less-than: returns ebool(a < b)
+- `FHE.ne()` - Encrypted inequality: returns ebool(a != b)
+- `FHE.select()` - Encrypted if-then-else: select(cond, a, b) → returns a if true, b if false
+
+</details>
+
 {% tabs %}
 
 {% tab title="FHEComparison.sol" %}

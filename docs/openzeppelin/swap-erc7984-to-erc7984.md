@@ -9,6 +9,17 @@ To run this example correctly, make sure the files are placed in the following d
 This ensures Hardhat can compile and test your contracts as expected.
 {% endhint %}
 
+<details>
+<summary>🔐 FHE API Reference (4 items)</summary>
+
+**Types:** `euint64` · `externalEuint64`
+
+**Functions:**
+- `FHE.allowTransient()` - Grants TEMPORARY permission (expires at tx end)
+- `FHE.fromExternal()` - Validates and converts external encrypted input using inputProof
+
+</details>
+
 {% tabs %}
 
 {% tab title="SwapERC7984ToERC7984Example.sol" %}
