@@ -26,7 +26,8 @@ describe("FHEAntiPatterns", function () {
 
   before(async function () {
     if (!hre.fhevm.isMock) {
-      throw new Error(`This hardhat test suite cannot run on Sepolia Testnet`);
+      console.warn(`This hardhat test suite cannot run on Sepolia Testnet`);
+      this.skip();
     }
     const ethSigners: HardhatEthersSigner[] = await ethers.getSigners();
     signers = { owner: ethSigners[0], alice: ethSigners[1] };

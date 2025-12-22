@@ -56,8 +56,8 @@ npx create-fhevm-example --category basic
 npx create-fhevm-example --add
 npx create-fhevm-example --add --target ./my-existing-project
 
-# With auto-install and testing
-npx create-fhevm-example --example fhe-counter --output ./my-project --install --test
+# With auto-install
+npx create-fhevm-example --example fhe-counter --output ./my-project --install
 ```
 
 ---
@@ -72,7 +72,6 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install -
 | `--target <dir>` | Target directory for `--add` mode (default: current dir) |
 | `--output <dir>` | Output directory for new projects |
 | `--install` | Auto-install dependencies after scaffolding |
-| `--test` | Auto-run tests (requires `--install`) |
 | `--help`, `-h` | Show help information |
 
 ---

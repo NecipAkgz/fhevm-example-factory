@@ -27,9 +27,6 @@ test-output/
 .agent/
 
 # Project files not needed in NPM
-contracts/
-test/
 docs/
-fhevm-hardhat-template/
 GITHUB_README.md
-NPM_README.md
+OVERVIEW.md

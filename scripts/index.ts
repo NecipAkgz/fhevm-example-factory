@@ -42,6 +42,15 @@ import { handleInteractiveDocs as runDocGeneration } from "./commands/generate-d
 // INTERACTIVE MODE
 // =============================================================================
 
+/** Helper to check if user cancelled and show message */
+function checkCancel<T>(value: T | symbol): value is symbol {
+  if (p.isCancel(value)) {
+    p.cancel("Operation cancelled.");
+    return true;
+  }
+  return false;
+}
+
 /** Project configuration from interactive prompts */
 interface ProjectConfig {
   mode: "single" | "category";
@@ -80,25 +89,16 @@ async function getProjectConfig(): Promise<ProjectConfig | null> {
     options,
   });
 
-  if (p.isCancel(mode)) {
-    p.cancel("Operation cancelled.");
-    return null;
-  }
+  if (checkCancel(mode)) return null;
 
   let name: string;
 
   if (mode === "single") {
     const category = await promptSelectCategory();
-    if (p.isCancel(category)) {
-      p.cancel("Operation cancelled.");
-      return null;
-    }
+    if (checkCancel(category)) return null;
 
     const example = await promptSelectExampleFromCategory(category as string);
-    if (p.isCancel(example)) {
-      p.cancel("Operation cancelled.");
-      return null;
-    }
+    if (checkCancel(example)) return null;
 
     name = example as string;
   } else if (mode === "docs") {
@@ -107,10 +107,7 @@ async function getProjectConfig(): Promise<ProjectConfig | null> {
     return null; // Exit after docs generation
   } else {
     const category = await promptSelectCategoryProject();
-    if (p.isCancel(category)) {
-      p.cancel("Operation cancelled.");
-      return null;
-    }
+    if (checkCancel(category)) return null;
 
     name = category as string;
   }
@@ -120,29 +117,20 @@ async function getProjectConfig(): Promise<ProjectConfig | null> {
     placeholder: `my-${name}-project`,
     defaultValue: `my-${name}-project`,
   });
-  if (p.isCancel(projectName)) {
-    p.cancel("Operation cancelled.");
-    return null;
-  }
+  if (checkCancel(projectName)) return null;
 
   const outputDir = await p.text({
     message: "Output directory:",
     placeholder: `./${projectName}`,
     defaultValue: `./${projectName}`,
   });
-  if (p.isCancel(outputDir)) {
-    p.cancel("Operation cancelled.");
-    return null;
-  }
+  if (checkCancel(outputDir)) return null;
 
   const shouldInstall = await p.confirm({
     message: "Install dependencies and run tests?",
     initialValue: false,
   });
-  if (p.isCancel(shouldInstall)) {
-    p.cancel("Operation cancelled.");
-    return null;
-  }
+  if (checkCancel(shouldInstall)) return null;
 
   return {
     mode: mode as "single" | "category",
@@ -228,20 +216,47 @@ async function runInteractiveMode(): Promise<void> {
 function parseArgs(args: string[]): Record<string, string | boolean> {
   const parsed: Record<string, string | boolean> = {};
 
+  // Short flag mappings
+  const shortFlags: Record<string, string> = {
+    "-e": "example",
+    "-c": "category",
+    "-o": "output",
+    "-a": "add",
+    "-i": "install",
+    "-h": "help",
+  };
+
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
+
+    // Handle long flags (--example, --category, etc.)
     if (arg.startsWith("--")) {
       const key = arg.slice(2);
       const nextArg = args[i + 1];
 
-      if (nextArg && !nextArg.startsWith("--")) {
+      if (nextArg && !nextArg.startsWith("-")) {
         parsed[key] = nextArg;
         i++;
       } else {
         parsed[key] = true;
       }
-    } else if (arg === "-h") {
-      parsed["help"] = true;
+    }
+    // Handle short flags (-e, -c, -o, -a, -i, -h)
+    else if (arg.startsWith("-") && shortFlags[arg]) {
+      const key = shortFlags[arg];
+      const nextArg = args[i + 1];
+
+      // Flags that take values: -e, -c, -o
+      if (
+        ["example", "category", "output"].includes(key) &&
+        nextArg &&
+        !nextArg.startsWith("-")
+      ) {
+        parsed[key] = nextArg;
+        i++;
+      } else {
+        parsed[key] = true;
+      }
     }
   }
 

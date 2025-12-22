@@ -70,8 +70,8 @@ export const FHEVM_DEPENDENCIES = {
     "@fhevm/solidity": "^0.9.1",
   },
   devDependencies: {
-    "@fhevm/hardhat-plugin": "^0.3.0-1",
-    "@zama-fhe/relayer-sdk": "^0.3.0-5",
+    "@fhevm/hardhat-plugin": "^0.3.0-3",
+    "@zama-fhe/relayer-sdk": "^0.3.0-6",
   },
 };
 

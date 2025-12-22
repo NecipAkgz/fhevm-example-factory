@@ -26,10 +26,10 @@ This project serves **two different audiences**:
 npx create-fhevm-example
 ```
 - Uses the published `create-fhevm-example` package from NPM
-- Package only contains the CLI code (`dist/scripts/`)
-- Contract files are **downloaded from GitHub** during scaffolding
+- **All files bundled** in the package (`contracts/`, `test/`, `fhevm-hardhat-template/`)
+- **Offline capable** - No network required during scaffolding
 - No need to clone the repository
-- Always gets the latest examples from the main branch
+- Fast scaffolding with local file copy
 
 ### Contributors (Local Development)
 ```bash

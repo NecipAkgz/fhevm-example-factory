@@ -14,6 +14,7 @@ import {
   getContractName,
   FHEVM_DEPENDENCIES,
   getRootDir,
+  ERROR_MESSAGES,
 } from "../shared/utils";
 
 // =============================================================================
@@ -26,7 +27,7 @@ import {
 function detectHardhatProject(targetDir: string): boolean {
   const packageJsonPath = path.join(targetDir, "package.json");
   const hardhatConfigTs = path.join(targetDir, "hardhat.config.ts");
-  const hardhatConfigJs = path.join(targetDir, "hardhat.config");
+  const hardhatConfigJs = path.join(targetDir, "hardhat.config.js");
 
   if (!fs.existsSync(packageJsonPath)) {
     return false;
@@ -91,7 +92,7 @@ function updateHardhatConfig(targetDir: string): void {
     : null;
 
   if (!actualPath) {
-    throw new Error("hardhat.config.ts or hardhat.config.js not found");
+    throw new Error(ERROR_MESSAGES.CONFIG_NOT_FOUND);
   }
 
   let content = fs.readFileSync(actualPath, "utf-8");
@@ -131,13 +132,13 @@ function updateHardhatConfig(targetDir: string): void {
 function addExampleFiles(exampleName: string, targetDir: string): void {
   const example = EXAMPLES[exampleName];
   if (!example) {
-    throw new Error(`Unknown example: ${exampleName}`);
+    throw new Error(ERROR_MESSAGES.UNKNOWN_EXAMPLE(exampleName));
   }
 
   const rootDir = getRootDir();
   const contractName = getContractName(example.contract);
   if (!contractName) {
-    throw new Error("Could not extract contract name");
+    throw new Error(ERROR_MESSAGES.CONTRACT_NAME_FAILED);
   }
 
   const contractSource = path.join(rootDir, example.contract);
@@ -151,14 +152,11 @@ function addExampleFiles(exampleName: string, targetDir: string): void {
     fs.mkdirSync(contractsDir, { recursive: true });
   }
 
-  if (fs.existsSync(contractDest)) {
-    // File exists - will be handled by caller with prompts
-    fs.copyFileSync(contractSource, contractDest);
-    p.log.success(`Overwritten: ${contractName}.sol`);
-  } else {
-    fs.copyFileSync(contractSource, contractDest);
-    p.log.success(`Added: ${contractName}.sol`);
-  }
+  const isContractOverwrite = fs.existsSync(contractDest);
+  fs.copyFileSync(contractSource, contractDest);
+  p.log.success(
+    `${isContractOverwrite ? "Overwritten" : "Added"}: ${contractName}.sol`
+  );
 
   // Handle test file
   const testFileName = path.basename(example.test);
@@ -169,13 +167,11 @@ function addExampleFiles(exampleName: string, targetDir: string): void {
     fs.mkdirSync(testDir, { recursive: true });
   }
 
-  if (fs.existsSync(testDest)) {
-    fs.copyFileSync(testSource, testDest);
-    p.log.success(`Overwritten: ${testFileName}`);
-  } else {
-    fs.copyFileSync(testSource, testDest);
-    p.log.success(`Added: ${testFileName}`);
-  }
+  const isTestOverwrite = fs.existsSync(testDest);
+  fs.copyFileSync(testSource, testDest);
+  p.log.success(
+    `${isTestOverwrite ? "Overwritten" : "Added"}: ${testFileName}`
+  );
 
   // Handle contract dependencies
   if (example.dependencies) {

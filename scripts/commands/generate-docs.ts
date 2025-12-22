@@ -197,5 +197,8 @@ async function main(): Promise<void> {
 
 const isMainModule = process.argv[1]?.includes("generate-docs");
 if (isMainModule) {
-  main().catch(console.error);
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
 }

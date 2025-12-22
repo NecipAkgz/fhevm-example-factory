@@ -64,7 +64,7 @@ bunx create-fhevm-example
 <td></td>
 </tr>
 <tr>
-<td><strong>📚 30+ Ready Examples</strong></td>
+<td><strong>📚 28+ Ready Examples</strong></td>
 <td>From "Hello World" counters to advanced blind auctions and confidential tokens. Each with full test coverage.</td>
 <td></td>
 </tr>
@@ -133,7 +133,7 @@ npx create-fhevm-example --category advanced
 | 🎓 **Basic** | 11 | Fundamentals: counters, encryption, decryption |
 | 💡 **Concepts** | 4 | Access control, handles, input proofs, anti-patterns |
 | 🎮 **Gaming** | 3 | Poker, lottery, rock-paper-scissors |
-| 🏛️ **OpenZeppelin** | 6 | ERC7984, wrappers, swaps, vesting |
+| 🏛️ **OpenZeppelin** | 5 | ERC7984, wrappers, swaps, vesting |
 | 🚀 **Advanced** | 5 | Blind auction, escrow, voting, KYC, payroll |
 
 ***
@@ -258,7 +258,7 @@ No! Just use `npx` (comes with Node.js). The CLI runs directly without any globa
 <details>
 <summary><strong>What Node.js version is required?</strong></summary>
 
-Node.js **v18.0.0** or higher is required. We recommend using the latest LTS version.
+Node.js **v20.0.0** or higher is required. We recommend using the latest LTS version.
 </details>
 
 <details>

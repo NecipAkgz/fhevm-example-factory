@@ -14,6 +14,7 @@ import {
   getRootDir,
   getTemplateDir,
   TEST_TYPES_CONTENT,
+  log,
 } from "./utils";
 import {
   generateDeployScript,
@@ -47,16 +48,19 @@ function copyDependencies(dependencies: string[], outputDir: string): void {
 }
 
 /**
- * Initializes git repository (optional, fails silently)
+ * Initializes git repository (optional, logs warning if skipped)
+ * @returns true if git init succeeded, false otherwise
  */
-function initGitRepo(outputDir: string): void {
+function initGitRepo(outputDir: string): boolean {
   try {
     require("child_process").execSync("git init", {
       cwd: outputDir,
       stdio: "ignore",
     });
+    return true;
   } catch {
-    // Git init is optional
+    log.dim("   ⚠️ Git initialization skipped (git not available)");
+    return false;
   }
 }
 
@@ -256,19 +260,9 @@ export async function createLocalTestProject(
     }
   }
 
-  // 3. Copy dependencies
-  for (const depPath of allContractDeps) {
-    const depFullPath = path.join(rootDir, depPath);
-    if (fs.existsSync(depFullPath)) {
-      const relativePath = depPath.replace(/^contracts\//, "");
-      const depDestPath = path.join(outputDir, "contracts", relativePath);
-      const depDestDir = path.dirname(depDestPath);
-
-      if (!fs.existsSync(depDestDir)) {
-        fs.mkdirSync(depDestDir, { recursive: true });
-      }
-      fs.copyFileSync(depFullPath, depDestPath);
-    }
+  // 3. Copy dependencies (reuse helper function)
+  if (allContractDeps.size > 0) {
+    copyDependencies(Array.from(allContractDeps), outputDir);
   }
 
   // 4. Finalize project
