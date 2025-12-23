@@ -64,7 +64,7 @@ bunx create-fhevm-example
 <td></td>
 </tr>
 <tr>
-<td><strong>📚 28+ Ready Examples</strong></td>
+<td><strong>📚 30+ Ready Examples</strong></td>
 <td>From "Hello World" counters to advanced blind auctions and confidential tokens. Each with full test coverage.</td>
 <td></td>
 </tr>
@@ -131,10 +131,10 @@ npx create-fhevm-example --category advanced
 | Category | Examples | Description |
 | :--- | :---: | :--- |
 | 🎓 **Basic** | 11 | Fundamentals: counters, encryption, decryption |
-| 💡 **Concepts** | 4 | Access control, handles, input proofs, anti-patterns |
+| 💡 **Concepts** | 7 | Access control, handles, input proofs, anti-patterns |
 | 🎮 **Gaming** | 3 | Poker, lottery, rock-paper-scissors |
 | 🏛️ **OpenZeppelin** | 5 | ERC7984, wrappers, swaps, vesting |
-| 🚀 **Advanced** | 5 | Blind auction, escrow, voting, KYC, payroll |
+| 🎯 **Advanced** | 5 | Blind auction, escrow, voting, KYC, payroll |
 
 ***
 

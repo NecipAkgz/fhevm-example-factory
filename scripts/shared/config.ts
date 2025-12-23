@@ -193,15 +193,6 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/concepts/fhe-access-control.md",
     title: "FHE Access Control"
   },
-  "fhe-anti-patterns": {
-    contract: "contracts/concepts/FHEAntiPatterns.sol",
-    test: "test/concepts/FHEAntiPatterns.ts",
-    description:
-      "Comprehensive guide to FHE anti-patterns and their solutions. Covers 9 critical mistakes: using if/else on encrypted values, incorrect permission patterns, require() statements that leak info, unbounded loops, noise accumulation, and deprecated APIs. Each pattern shows both ❌ WRONG and ✅ CORRECT implementations.",
-    category: "Concepts",
-    docsOutput: "docs/concepts/fhe-anti-patterns.md",
-    title: "FHE Anti Patterns"
-  },
   "fhe-handles": {
     contract: "contracts/concepts/FHEHandles.sol",
     test: "test/concepts/FHEHandles.ts",
@@ -219,6 +210,33 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     category: "Concepts",
     docsOutput: "docs/concepts/fhe-input-proof.md",
     title: "FHE Input Proof"
+  },
+  "control-flow": {
+    contract: "contracts/concepts/antipatterns/ControlFlow.sol",
+    test: "test/concepts/antipatterns/ControlFlow.ts",
+    description:
+      "Control flow anti-patterns in FHE development. Demonstrates common mistakes when using conditional logic and loops with encrypted values.",
+    category: "Concepts - Antipatterns",
+    docsOutput: "docs/concepts/antipatterns/control-flow.md",
+    title: "Control Flow"
+  },
+  "operations-gas-noise": {
+    contract: "contracts/concepts/antipatterns/OperationsGasNoise.sol",
+    test: "test/concepts/antipatterns/OperationsGasNoise.ts",
+    description:
+      "Operations, gas, and noise anti-patterns in FHE development. Demonstrates performance issues, side-channel leaks, and inefficient encrypted computation patterns.",
+    category: "Concepts - Antipatterns",
+    docsOutput: "docs/concepts/antipatterns/operations-gas-noise.md",
+    title: "Operations Gas Noise"
+  },
+  "permissions": {
+    contract: "contracts/concepts/antipatterns/Permissions.sol",
+    test: "test/concepts/antipatterns/Permissions.ts",
+    description:
+      "Permission management anti-patterns in FHE development. Demonstrates common mistakes with allowThis, allow, and permission propagation across transfers and contracts.",
+    category: "Concepts - Antipatterns",
+    docsOutput: "docs/concepts/antipatterns/permissions.md",
+    title: "Permissions"
   },
   "encrypted-lottery": {
     contract: "contracts/gaming/EncryptedLottery.sol",
@@ -423,16 +441,29 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
         test: "test/concepts/FHEAccessControl.ts",
       },
       {
-        sol: "contracts/concepts/FHEAntiPatterns.sol",
-        test: "test/concepts/FHEAntiPatterns.ts",
-      },
-      {
         sol: "contracts/concepts/FHEHandles.sol",
         test: "test/concepts/FHEHandles.ts",
       },
       {
         sol: "contracts/concepts/FHEInputProof.sol",
         test: "test/concepts/FHEInputProof.ts",
+      }
+    ],
+  },
+  conceptsantipatterns: {
+    name: "Concepts - Antipatterns Examples",
+    contracts: [
+      {
+        sol: "contracts/concepts/antipatterns/ControlFlow.sol",
+        test: "test/concepts/antipatterns/ControlFlow.ts",
+      },
+      {
+        sol: "contracts/concepts/antipatterns/OperationsGasNoise.sol",
+        test: "test/concepts/antipatterns/OperationsGasNoise.ts",
+      },
+      {
+        sol: "contracts/concepts/antipatterns/Permissions.sol",
+        test: "test/concepts/antipatterns/Permissions.ts",
       }
     ],
   },

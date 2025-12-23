@@ -2,7 +2,7 @@
 
 - [🔐 Create FHEVM Example CLI](README.md)
 
-## Basic
+## 🎓 Basic
 
 - FHE Operations
   - [Add](basic/fhe-operations/fhe-add.md)
@@ -19,20 +19,24 @@
   - [Public Decrypt Single Value](basic/decryption/public-decrypt-single-value.md)
   - [Public Decrypt Multiple Values](basic/decryption/public-decrypt-multiple-values.md)
 
-## Critical Concepts
+## 💡 Critical Concepts
 
-- [Access Control](concepts/fhe-access-control.md)
-- [Input Proofs](concepts/fhe-input-proof.md)
-- [Handles & Lifecycle](concepts/fhe-handles.md)
-- [Anti-Patterns](concepts/fhe-anti-patterns.md)
+- Core Concepts
+  - [Access Control](concepts/fhe-access-control.md)
+  - [Input Proofs](concepts/fhe-input-proof.md)
+  - [Handles & Lifecycle](concepts/fhe-handles.md)
+- Anti-Patterns
+  - [Control Flow](concepts/antipatterns/control-flow.md)
+  - [Permissions](concepts/antipatterns/permissions.md)
+  - [Operations Gas Noise](concepts/antipatterns/operations-gas-noise.md)
 
-## Gaming
+## 🎮 Gaming
 
 - [Rock Paper Scissors](gaming/rock-paper-scissors.md)
 - [Encrypted Lottery](gaming/encrypted-lottery.md)
 - [Encrypted Poker](gaming/encrypted-poker.md)
 
-## Advanced Examples
+## 🎯 Advanced Examples
 
 - [Blind Auction](advanced/blind-auction.md)
 - [Hidden Voting](advanced/hidden-voting.md)
@@ -40,10 +44,11 @@
 - [Encrypted Escrow](advanced/encrypted-escrow.md)
 - [Private KYC](advanced/private-kyc.md)
 
-## OpenZeppelin Confidential Contracts
+## 🏛️ OpenZeppelin Confidential Contracts
 
 - [Library Installation and Overview](openzeppelin/README.md)
-- [ERC7984 Standard](openzeppelin/erc7984.md)
+- ERC7984 Standard
+  - [ERC7984 Overview](openzeppelin/erc7984.md)
   - [ERC7984 Tutorial](openzeppelin/erc7984-tutorial.md)
   - [ERC7984 to ERC20 Wrapper](openzeppelin/erc7984-erc20-wrapper.md)
   - [Swap ERC7984 to ERC20](openzeppelin/swap-erc7984-to-erc20.md)

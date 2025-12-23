@@ -32,7 +32,7 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ### Key Features
 
-- 🎯 **28+ Examples** - encryption, decryption, operations,  OpenZeppelin and more
+- 🎯 **30+ Examples** - encryption, decryption, operations,  OpenZeppelin and more
 - 🛠️ **Interactive CLI** - Modern command-line interface with beautiful prompts
 - 📦 **Standalone Projects** - Generate, runnable Hardhat projects from any example
 - 📚 **Auto Documentation** - GitBook-formatted documentation automatically
@@ -148,7 +148,7 @@ This will:
 
 ## 📋 Available Examples
 
-**28 examples total** - Click to expand each category:
+**30 examples total** - Click to expand each category:
 
 <details>
 <summary><b>🔐 Encryption Examples (3)</b></summary>
@@ -180,12 +180,16 @@ This will:
 </details>
 
 <details>
-<summary><b>🧠 Critical Concepts (4)</b></summary>
+<summary><b>🧠 Critical Concepts (7)</b></summary>
 
 - `fhe-access-control` - `FHE.allow`, `FHE.allowThis`, `FHE.allowTransient` patterns
 - `fhe-input-proof` - Input proof validation, batched inputs
 - `fhe-handles` - Handle creation, computation, immutability
-- `fhe-anti-patterns` - Common mistakes and correct alternatives
+
+**Anti-Patterns:**
+- `control-flow` - Conditional logic and loop anti-patterns with encrypted values
+- `permissions` - Permission management mistakes (allowThis, allow, cross-contract)
+- `operations-gas-noise` - Performance issues, side-channels, inefficient operations
 
 </details>
 
@@ -210,7 +214,7 @@ This will:
 </details>
 
 <details>
-<summary><b>🚀 Advanced Examples (5)</b></summary>
+<summary><b>🎯 Advanced Examples (5)</b></summary>
 
 - `blind-auction` - Encrypted bids, winner computed via FHE.gt/select
 - `hidden-voting` - Homomorphic vote tallying, private ballots

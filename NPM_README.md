@@ -84,7 +84,7 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 
 **FHE Operations** (4): `fhe-add`, `fhe-if-then-else`, `fhe-arithmetic`, `fhe-comparison`
 
-**Concepts** (4): `fhe-access-control`, `fhe-input-proof`, `fhe-handles`, `fhe-anti-patterns`
+**Concepts** (6): `fhe-access-control`, `fhe-input-proof`, `fhe-handles`, `control-flow`, `permissions`, `operations-gas-noise`
 
 **Gaming** (3): `rock-paper-scissors`, `encrypted-lottery`, `encrypted-poker`
 
