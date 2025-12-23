@@ -137,7 +137,7 @@ async function runTestPipeline(
     const testFile = testFiles[i];
     const progress = `[${i + 1}/${testFiles.length}]`;
 
-    process.stdout.write(`  ${pc.dim(progress)} ${testFile} `);
+    p.log.message(`${pc.cyan(pc.bold(progress))} ${pc.bold(testFile)}`);
 
     const testStart = Date.now();
     const result = await runCommandWithStatus(
@@ -147,23 +147,67 @@ async function runTestPipeline(
     );
     const duration = ((Date.now() - testStart) / 1000).toFixed(1);
 
+    // Filter output to show only relevant test results
+    const lines = result.output.split("\n");
+    let relevantOutput = "";
+    let captured = false;
+
+    for (const line of lines) {
+      // Start capturing from the first non-empty line after Hardhat compilation noise
+      if (
+        !captured &&
+        line.trim() &&
+        !line.includes("Nothing to compile") &&
+        !line.includes("Successfully compiled")
+      ) {
+        captured = true;
+      }
+
+      if (captured) {
+        // Skip final summary lines that we handle ourselves
+        if (line.includes("passing") || line.includes("failing")) {
+          continue;
+        }
+        if (line.trim()) {
+          relevantOutput += `    ${line}\n`;
+        }
+      }
+    }
+
+    if (relevantOutput.trim()) {
+      p.log.message(relevantOutput);
+    }
+
     if (result.success) {
       const testResults = extractTestResults(result.output);
       const resultInfo = testResults
         ? pc.dim(`(${testResults.replace(" ✓", "")})`)
         : "";
-      p.log.message(pc.green(`✓`) + ` ${pc.dim(duration + "s")} ${resultInfo}`);
+      p.log.message(
+        pc.green(`  ✓`) +
+          ` ${pc.dim(duration + "s")} ${pc.green(
+            pc.bold("PASSED")
+          )} ${resultInfo}`
+      );
+      p.log.message("");
       passedTests++;
     } else {
-      p.log.message(pc.red(`✗`) + ` ${pc.dim(duration + "s")}`);
+      p.log.message(
+        pc.red(`  ✗`) +
+          ` ${pc.dim(duration + "s")} ${pc.red(pc.bold("FAILED"))}`
+      );
       failedTests++;
       summary.failedTests.push(testFile);
 
       const errorMsg = extractErrorMessage(result.output);
       if (errorMsg) {
-        const shortError = errorMsg.split("\n")[0].slice(0, 80);
-        p.log.message(`    ${pc.red(pc.dim(shortError))}`);
+        p.log.message("");
+        p.log.message(pc.red("    Error Detail:"));
+        p.log.message(
+          `    ${pc.red(pc.dim(errorMsg.replace(/\n/g, "\n    ")))}`
+        );
       }
+      p.log.message("");
     }
   }
 
