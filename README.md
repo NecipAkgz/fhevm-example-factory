@@ -18,6 +18,7 @@
   <a href="#-npm-package">📦 <strong>NPM Package</strong></a> •
   <a href="#-available-examples">📚 <strong>Example Gallery</strong></a> •
   <a href="#-automation-tools">🛠️ <strong>Automation Tools</strong></a> •
+  <a href="#-maintenance">🔄 <strong>Maintenance</strong></a> •
   <a href="#-cli-reference">💻 <strong>CLI Reference</strong></a> •
   <a href="#️-creating-a-new-example">✨ <strong>Add New Example</strong></a>
 </p>
@@ -284,7 +285,7 @@ npm run create:docs                # All examples
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run test:all` - Test selected examples (interactive selection)
-- `npm run doctor` - Validate environment and config integrity
+- `npm run doctor` - Validate environment, submodule status, and config integrity
 - `npm run help:create` - Show help information
 
 **NPM Package:**

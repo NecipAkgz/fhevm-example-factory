@@ -65,7 +65,7 @@ fhevm-example-factory/
 │   │   └── ui.ts              # CLI prompts & interaction
 │   └── commands/              # CLI commands
 │       ├── add-mode.ts        # --add feature
-│       ├── doctor.ts          # Health checker
+│       ├── doctor.ts          # Health checker (env + submodule)
 │       ├── generate-config.ts # Config auto-generator
 │       ├── generate-docs.ts   # Docs generator
 │       └── maintenance.ts     # Test runner
@@ -266,6 +266,7 @@ Validates your development environment:
 - ✅ Node.js >= 20
 - ✅ Git installed
 - ✅ All paths in config.ts are valid
+- ✅ Submodule is up to date
 
 ---
 
@@ -430,4 +431,4 @@ Create a matching test file at `test/<category>/ContractName.ts`.
 Run `npm run generate:config` to regenerate.
 
 ### Tests failing after update
-Run `npm run doctor` to check all paths are valid.
+Run `npm run doctor` to check environment, submodule status, and all paths.
