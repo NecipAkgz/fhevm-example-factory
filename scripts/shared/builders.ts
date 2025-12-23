@@ -236,13 +236,16 @@ export async function createLocalTestProject(
     const testPath = path.join(rootDir, example.test);
 
     if (fs.existsSync(contractPath)) {
-      const contractName = getContractName(example.contract);
-      if (contractName) {
-        fs.copyFileSync(
-          contractPath,
-          path.join(outputDir, "contracts", `${contractName}.sol`)
-        );
+      // Preserve directory structure to avoid contract name conflicts
+      const relativePath = example.contract.replace(/^contracts\//, "");
+      const destPath = path.join(outputDir, "contracts", relativePath);
+      const destDir = path.dirname(destPath);
+
+      if (!fs.existsSync(destDir)) {
+        fs.mkdirSync(destDir, { recursive: true });
       }
+
+      fs.copyFileSync(contractPath, destPath);
     }
 
     if (fs.existsSync(testPath)) {
