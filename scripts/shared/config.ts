@@ -184,33 +184,6 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/basic/fhe-operations/fhe-if-then-else.md",
     title: "FHE If Then Else"
   },
-  "fhe-access-control": {
-    contract: "contracts/concepts/FHEAccessControl.sol",
-    test: "test/concepts/FHEAccessControl.ts",
-    description:
-      "Master class for FHE permission patterns and access control. Explains the three permission types: allow() for permanent access, allowThis() for contract operations, and allowTransient() for temporary cross-contract calls. Includes correct and incorrect usage examples to prevent common decryption failures.",
-    category: "Concepts",
-    docsOutput: "docs/concepts/fhe-access-control.md",
-    title: "FHE Access Control"
-  },
-  "fhe-handles": {
-    contract: "contracts/concepts/FHEHandles.sol",
-    test: "test/concepts/FHEHandles.ts",
-    description:
-      "Deep dive into FHE handles: what they are and how they work. Explains that handles are uint256 pointers to encrypted data, demonstrates three creation methods (fromExternal, asEuint, operations), and emphasizes immutability - every operation creates a NEW handle. Includes gas cost comparisons for different operations.",
-    category: "Concepts",
-    docsOutput: "docs/concepts/fhe-handles.md",
-    title: "FHE Handles"
-  },
-  "fhe-input-proof": {
-    contract: "contracts/concepts/FHEInputProof.sol",
-    test: "test/concepts/FHEInputProof.ts",
-    description:
-      "Input proof validation and batching strategies in FHEVM. Explains why proofs are essential (prevent garbage data, wrong types, and replay attacks) and demonstrates the gas-efficient batching pattern where one proof validates multiple encrypted inputs, saving ~50k gas per additional value.",
-    category: "Concepts",
-    docsOutput: "docs/concepts/fhe-input-proof.md",
-    title: "FHE Input Proof"
-  },
   "control-flow": {
     contract: "contracts/concepts/antipatterns/ControlFlow.sol",
     test: "test/concepts/antipatterns/ControlFlow.ts",
@@ -237,6 +210,33 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     category: "Concepts - Antipatterns",
     docsOutput: "docs/concepts/antipatterns/permissions.md",
     title: "Permissions"
+  },
+  "fhe-access-control": {
+    contract: "contracts/concepts/core/FHEAccessControl.sol",
+    test: "test/concepts/core/FHEAccessControl.ts",
+    description:
+      "Master class for FHE permission patterns and access control. Explains the three permission types: allow() for permanent access, allowThis() for contract operations, and allowTransient() for temporary cross-contract calls. Includes correct and incorrect usage examples to prevent common decryption failures.",
+    category: "Concepts - Core",
+    docsOutput: "docs/concepts/core/fhe-access-control.md",
+    title: "FHE Access Control"
+  },
+  "fhe-handles": {
+    contract: "contracts/concepts/core/FHEHandles.sol",
+    test: "test/concepts/core/FHEHandles.ts",
+    description:
+      "Deep dive into FHE handles: what they are and how they work. Explains that handles are uint256 pointers to encrypted data, demonstrates three creation methods (fromExternal, asEuint, operations), and emphasizes immutability - every operation creates a NEW handle. Includes gas cost comparisons for different operations.",
+    category: "Concepts - Core",
+    docsOutput: "docs/concepts/core/fhe-handles.md",
+    title: "FHE Handles"
+  },
+  "fhe-input-proof": {
+    contract: "contracts/concepts/core/FHEInputProof.sol",
+    test: "test/concepts/core/FHEInputProof.ts",
+    description:
+      "Input proof validation and batching strategies in FHEVM. Explains why proofs are essential (prevent garbage data, wrong types, and replay attacks) and demonstrates the gas-efficient batching pattern where one proof validates multiple encrypted inputs, saving ~50k gas per additional value.",
+    category: "Concepts - Core",
+    docsOutput: "docs/concepts/core/fhe-input-proof.md",
+    title: "FHE Input Proof"
   },
   "encrypted-lottery": {
     contract: "contracts/gaming/EncryptedLottery.sol",
@@ -349,8 +349,118 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
 // =============================================================================
 
 export const CATEGORIES: Record<string, CategoryConfig> = {
+  basicencryption: {
+    name: "Basic - Encryption",
+    contracts: [
+      {
+        sol: "contracts/basic/encryption/EncryptMultipleValues.sol",
+        test: "test/basic/encryption/EncryptMultipleValues.ts",
+      },
+      {
+        sol: "contracts/basic/encryption/EncryptSingleValue.sol",
+        test: "test/basic/encryption/EncryptSingleValue.ts",
+      },
+      {
+        sol: "contracts/basic/encryption/FHECounter.sol",
+        test: "test/basic/encryption/FHECounter.ts",
+      }
+    ],
+  },
+  basicdecryption: {
+    name: "Basic - Decryption",
+    contracts: [
+      {
+        sol: "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
+        test: "test/basic/decryption/PublicDecryptMultipleValues.ts",
+      },
+      {
+        sol: "contracts/basic/decryption/PublicDecryptSingleValue.sol",
+        test: "test/basic/decryption/PublicDecryptSingleValue.ts",
+      },
+      {
+        sol: "contracts/basic/decryption/UserDecryptMultipleValues.sol",
+        test: "test/basic/decryption/UserDecryptMultipleValues.ts",
+      },
+      {
+        sol: "contracts/basic/decryption/UserDecryptSingleValue.sol",
+        test: "test/basic/decryption/UserDecryptSingleValue.ts",
+      }
+    ],
+  },
+  basicfheoperations: {
+    name: "Basic - FHE Operations",
+    contracts: [
+      {
+        sol: "contracts/basic/fhe-operations/FHEAdd.sol",
+        test: "test/basic/fhe-operations/FHEAdd.ts",
+      },
+      {
+        sol: "contracts/basic/fhe-operations/FHEArithmetic.sol",
+        test: "test/basic/fhe-operations/FHEArithmetic.ts",
+      },
+      {
+        sol: "contracts/basic/fhe-operations/FHEComparison.sol",
+        test: "test/basic/fhe-operations/FHEComparison.ts",
+      },
+      {
+        sol: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
+        test: "test/basic/fhe-operations/FHEIfThenElse.ts",
+      }
+    ],
+  },
+  conceptscore: {
+    name: "Concepts - Core",
+    contracts: [
+      {
+        sol: "contracts/concepts/core/FHEAccessControl.sol",
+        test: "test/concepts/core/FHEAccessControl.ts",
+      },
+      {
+        sol: "contracts/concepts/core/FHEHandles.sol",
+        test: "test/concepts/core/FHEHandles.ts",
+      },
+      {
+        sol: "contracts/concepts/core/FHEInputProof.sol",
+        test: "test/concepts/core/FHEInputProof.ts",
+      }
+    ],
+  },
+  conceptsantipatterns: {
+    name: "Concepts - Antipatterns",
+    contracts: [
+      {
+        sol: "contracts/concepts/antipatterns/ControlFlow.sol",
+        test: "test/concepts/antipatterns/ControlFlow.ts",
+      },
+      {
+        sol: "contracts/concepts/antipatterns/OperationsGasNoise.sol",
+        test: "test/concepts/antipatterns/OperationsGasNoise.ts",
+      },
+      {
+        sol: "contracts/concepts/antipatterns/Permissions.sol",
+        test: "test/concepts/antipatterns/Permissions.ts",
+      }
+    ],
+  },
+  gaming: {
+    name: "Gaming",
+    contracts: [
+      {
+        sol: "contracts/gaming/EncryptedLottery.sol",
+        test: "test/gaming/EncryptedLottery.ts",
+      },
+      {
+        sol: "contracts/gaming/EncryptedPoker.sol",
+        test: "test/gaming/EncryptedPoker.ts",
+      },
+      {
+        sol: "contracts/gaming/RockPaperScissors.sol",
+        test: "test/gaming/RockPaperScissors.ts",
+      }
+    ],
+  },
   advanced: {
-    name: "Advanced Examples",
+    name: "Advanced",
     contracts: [
       {
         sol: "contracts/advanced/BlindAuction.sol",
@@ -374,118 +484,8 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       }
     ],
   },
-  basicdecryption: {
-    name: "Basic - Decryption Examples",
-    contracts: [
-      {
-        sol: "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
-        test: "test/basic/decryption/PublicDecryptMultipleValues.ts",
-      },
-      {
-        sol: "contracts/basic/decryption/PublicDecryptSingleValue.sol",
-        test: "test/basic/decryption/PublicDecryptSingleValue.ts",
-      },
-      {
-        sol: "contracts/basic/decryption/UserDecryptMultipleValues.sol",
-        test: "test/basic/decryption/UserDecryptMultipleValues.ts",
-      },
-      {
-        sol: "contracts/basic/decryption/UserDecryptSingleValue.sol",
-        test: "test/basic/decryption/UserDecryptSingleValue.ts",
-      }
-    ],
-  },
-  basicencryption: {
-    name: "Basic - Encryption Examples",
-    contracts: [
-      {
-        sol: "contracts/basic/encryption/EncryptMultipleValues.sol",
-        test: "test/basic/encryption/EncryptMultipleValues.ts",
-      },
-      {
-        sol: "contracts/basic/encryption/EncryptSingleValue.sol",
-        test: "test/basic/encryption/EncryptSingleValue.ts",
-      },
-      {
-        sol: "contracts/basic/encryption/FHECounter.sol",
-        test: "test/basic/encryption/FHECounter.ts",
-      }
-    ],
-  },
-  basicfheoperations: {
-    name: "Basic - FHE Operations Examples",
-    contracts: [
-      {
-        sol: "contracts/basic/fhe-operations/FHEAdd.sol",
-        test: "test/basic/fhe-operations/FHEAdd.ts",
-      },
-      {
-        sol: "contracts/basic/fhe-operations/FHEArithmetic.sol",
-        test: "test/basic/fhe-operations/FHEArithmetic.ts",
-      },
-      {
-        sol: "contracts/basic/fhe-operations/FHEComparison.sol",
-        test: "test/basic/fhe-operations/FHEComparison.ts",
-      },
-      {
-        sol: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
-        test: "test/basic/fhe-operations/FHEIfThenElse.ts",
-      }
-    ],
-  },
-  concepts: {
-    name: "Concepts Examples",
-    contracts: [
-      {
-        sol: "contracts/concepts/FHEAccessControl.sol",
-        test: "test/concepts/FHEAccessControl.ts",
-      },
-      {
-        sol: "contracts/concepts/FHEHandles.sol",
-        test: "test/concepts/FHEHandles.ts",
-      },
-      {
-        sol: "contracts/concepts/FHEInputProof.sol",
-        test: "test/concepts/FHEInputProof.ts",
-      }
-    ],
-  },
-  conceptsantipatterns: {
-    name: "Concepts - Antipatterns Examples",
-    contracts: [
-      {
-        sol: "contracts/concepts/antipatterns/ControlFlow.sol",
-        test: "test/concepts/antipatterns/ControlFlow.ts",
-      },
-      {
-        sol: "contracts/concepts/antipatterns/OperationsGasNoise.sol",
-        test: "test/concepts/antipatterns/OperationsGasNoise.ts",
-      },
-      {
-        sol: "contracts/concepts/antipatterns/Permissions.sol",
-        test: "test/concepts/antipatterns/Permissions.ts",
-      }
-    ],
-  },
-  gaming: {
-    name: "Gaming Examples",
-    contracts: [
-      {
-        sol: "contracts/gaming/EncryptedLottery.sol",
-        test: "test/gaming/EncryptedLottery.ts",
-      },
-      {
-        sol: "contracts/gaming/EncryptedPoker.sol",
-        test: "test/gaming/EncryptedPoker.ts",
-      },
-      {
-        sol: "contracts/gaming/RockPaperScissors.sol",
-        test: "test/gaming/RockPaperScissors.ts",
-      }
-    ],
-  },
   openzeppelin: {
-    name: "Openzeppelin Examples",
+    name: "Openzeppelin",
     contracts: [
       {
         sol: "contracts/openzeppelin/ERC7984.sol",

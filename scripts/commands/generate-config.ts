@@ -15,6 +15,7 @@ import {
   contractNameToTitle,
   formatCategoryName,
   log,
+  CATEGORY_ORDER,
 } from "../shared/utils";
 import pc from "picocolors";
 
@@ -209,29 +210,38 @@ function generateCategoriesConfig(contracts: ContractInfo[]): string {
     categoryMap[contract.category].push(contract);
   }
 
-  const categoryEntries = Object.entries(categoryMap).map(
-    ([category, items]) => {
-      const categoryKey = category
-        .toLowerCase()
-        .replace(/\s+/g, "")
-        .replace(/-/g, "");
-      const contracts = items
-        .map(
-          (c) => `      {
+  const sortedEntries = Object.entries(categoryMap).sort(([catA], [catB]) => {
+    const idxA = CATEGORY_ORDER.indexOf(catA);
+    const idxB = CATEGORY_ORDER.indexOf(catB);
+
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+
+    return catA.localeCompare(catB);
+  });
+
+  const categoryEntries = sortedEntries.map(([category, items]) => {
+    const categoryKey = category
+      .toLowerCase()
+      .replace(/\s+/g, "")
+      .replace(/-/g, "");
+    const contracts = items
+      .map(
+        (c) => `      {
         sol: "${c.contractPath}",
         test: "${c.testPath}",
       }`
-        )
-        .join(",\n");
+      )
+      .join(",\n");
 
-      return `  ${categoryKey}: {
-    name: "${category} Examples",
+    return `  ${categoryKey}: {
+    name: "${category}",
     contracts: [
 ${contracts}
     ],
   }`;
-    }
-  );
+  });
 
   return `export const CATEGORIES: Record<string, CategoryConfig> = {\n${categoryEntries.join(
     ",\n"

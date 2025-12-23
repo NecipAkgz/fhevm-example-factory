@@ -79,10 +79,11 @@ export const CATEGORY_ORDER = [
   "Basic - Encryption",
   "Basic - Decryption",
   "Basic - FHE Operations",
-  "Concepts",
+  "Concepts - Core",
+  "Concepts - Antipatterns",
   "Gaming",
-  "Openzeppelin",
   "Advanced",
+  "Openzeppelin",
 ];
 
 export const TEST_TYPES_CONTENT = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
