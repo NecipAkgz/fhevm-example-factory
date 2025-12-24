@@ -11,11 +11,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Operations, gas, and noise anti-patterns in FHE development.
- *         Demonstrates performance issues, side-channel leaks, and
- *         inefficient encrypted computation patterns.
+ *         Covers performance issues, side-channel leaks, noise accumulation,
+ *         and inefficient encrypted computation patterns.
  *
- * @dev Covers 4 patterns: gas/timing side channels, noise accumulation,
- *      deprecated APIs, and type mismatches.
+ * @dev Explores timing side channels, noise, deprecated APIs, and type mismatches.
  */
 contract FHEOperationsGasNoiseAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretValue;

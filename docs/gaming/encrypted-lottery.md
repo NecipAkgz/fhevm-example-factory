@@ -1,4 +1,4 @@
-Provably fair lottery with encrypted ticket numbers. Players buy tickets with encrypted numbers. Winning number is generated using FHE randomness. Winner is determined by comparing encrypted values without revealing losing tickets. Ensures fairness and privacy - no one can see ticket numbers before the draw.
+Provably fair lottery with encrypted ticket numbers and FHE randomness. Players buy tickets with hidden numbers. Winners are determined by comparing encrypted values, ensuring no one sees numbers before the draw.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -43,15 +43,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Provably fair lottery with encrypted ticket numbers.
- *         Players buy tickets with encrypted numbers. Winning number is generated
- *         using FHE randomness. Winner is determined by comparing encrypted values
- *         without revealing losing tickets. Ensures fairness and privacy - no one
- *         can see ticket numbers before the draw.
+ * @notice Provably fair lottery with encrypted ticket numbers and FHE randomness.
+ *         Players buy tickets with hidden numbers. Winners are determined by
+ *         comparing encrypted values, ensuring no one sees numbers before the draw.
  *
  * @dev Flow: buyTicket() → startDrawing() → checkAndClaim() → revealWinner()
- *      ⚡ Gas: Loop in checkAndClaim can be expensive with many tickets!
- *      ⚠️ Block randomness is predictable - use VRF in production!
  */
 contract EncryptedLottery is ZamaEthereumConfig {
     enum LotteryState {

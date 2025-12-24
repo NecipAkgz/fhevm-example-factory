@@ -1,4 +1,4 @@
-Confidential counter with encrypted increment/decrement operations. Demonstrates the complete FHE workflow: encryption, computation, and permission management. The counter value remains private, only accessible through decryption by authorized users.
+Confidential counter with encrypted increment/decrement operations. Demonstrates the FHE workflow: encryption, computation, and permission management while keeping the counter value private.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -37,12 +37,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Confidential counter with encrypted increment/decrement operations.
- *         Demonstrates the complete FHE workflow: encryption, computation,
- *         and permission management. The counter value remains private,
- *         only accessible through decryption by authorized users.
+ *         Demonstrates the FHE workflow: encryption, computation, and permission
+ *         management while keeping the counter value private.
 
- * @dev Demonstrates basic FHE workflow: fromExternal() → compute → allow permissions.
- *      All arithmetic happens on encrypted values without revealing the count.
+ * @dev Workflow: fromExternal (validation) → arithmetic → permissions.
  */
 contract FHECounter is ZamaEthereumConfig {
     euint32 private _count;

@@ -1,4 +1,4 @@
-Control flow anti-patterns in FHE development. Demonstrates common mistakes when using conditional logic and loops with encrypted values.
+Control flow anti-patterns in FHE development. Demonstrates mistakes with conditional logic and loops on encrypted values, providing correct vs incorrect implementations.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -46,12 +46,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Control flow anti-patterns in FHE development.
- *         Demonstrates common mistakes when using conditional logic
- *         and loops with encrypted values.
+ *         Demonstrates mistakes with conditional logic and loops on encrypted
+ *         values, providing correct vs incorrect implementations.
  *
- * @dev Covers 3 critical patterns: if/else branching, require statements,
- *      and encrypted loop iterations.
- *      Each shows ❌ WRONG and ✅ CORRECT implementations.
+ * @dev Covers if/else branching, require statements, and encrypted loops.
  */
 contract FHEControlFlowAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretBalance;

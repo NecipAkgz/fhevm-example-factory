@@ -44,7 +44,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/advanced/BlindAuction.sol",
     test: "test/advanced/BlindAuction.ts",
     description:
-      "Blind auction where bids remain encrypted until the end. Bidders submit encrypted amounts. The contract finds the highest bid using FHE.gt and FHE.select without ever decrypting losing bids. Only the winning bid amount is revealed after the auction closes. Losing bids remain private forever, ensuring true bid confidentiality.",
+      "Blind auction where bids remain fully encrypted until the end. Uses FHE.gt/select to find the winner without decrypting losing bids. Only the winning amount is revealed after the auction closes.",
     category: "Advanced",
     docsOutput: "docs/advanced/blind-auction.md",
     title: "Blind Auction"
@@ -53,7 +53,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/advanced/EncryptedEscrow.sol",
     test: "test/advanced/EncryptedEscrow.ts",
     description:
-      "Confidential escrow service with hidden transaction amounts. Buyer and seller agree on encrypted escrow amount. Funds are held securely until conditions are met. Amount remains hidden from public view until release or refund. Includes arbiter for dispute resolution. Perfect for high-value transactions requiring privacy.",
+      "Confidential escrow service with hidden transaction amounts and arbiters. Secures funds with encrypted amounts. Details remain hidden until release or refund, supporting multi-party dispute resolution.",
     category: "Advanced",
     docsOutput: "docs/advanced/encrypted-escrow.md",
     title: "Encrypted Escrow"
@@ -62,7 +62,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/advanced/HiddenVoting.sol",
     test: "test/advanced/HiddenVoting.ts",
     description:
-      "Private voting system with homomorphic vote tallying. Voters submit encrypted ballots (Yes/No). Votes are tallied using homomorphic addition WITHOUT decrypting individual ballots. Only the final tally is revealed - individual votes remain private forever. Perfect for DAO governance, elections, or any scenario requiring ballot secrecy.",
+      "Private voting system with homomorphic vote tallying (Yes/No). Ballots are added without decryption. Only final totals are revealed, ensuring individual vote secrecy forever.",
     category: "Advanced",
     docsOutput: "docs/advanced/hidden-voting.md",
     title: "Hidden Voting"
@@ -71,7 +71,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/advanced/PrivateKYC.sol",
     test: "test/advanced/PrivateKYC.ts",
     description:
-      "Privacy-preserving identity verification using predicate proofs. Users submit encrypted personal data (age, country, credit score). Contract can verify predicates like \"Is user 18+?\" or \"Good credit?\" without learning the actual values. Returns encrypted booleans that prove compliance without revealing sensitive information. Revolutionary for KYC/AML compliance while preserving user privacy.",
+      "Privacy-preserving KYC using encrypted predicate proofs (e.g., 18+ check). Users submit encrypted data. The contract verifies compliance without learning actual values, returning encrypted booleans.",
     category: "Advanced",
     docsOutput: "docs/advanced/private-kyc.md",
     title: "Private KYC"
@@ -80,7 +80,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/advanced/PrivatePayroll.sol",
     test: "test/advanced/PrivatePayroll.ts",
     description:
-      "Confidential payroll system with encrypted salaries. Employers can add employees with encrypted salary amounts. Each employee can decrypt only their own salary - other salaries remain hidden. Demonstrates selective decryption permissions where different users see different encrypted values. Perfect for privacy-preserving HR systems.",
+      "Confidential payroll system with encrypted salaries and selective access. Employers manage employees with hidden salaries. Only the owner and the respective employee can access specific salary data.",
     category: "Advanced",
     docsOutput: "docs/advanced/private-payroll.md",
     title: "Private Payroll"
@@ -89,7 +89,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decryption/PublicDecryptMultipleValues.sol",
     test: "test/basic/decryption/PublicDecryptMultipleValues.ts",
     description:
-      "Highest die roll game with public decryption of multiple values. Two players roll encrypted 8-sided dice, results are made publicly decryptable. Demonstrates handling multiple encrypted values in checkSignatures() where ORDER MATTERS - the cts[] array must match the order of values in the ABI-encoded result.",
+      "Dice game demonstrating public decryption of multiple encrypted values. Shows how to use checkSignatures() with multiple values, highlighting that the order in cts[] must match the ABI-encoded results.",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/public-decrypt-multiple-values.md",
     title: "Public Decrypt Multiple Values"
@@ -98,7 +98,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decryption/PublicDecryptSingleValue.sol",
     test: "test/basic/decryption/PublicDecryptSingleValue.ts",
     description:
-      "Heads or Tails game with public, permissionless decryption. Demonstrates makePubliclyDecryptable() which allows ANYONE to decrypt the result (not just allowed users). Perfect for public game results, lottery winners, or voting tallies. Uses FHE.randEbool() for fair randomness and KMS-verified decryption proofs.",
+      "Heads or Tails game with public, permissionless decryption. Demonstrates FHE.makePubliclyDecryptable(), allowing any user to decrypt results like game outcomes or voting tallies using KMS proofs.",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/public-decrypt-single-value.md",
     title: "Public Decrypt Single Value"
@@ -107,7 +107,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decryption/UserDecryptMultipleValues.sol",
     test: "test/basic/decryption/UserDecryptMultipleValues.ts",
     description:
-      "Decrypting multiple encrypted values of different types for a user. Shows how to handle ebool, euint32, and euint64 in one contract. Each value requires individual permission grants - there's no batching for permissions (unlike input proofs). Demonstrates the pattern of granting allowThis() for each value separately.",
+      "Decrypting multiple encrypted values (ebool, euint32, euint64) for a user. Highlights that each value requires individual permission grants, as there is no batching for FHE.allow() or FHE.allowThis().",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/user-decrypt-multiple-values.md",
     title: "User Decrypt Multiple Values"
@@ -116,7 +116,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/decryption/UserDecryptSingleValue.sol",
     test: "test/basic/decryption/UserDecryptSingleValue.ts",
     description:
-      "User-controlled decryption with proper permission management. Demonstrates the critical two-step permission pattern: allowThis() grants the contract permission to store/compute, while allow() grants the user permission to decrypt. Missing either step causes decryption to fail. Includes examples of both correct and incorrect patterns.",
+      "User-controlled decryption with mandatory two-step permissions. Demonstrates the pattern: allowThis() for contract storage/computation and allow() for user decryption, illustrating correct vs incorrect usage.",
     category: "Basic - Decryption",
     docsOutput: "docs/basic/decryption/user-decrypt-single-value.md",
     title: "User Decrypt Single Value"
@@ -125,7 +125,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/encryption/EncryptMultipleValues.sol",
     test: "test/basic/encryption/EncryptMultipleValues.ts",
     description:
-      "Efficient handling of multiple encrypted values in one transaction. Demonstrates batched input validation where a single proof covers multiple encrypted values (ebool, euint32, eaddress), saving ~50k gas per additional value compared to separate proofs.",
+      "Efficient handling of multiple encrypted values via batched inputs. Uses a single proof for multiple values (ebool, euint32, eaddress), saving significant gas compared to separate proofs.",
     category: "Basic - Encryption",
     docsOutput: "docs/basic/encryption/encrypt-multiple-values.md",
     title: "Encrypt Multiple Values"
@@ -143,7 +143,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/encryption/FHECounter.sol",
     test: "test/basic/encryption/FHECounter.ts",
     description:
-      "Confidential counter with encrypted increment/decrement operations. Demonstrates the complete FHE workflow: encryption, computation, and permission management. The counter value remains private, only accessible through decryption by authorized users.",
+      "Confidential counter with encrypted increment/decrement operations. Demonstrates the FHE workflow: encryption, computation, and permission management while keeping the counter value private.",
     category: "Basic - Encryption",
     docsOutput: "docs/basic/encryption/fhe-counter.md",
     title: "FHE Counter"
@@ -152,7 +152,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEAdd.sol",
     test: "test/basic/fhe-operations/FHEAdd.ts",
     description:
-      "Introduction to homomorphic addition on encrypted values. Demonstrates the most fundamental FHE operation: adding two encrypted numbers without decrypting them. Shows the complete flow from receiving encrypted inputs, performing the addition, and granting permissions for both contract storage and user decryption.",
+      "Introduction to homomorphic addition on encrypted values. Demonstrates adding two encrypted numbers without decryption, including input handling, addition, and permission management.",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-add.md",
     title: "FHE Add"
@@ -161,7 +161,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEArithmetic.sol",
     test: "test/basic/fhe-operations/FHEArithmetic.ts",
     description:
-      "Complete suite of FHE arithmetic operations on encrypted values. Covers all basic math: addition, subtraction, multiplication, division, remainder (modulo), minimum, and maximum. Includes gas cost comparisons and important limitations (e.g., division/remainder only work with plaintext divisors, not encrypted divisors).",
+      "FHE arithmetic (add, sub, mul, div, rem, min, max) on encrypted values. Includes gas cost comparisons and key limitations, such as plaintext divisors for division and remainder operations.",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-arithmetic.md",
     title: "FHE Arithmetic"
@@ -170,7 +170,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEComparison.sol",
     test: "test/basic/fhe-operations/FHEComparison.ts",
     description:
-      "Complete guide to encrypted comparisons and conditional selection. Covers all comparison operators (eq, ne, gt, lt, ge, le) that return encrypted booleans (ebool), and demonstrates FHE.select for branching without information leakage. Critical for implementing logic like \"find maximum\" or \"check threshold\" without revealing values.",
+      "Encrypted comparisons (eq, ne, gt, lt, ge, le) and conditional selection. Demonstrates FHE.select for branching without information leakage, essential for \"find maximum\" or threshold logic.",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-comparison.md",
     title: "FHE Comparison"
@@ -179,7 +179,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/basic/fhe-operations/FHEIfThenElse.sol",
     test: "test/basic/fhe-operations/FHEIfThenElse.ts",
     description:
-      "Conditional logic without information leakage using FHE.select. Demonstrates how to implement if-then-else logic on encrypted values (computing max of two numbers). Using regular if/else would decrypt and leak which branch was taken. FHE.select evaluates BOTH branches and picks one based on the encrypted condition, preserving privacy.",
+      "Conditional logic using FHE.select for privacy-preserving branching. Demonstrates if-then-else logic on encrypted values. Unlike regular if/else, FHE.select avoids information leakage by evaluating both branches.",
     category: "Basic - FHE Operations",
     docsOutput: "docs/basic/fhe-operations/fhe-if-then-else.md",
     title: "FHE If Then Else"
@@ -188,7 +188,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/concepts/antipatterns/ControlFlow.sol",
     test: "test/concepts/antipatterns/ControlFlow.ts",
     description:
-      "Control flow anti-patterns in FHE development. Demonstrates common mistakes when using conditional logic and loops with encrypted values.",
+      "Control flow anti-patterns in FHE development. Demonstrates mistakes with conditional logic and loops on encrypted values, providing correct vs incorrect implementations.",
     category: "Concepts - Antipatterns",
     docsOutput: "docs/concepts/antipatterns/control-flow.md",
     title: "Control Flow"
@@ -197,7 +197,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/concepts/antipatterns/OperationsGasNoise.sol",
     test: "test/concepts/antipatterns/OperationsGasNoise.ts",
     description:
-      "Operations, gas, and noise anti-patterns in FHE development. Demonstrates performance issues, side-channel leaks, and inefficient encrypted computation patterns.",
+      "Operations, gas, and noise anti-patterns in FHE development. Covers performance issues, side-channel leaks, noise accumulation, and inefficient encrypted computation patterns.",
     category: "Concepts - Antipatterns",
     docsOutput: "docs/concepts/antipatterns/operations-gas-noise.md",
     title: "Operations Gas Noise"
@@ -206,7 +206,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/concepts/antipatterns/Permissions.sol",
     test: "test/concepts/antipatterns/Permissions.ts",
     description:
-      "Permission management anti-patterns in FHE development. Demonstrates common mistakes with allowThis, allow, and permission propagation across transfers and contracts.",
+      "Permission management anti-patterns in FHE development. Covers mistakes with allowThis, allow, and permission propagation across transfers and cross-contract calls.",
     category: "Concepts - Antipatterns",
     docsOutput: "docs/concepts/antipatterns/permissions.md",
     title: "Permissions"
@@ -215,7 +215,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/concepts/core/FHEAccessControl.sol",
     test: "test/concepts/core/FHEAccessControl.ts",
     description:
-      "Master class for FHE permission patterns and access control. Explains the three permission types: allow() for permanent access, allowThis() for contract operations, and allowTransient() for temporary cross-contract calls. Includes correct and incorrect usage examples to prevent common decryption failures.",
+      "FHE permission patterns: allow() permanent, allowThis() contract, and allowTransient() temporary access. Demonstrates usage to prevent common decryption failures.",
     category: "Concepts - Core",
     docsOutput: "docs/concepts/core/fhe-access-control.md",
     title: "FHE Access Control"
@@ -224,7 +224,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/concepts/core/FHEHandles.sol",
     test: "test/concepts/core/FHEHandles.ts",
     description:
-      "Deep dive into FHE handles: what they are and how they work. Explains that handles are uint256 pointers to encrypted data, demonstrates three creation methods (fromExternal, asEuint, operations), and emphasizes immutability - every operation creates a NEW handle. Includes gas cost comparisons for different operations.",
+      "Deep dive into FHE handles: uint256 pointers to encrypted data. Demonstrates handle creation (fromExternal, asEuint, operations) and emphasizes their immutability—each operation creates a NEW handle.",
     category: "Concepts - Core",
     docsOutput: "docs/concepts/core/fhe-handles.md",
     title: "FHE Handles"
@@ -233,7 +233,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/concepts/core/FHEInputProof.sol",
     test: "test/concepts/core/FHEInputProof.ts",
     description:
-      "Input proof validation and batching strategies in FHEVM. Explains why proofs are essential (prevent garbage data, wrong types, and replay attacks) and demonstrates the gas-efficient batching pattern where one proof validates multiple encrypted inputs, saving ~50k gas per additional value.",
+      "Input proof validation and batching strategies in FHEVM. Explains why proofs are essential (preventing replay attacks and invalid data) and demonstrates gas-efficient batching where one proof validates multiple encrypted inputs.",
     category: "Concepts - Core",
     docsOutput: "docs/concepts/core/fhe-input-proof.md",
     title: "FHE Input Proof"
@@ -242,7 +242,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/gaming/EncryptedLottery.sol",
     test: "test/gaming/EncryptedLottery.ts",
     description:
-      "Provably fair lottery with encrypted ticket numbers. Players buy tickets with encrypted numbers. Winning number is generated using FHE randomness. Winner is determined by comparing encrypted values without revealing losing tickets. Ensures fairness and privacy - no one can see ticket numbers before the draw.",
+      "Provably fair lottery with encrypted ticket numbers and FHE randomness. Players buy tickets with hidden numbers. Winners are determined by comparing encrypted values, ensuring no one sees numbers before the draw.",
     category: "Gaming",
     docsOutput: "docs/gaming/encrypted-lottery.md",
     title: "Encrypted Lottery"
@@ -251,7 +251,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/gaming/EncryptedPoker.sol",
     test: "test/gaming/EncryptedPoker.ts",
     description:
-      "On-chain Texas Hold'em poker with encrypted hole cards. Two players receive encrypted hole cards that remain hidden throughout the game. Hand strength is computed using FHE operations. Winner is determined by comparing encrypted hand strengths. Demonstrates complex game logic with multiple encrypted states and conditional operations.",
+      "On-chain Texas Hold'em poker with encrypted hole cards and hand strengths. Hole cards remain hidden throughout. Winners are determined by comparing encrypted hand strengths, demonstrating complex multi-state game logic.",
     category: "Gaming",
     docsOutput: "docs/gaming/encrypted-poker.md",
     title: "Encrypted Poker"
@@ -260,7 +260,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     contract: "contracts/gaming/RockPaperScissors.sol",
     test: "test/gaming/RockPaperScissors.ts",
     description:
-      "Fair Rock-Paper-Scissors game with encrypted moves. Players submit encrypted moves (0=Rock, 1=Paper, 2=Scissors) ensuring neither player can see the other's choice before committing. Winner is determined using FHE operations and revealed publicly. No trusted third party needed - cryptography guarantees fairness.",
+      "Fair Rock-Paper-Scissors game with encrypted moves. Neither player can see the other's choice before committing. Winners are determined via FHE and revealed publicly, ensuring decentralized fairness.",
     category: "Gaming",
     docsOutput: "docs/gaming/rock-paper-scissors.md",
     title: "Rock Paper Scissors"
@@ -273,7 +273,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "@openzeppelin/confidential-contracts": "^0.3.0"
     },
     description:
-      "Confidential ERC20-compatible token using OpenZeppelin's ERC7984 standard. Implements a fully private token where balances and transfer amounts are encrypted. Compatible with standard ERC20 interfaces but with FHE under the hood. Supports both visible minting (owner knows amount) and confidential minting (fully private). Foundation for building private DeFi applications.",
+      "Confidential ERC20-compatible token using the ERC7984 standard. Supports encrypted balances and transfers with optional private minting, serving as a foundation for privacy-focused DeFi applications.",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/erc7984.md",
     title: "ERC7984"
@@ -289,7 +289,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "contracts/openzeppelin/mocks/ERC20Mock.sol"
     ],
     description:
-      "Bridge between public ERC20 and confidential ERC7984 tokens. Allows users to wrap regular ERC20 tokens into privacy-preserving ERC7984 tokens (public → private) and unwrap them back (private → public). Wrapping is instant, unwrapping requires decryption proof from KMS. Essential for bringing existing tokens into the confidential ecosystem.",
+      "Bridge between public ERC20 and confidential ERC7984 tokens. Enables wrapping (public → private) and unwrapping (private → public) of tokens, facilitating migration into the confidential ecosystem.",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/erc7984-erc20-wrapper.md",
     title: "ERC7984 ERC20 Wrapper"
@@ -306,7 +306,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "contracts/openzeppelin/ERC7984.sol"
     ],
     description:
-      "Atomic swap from confidential ERC7984 to public ERC20 tokens. Two-step process: (1) Initiate swap with encrypted amount, request decryption from KMS. (2) Finalize swap with decryption proof, receive ERC20 tokens. Demonstrates the FHEVM v0.9 public decryption flow with makePubliclyDecryptable() and checkSignatures() for trustless swaps.",
+      "Atomic swap from confidential ERC7984 to public ERC20 tokens. Demonstrates a two-step swap process using FHEVM v0.9 public decryption flow (makePubliclyDecryptable and checkSignatures) for trustless swaps.",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc20.md",
     title: "Swap ERC7984 To ERC20"
@@ -321,7 +321,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "contracts/openzeppelin/ERC7984.sol"
     ],
     description:
-      "Fully private atomic swap between two confidential ERC7984 tokens. Both input and output amounts remain encrypted throughout the entire swap process. No decryption needed - amounts stay private from start to finish. Perfect for confidential DEX operations where trade sizes must remain hidden. The ultimate privacy-preserving token exchange.",
+      "Fully private atomic swap between two confidential ERC7984 tokens. Both input and output amounts remain encrypted throughout—no decryption is needed, ensuring complete privacy from start to finish.",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/swap-erc7984-to-erc7984.md",
     title: "Swap ERC7984 To ERC7984"
@@ -337,7 +337,7 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
       "contracts/openzeppelin/ERC7984.sol"
     ],
     description:
-      "Time-locked vesting wallet with fully encrypted token amounts. Implements linear vesting for ERC7984 confidential tokens. Vesting schedule, amounts, and release calculations all happen on encrypted values using FHE operations. Beneficiary can release vested tokens over time without revealing the total allocation or vesting progress to observers.",
+      "Time-locked vesting wallet with fully encrypted token amounts. Implements linear vesting for ERC7984 tokens where the schedule, amounts, and releases are computed via FHE, keeping progress hidden from observers.",
     category: "Openzeppelin",
     docsOutput: "docs/openzeppelin/vesting-wallet.md",
     title: "Vesting Wallet"

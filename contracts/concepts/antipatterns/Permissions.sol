@@ -6,12 +6,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Permission management anti-patterns in FHE development.
- *         Demonstrates common mistakes with allowThis, allow, and
- *         permission propagation across transfers and contracts.
+ *         Covers mistakes with allowThis, allow, and permission propagation
+ *         across transfers and cross-contract calls.
  *
- * @dev Covers 6 critical patterns: missing allowThis, missing allow(user),
- *      view functions without permissions, unauthenticated re-encryption,
- *      transfer permission issues, and cross-contract delegation.
+ * @dev Explores missing permissions, view function failures, and delegation issues.
  */
 contract FHEPermissionsAntiPatterns is ZamaEthereumConfig {
     euint32 private _secretValue;

@@ -13,11 +13,8 @@ import {
 
 /**
  * @notice Time-locked vesting wallet with fully encrypted token amounts.
- *         Implements linear vesting for ERC7984 confidential tokens. Vesting
- *         schedule, amounts, and release calculations all happen on encrypted
- *         values using FHE operations. Beneficiary can release vested tokens
- *         over time without revealing the total allocation or vesting progress
- *         to observers.
+ *         Implements linear vesting for ERC7984 tokens where the schedule, amounts,
+ *         and releases are computed via FHE, keeping progress hidden from observers.
 
  * @dev Timeline: |--START--|---VESTING---|--END--| (0% → linear → 100%)
  *      All vesting calculations performed on encrypted values using FHE.

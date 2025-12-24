@@ -1,4 +1,4 @@
-Atomic swap from confidential ERC7984 to public ERC20 tokens. Two-step process: (1) Initiate swap with encrypted amount, request decryption from KMS. (2) Finalize swap with decryption proof, receive ERC20 tokens. Demonstrates the FHEVM v0.9 public decryption flow with makePubliclyDecryptable() and checkSignatures() for trustless swaps.
+Atomic swap from confidential ERC7984 to public ERC20 tokens. Demonstrates a two-step swap process using FHEVM v0.9 public decryption flow (makePubliclyDecryptable and checkSignatures) for trustless swaps.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -43,13 +43,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Atomic swap from confidential ERC7984 to public ERC20 tokens.
- *         Two-step process: (1) Initiate swap with encrypted amount, request
- *         decryption from KMS. (2) Finalize swap with decryption proof, receive
- *         ERC20 tokens. Demonstrates the FHEVM v0.9 public decryption flow with
- *         makePubliclyDecryptable() and checkSignatures() for trustless swaps.
+ *         Demonstrates a two-step swap process using FHEVM v0.9 public decryption
+ *         flow (makePubliclyDecryptable and checkSignatures) for trustless swaps.
  *
- * @dev Uses FHEVM v0.9 decryption flow:
- *      FHE.makePubliclyDecryptable() + FHE.checkSignatures()
+ * @dev Workflow: Initiate swap → KMS decryption → Finalize with proof.
  */
 contract SwapERC7984ToERC20Example is ZamaEthereumConfig {
     using SafeERC20 for IERC20;

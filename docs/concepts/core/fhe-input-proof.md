@@ -1,4 +1,4 @@
-Input proof validation and batching strategies in FHEVM. Explains why proofs are essential (prevent garbage data, wrong types, and replay attacks) and demonstrates the gas-efficient batching pattern where one proof validates multiple encrypted inputs, saving ~50k gas per additional value.
+Input proof validation and batching strategies in FHEVM. Explains why proofs are essential (preventing replay attacks and invalid data) and demonstrates gas-efficient batching where one proof validates multiple encrypted inputs.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -41,13 +41,11 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Input proof validation and batching strategies in FHEVM.
- *         Explains why proofs are essential (prevent garbage data, wrong types,
- *         and replay attacks) and demonstrates the gas-efficient batching pattern
- *         where one proof validates multiple encrypted inputs, saving ~50k gas
- *         per additional value.
+ *         Explains why proofs are essential (preventing replay attacks and invalid
+ *         data) and demonstrates gas-efficient batching where one proof validates
+ *         multiple encrypted inputs.
  *
- * @dev Proofs ensure: valid ciphertext + correct range + proof of knowledge.
- *      ⚡ Gas: Batching multiple values in ONE proof saves ~50k gas vs separate proofs!
+ * @dev Batching multiple values in ONE proof saves ~50k gas vs separate proofs.
  */
 contract FHEInputProof is ZamaEthereumConfig {
     euint32 private _singleValue;

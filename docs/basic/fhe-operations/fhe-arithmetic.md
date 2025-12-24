@@ -1,4 +1,4 @@
-Complete suite of FHE arithmetic operations on encrypted values. Covers all basic math: addition, subtraction, multiplication, division, remainder (modulo), minimum, and maximum. Includes gas cost comparisons and important limitations (e.g., division/remainder only work with plaintext divisors, not encrypted divisors).
+FHE arithmetic (add, sub, mul, div, rem, min, max) on encrypted values. Includes gas cost comparisons and key limitations, such as plaintext divisors for division and remainder operations.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -40,14 +40,11 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Complete suite of FHE arithmetic operations on encrypted values.
- *         Covers all basic math: addition, subtraction, multiplication, division,
- *         remainder (modulo), minimum, and maximum. Includes gas cost comparisons
- *         and important limitations (e.g., division/remainder only work with
- *         plaintext divisors, not encrypted divisors).
+ * @notice FHE arithmetic (add, sub, mul, div, rem, min, max) on encrypted values.
+ *         Includes gas cost comparisons and key limitations, such as plaintext
+ *         divisors for division and remainder operations.
  *
- * @dev ⚡ Gas costs vary: add/sub (~100k) < mul (~150k) < div/rem (~300k)
- *      ⚠️ div/rem only work with plaintext divisor (not encrypted!)
+ * @dev div/rem only work with plaintext divisors (not encrypted).
  */
 contract FHEArithmetic is ZamaEthereumConfig {
     euint32 private _a;

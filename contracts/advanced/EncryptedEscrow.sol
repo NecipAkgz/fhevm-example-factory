@@ -10,14 +10,11 @@ import {
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Confidential escrow service with hidden transaction amounts.
- *         Buyer and seller agree on encrypted escrow amount. Funds are held
- *         securely until conditions are met. Amount remains hidden from public
- *         view until release or refund. Includes arbiter for dispute resolution.
- *         Perfect for high-value transactions requiring privacy.
+ * @notice Confidential escrow service with hidden transaction amounts and arbiters.
+ *         Secures funds with encrypted amounts. Details remain hidden until
+ *         release or refund, supporting multi-party dispute resolution.
  *
  * @dev Flow: createEscrow() → fundEscrow() → release()/requestRefund()/raiseDispute()
- *      Multi-party agreement with arbiter for disputes.
  */
 contract EncryptedEscrow is ZamaEthereumConfig {
     enum EscrowState {

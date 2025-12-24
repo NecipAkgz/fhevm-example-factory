@@ -1,4 +1,4 @@
-Deep dive into FHE handles: what they are and how they work. Explains that handles are uint256 pointers to encrypted data, demonstrates three creation methods (fromExternal, asEuint, operations), and emphasizes immutability - every operation creates a NEW handle. Includes gas cost comparisons for different operations.
+Deep dive into FHE handles: uint256 pointers to encrypted data. Demonstrates handle creation (fromExternal, asEuint, operations) and emphasizes their immutability—each operation creates a NEW handle.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -37,14 +37,11 @@ import {FHE, euint32, externalEuint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Deep dive into FHE handles: what they are and how they work.
- *         Explains that handles are uint256 pointers to encrypted data,
- *         demonstrates three creation methods (fromExternal, asEuint, operations),
- *         and emphasizes immutability - every operation creates a NEW handle.
- *         Includes gas cost comparisons for different operations.
+ * @notice Deep dive into FHE handles: uint256 pointers to encrypted data.
+ *         Demonstrates handle creation (fromExternal, asEuint, operations) and
+ *         emphasizes their immutability—each operation creates a NEW handle.
  *
- * @dev Handle = uint256 pointer to encrypted data. Operations create NEW handles (immutable).
- *      ⚡ Gas: asEuint32 ~20k, fromExternal ~50k, add/sub ~100k
+ * @dev Handles are immutable uint256 pointers. Operations always yield new handles.
  */
 contract FHEHandles is ZamaEthereumConfig {
     euint32 private _storedValue;

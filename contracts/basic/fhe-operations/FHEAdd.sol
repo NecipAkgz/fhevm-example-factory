@@ -6,13 +6,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Introduction to homomorphic addition on encrypted values.
- *         Demonstrates the most fundamental FHE operation: adding two encrypted
- *         numbers without decrypting them. Shows the complete flow from receiving
- *         encrypted inputs, performing the addition, and granting permissions
- *         for both contract storage and user decryption.
+ *         Demonstrates adding two encrypted numbers without decryption, including
+ *         input handling, addition, and permission management.
 
- * @dev Shows the most basic FHE operation and permission flow.
- *      ⚡ Gas: FHE.add() costs ~100k gas (coprocessor call)
+ * @dev Shows the basic FHE operation and permission flow (FHE.add ~100k gas).
  */
 contract FHEAdd is ZamaEthereumConfig {
     euint8 private _a;

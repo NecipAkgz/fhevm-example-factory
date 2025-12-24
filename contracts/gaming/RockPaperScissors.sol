@@ -6,14 +6,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Fair Rock-Paper-Scissors game with encrypted moves.
- *         Players submit encrypted moves (0=Rock, 1=Paper, 2=Scissors) ensuring
- *         neither player can see the other's choice before committing. Winner is
- *         determined using FHE operations and revealed publicly. No trusted third
- *         party needed - cryptography guarantees fairness.
+ *         Neither player can see the other's choice before committing. Winners are
+ *         determined via FHE and revealed publicly, ensuring decentralized fairness.
 
- * @dev Commit-reveal pattern without trusted third party.
- *      Move encoding: 0=Rock, 1=Paper, 2=Scissors
- *      ⚡ Gas: FHE.rem() is computationally expensive (~300k gas)
+ * @dev Move encoding: 0=Rock, 1=Paper, 2=Scissors
  */
 contract RockPaperScissors is ZamaEthereumConfig {
     enum GameState {

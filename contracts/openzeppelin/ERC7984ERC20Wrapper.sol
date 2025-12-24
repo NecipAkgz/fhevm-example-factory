@@ -10,13 +10,10 @@ import {
 
 /**
  * @notice Bridge between public ERC20 and confidential ERC7984 tokens.
- *         Allows users to wrap regular ERC20 tokens into privacy-preserving
- *         ERC7984 tokens (public → private) and unwrap them back (private → public).
- *         Wrapping is instant, unwrapping requires decryption proof from KMS.
- *         Essential for bringing existing tokens into the confidential ecosystem.
+ *         Enables wrapping (public → private) and unwrapping (private → public)
+ *         of tokens, facilitating migration into the confidential ecosystem.
  *
- * @dev WRAP: ERC20 → ERC7984 (public → private)
- *      UNWRAP: ERC7984 → ERC20 (private → public, requires decryption)
+ * @dev WRAP: Public → Private (instant); UNWRAP: Private → Public (KMS proof).
  */
 contract ERC7984ERC20WrapperExample is
     ERC7984ERC20WrapperBase,

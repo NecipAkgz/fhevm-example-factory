@@ -5,14 +5,11 @@ import {FHE, euint32} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice User-controlled decryption with proper permission management.
- *         Demonstrates the critical two-step permission pattern: allowThis()
- *         grants the contract permission to store/compute, while allow() grants
- *         the user permission to decrypt. Missing either step causes decryption
- *         to fail. Includes examples of both correct and incorrect patterns.
+ * @notice User-controlled decryption with mandatory two-step permissions.
+ *         Demonstrates the pattern: allowThis() for contract storage/computation
+ *         and allow() for user decryption, illustrating correct vs incorrect usage.
  *
- * @dev Shows CORRECT vs INCORRECT permission granting.
- *      ⚠️ Both allowThis + allow required for user decryption!
+ * @dev Both allowThis and allow are required for successful user decryption.
  */
 contract UserDecryptSingleValue is ZamaEthereumConfig {
     euint32 private _trivialEuint32;

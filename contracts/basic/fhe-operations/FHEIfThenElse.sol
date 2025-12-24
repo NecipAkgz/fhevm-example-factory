@@ -5,14 +5,11 @@ import {FHE, ebool, euint8, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Conditional logic without information leakage using FHE.select.
- *         Demonstrates how to implement if-then-else logic on encrypted values
- *         (computing max of two numbers). Using regular if/else would decrypt
- *         and leak which branch was taken. FHE.select evaluates BOTH branches
- *         and picks one based on the encrypted condition, preserving privacy.
+ * @notice Conditional logic using FHE.select for privacy-preserving branching.
+ *         Demonstrates if-then-else logic on encrypted values. Unlike regular
+ *         if/else, FHE.select avoids information leakage by evaluating both branches.
  *
- * @dev ❌ Can't use if/else (leaks info!) ✅ Use FHE.select instead
- *      ⚡ Gas: ~120k for select operation
+ * @dev Evaluates both branches using encrypted conditions (FHE.select ~120k gas).
  */
 contract FHEIfThenElse is ZamaEthereumConfig {
     euint8 private _a;

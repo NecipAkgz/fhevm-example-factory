@@ -6,13 +6,10 @@ import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
  * @notice Heads or Tails game with public, permissionless decryption.
- *         Demonstrates makePubliclyDecryptable() which allows ANYONE to decrypt
- *         the result (not just allowed users). Perfect for public game results,
- *         lottery winners, or voting tallies. Uses FHE.randEbool() for fair
- *         randomness and KMS-verified decryption proofs.
+ *         Demonstrates FHE.makePubliclyDecryptable(), allowing any user to
+ *         decrypt results like game outcomes or voting tallies using KMS proofs.
  *
- * @dev Uses FHE.randEbool() for random result + FHE.makePubliclyDecryptable() for revealing.
- *      Anyone can decrypt results with valid KMS proof.
+ * @dev Uses FHE.randEbool() and FHE.makePubliclyDecryptable().
  */
 contract HeadsOrTails is ZamaEthereumConfig {
     /// Simple counter to assign a unique ID to each new game.

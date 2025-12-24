@@ -1,4 +1,4 @@
-Highest die roll game with public decryption of multiple values. Two players roll encrypted 8-sided dice, results are made publicly decryptable. Demonstrates handling multiple encrypted values in checkSignatures() where ORDER MATTERS - the cts[] array must match the order of values in the ABI-encoded result.
+Dice game demonstrating public decryption of multiple encrypted values. Shows how to use checkSignatures() with multiple values, highlighting that the order in cts[] must match the ABI-encoded results.
 
 {% hint style="info" %}
 To run this example correctly, make sure the files are placed in the following directories:
@@ -34,14 +34,11 @@ import {FHE, euint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Highest die roll game with public decryption of multiple values.
- *         Two players roll encrypted 8-sided dice, results are made publicly
- *         decryptable. Demonstrates handling multiple encrypted values in
- *         checkSignatures() where ORDER MATTERS - the cts[] array must match
- *         the order of values in the ABI-encoded result.
+ * @notice Dice game demonstrating public decryption of multiple encrypted values.
+ *         Shows how to use checkSignatures() with multiple values, highlighting
+ *         that the order in cts[] must match the ABI-encoded results.
  *
- * @dev Uses FHE.randEuint8() + FHE.makePubliclyDecryptable() for both dice rolls.
- *      ⚠️ Order matters in cts[] array for checkSignatures!
+ * @dev Uses FHE.randEuint8() and FHE.makePubliclyDecryptable().
  */
 contract HighestDieRoll is ZamaEthereumConfig {
     // Simple counter to assign a unique ID to each new game.

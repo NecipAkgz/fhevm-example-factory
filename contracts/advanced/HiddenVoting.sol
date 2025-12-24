@@ -5,11 +5,9 @@ import {FHE, euint64, ebool, externalEuint8} from "@fhevm/solidity/lib/FHE.sol";
 import {ZamaEthereumConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /**
- * @notice Private voting system with homomorphic vote tallying.
- *         Voters submit encrypted ballots (Yes/No). Votes are tallied using
- *         homomorphic addition WITHOUT decrypting individual ballots. Only the
- *         final tally is revealed - individual votes remain private forever.
- *         Perfect for DAO governance, elections, or any scenario requiring ballot secrecy.
+ * @notice Private voting system with homomorphic vote tallying (Yes/No).
+ *         Ballots are added without decryption. Only final totals are revealed,
+ *         ensuring individual vote secrecy forever.
  *
  * @dev Flow: vote() → closeVoting() → revealResults()
  *      ⚡ Gas: Each vote costs ~200k gas (FHE.add + FHE.select operations)
