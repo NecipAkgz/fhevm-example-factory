@@ -1,6 +1,6 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.4.8",
+  "version": "1.4.9",
   "description": "Create FHEVM example projects with a single command - A comprehensive toolkit for building privacy-preserving smart contracts",
   "bin": {
     "create-fhevm-example": "./dist/scripts/index.js"
@@ -24,7 +24,6 @@
     "help:create": "LOCAL_DEV=1 ts-node scripts/index.ts --help",
     "help:docs": "ts-node scripts/commands/generate-docs.ts --help",
     "help:test": "ts-node scripts/commands/maintenance.ts test-all --help",
-
     "prepare": "git submodule update --init --recursive || true",
     "prepublishOnly": "npm run build",
     "prepack": "mv README.md GITHUB_README.md && cp NPM_README.md README.md",
