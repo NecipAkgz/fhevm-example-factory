@@ -224,11 +224,10 @@ async function deployFixture() {
 }
 
 /**
- * FHEControlFlowAntiPatterns Example:
- * This contract highlights the most common mistake in FHE development:
- * trying to use encrypted variables in standard control flow (if/else, while).
- * Since the blockchain must execute logic deterministically, it cannot
- * "branch" based on data it cannot see.
+ * FHE Control Flow Anti-Pattern Tests
+ *
+ * Tests the limitations of using encrypted variables in standard EVM control flow.
+ * Validates proper use of FHE.select for conditional logic instead of branching.
  */
 describe("FHEControlFlowAntiPatterns", function () {
   let contract: FHEControlFlowAntiPatterns;

@@ -316,10 +316,10 @@ async function deployFixture() {
 }
 
 /**
- * FHEPermissionsAntiPatterns Example:
- * This contract focuses on the nuances of FHEVM's permission system.
- * We explore why `allowThis` is necessary for contract operations and how
- * to correctly propagate permissions to users so they can decrypt results.
+ * FHE Permission Anti-Pattern Tests
+ *
+ * Tests common mistakes in FHEVM permission management.
+ * Validates the necessity of FHE.allowThis and correct permission propagation to users.
  */
 describe("FHEPermissionsAntiPatterns", function () {
   let contract: FHEPermissionsAntiPatterns;

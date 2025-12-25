@@ -20,10 +20,10 @@ async function deployFixture() {
 }
 
 /**
- * FHEAccessControl Example:
- * This contract demonstrates how to manage permissions for encrypted data.
- * In FHEVM, only authorized users or the contract itself can decrypt specific variables.
- * We explore the patterns for granting access (allow) and the common pitfall of missing permissions.
+ * FHE Access Control Tests
+ *
+ * Tests permission management and authorized decryption patterns.
+ * Validates the use of FHE.allow and handles common pitfalls of missing permissions.
  */
 describe("FHEAccessControl", function () {
   let contract: FHEAccessControl;
