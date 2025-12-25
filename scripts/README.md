@@ -104,15 +104,15 @@ Runs tests across all examples to ensure quality.
 
 **Usage:**
 ```bash
-# Test all examples
-ts-node scripts/commands/maintenance.ts test-all
+# Interactive mode - select examples to test
+ts-node scripts/commands/maintenance.ts test
 
-# Test specific example
-ts-node scripts/commands/maintenance.ts test-all <example-name>
-ts-node scripts/commands/maintenance.ts test-all blind-auction
+# Run all tests directly
+ts-node scripts/commands/maintenance.ts test --all
 
-# Show help
-ts-node scripts/commands/maintenance.ts test-all --help
+# Test specific examples
+ts-node scripts/commands/maintenance.ts test blind-auction
+ts-node scripts/commands/maintenance.ts test fhe-counter,fhe-add
 ```
 
 **Features:**
@@ -190,7 +190,8 @@ These scripts are defined in `package.json` for convenience:
 | `npm run create:example` | Create a single example |
 | `npm run create:category` | Create a category project |
 | `npm run create:docs` | Generate GitBook documentation |
-| `npm run test:all` | Run tests for all examples |
+| `npm run test` | Run tests (interactive selection) |
+| `npm run test:all` | Run all tests directly |
 | `npm run doctor` | Check environment health |
 | `npm run generate:config` | Generate configuration files |
 | `npm run help:create` | Show CLI help |
@@ -210,7 +211,7 @@ These scripts are defined in `package.json` for convenience:
    ```
 4. Test the example:
    ```bash
-   ts-node scripts/commands/maintenance.ts test-all <example-name>
+   ts-node scripts/commands/maintenance.ts test <example-name>
    ```
 5. Generate docs:
    ```bash

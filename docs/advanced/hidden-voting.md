@@ -395,7 +395,6 @@ describe("HiddenVoting", function () {
     });
 
     it("should allow owner to close after time passes", async function () {
-      await new Promise((resolve) => setTimeout(resolve, 11000));
       await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 
@@ -443,7 +442,6 @@ describe("HiddenVoting", function () {
       await voting.connect(voter3).vote(enc3.handles[0], enc3.inputProof);
 
       // Wait and close voting
-      await new Promise((resolve) => setTimeout(resolve, 11000));
       await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 
@@ -492,7 +490,6 @@ describe("HiddenVoting", function () {
         await voting.connect(voter).vote(enc.handles[0], enc.inputProof);
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 11000));
       await hre.network.provider.send("evm_increaseTime", [12]);
       await hre.network.provider.send("evm_mine");
 

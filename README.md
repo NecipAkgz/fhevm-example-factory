@@ -75,7 +75,7 @@ npm run create
 ```
 
 <p align="left">
-  <img src="https://i.ibb.co/p6PGxGWS/main.gif" alt="Interactive CLI Demo" width="600px" />
+  <img src="https://i.ibb.co/ZpLmPN8z/crate.gif" alt="Interactive CLI Demo" width="600px" />
 </p>
 
 **Quick Commands:**
@@ -113,7 +113,7 @@ npx create-fhevm-example
 ```
 
 <p align="left">
-  <img src="https://i.ibb.co/d4YWwh7V/package.gif" alt="NPX Demo" width="600px" />
+  <img src="https://i.ibb.co/PvtZSQyd/create-fhevm.gif" alt="NPX Demo" width="600px" />
 </p>
 
 ### Quick Commands
@@ -285,7 +285,8 @@ npm run create:docs                # All examples
 - `npm run create:category [name] [path]` - Generate category project
 - `npm run create:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
-- `npm run test:all` - Test selected examples (interactive selection)
+- `npm run test` - Test examples (interactive selection)
+- `npm run test:all` - Test all examples directly
 - `npm run doctor` - Validate environment, submodule status, and config integrity
 - `npm run help:create` - Show help information
 
@@ -306,14 +307,17 @@ Test selected examples in a unified project for fast, efficient verification:
 
 ```bash
 # Interactive mode - select with space, confirm with enter
+npm run test
+
+# Run all tests directly
 npm run test:all
 
 # Quick mode - test specific examples
-npm run test:all fhe-counter,fhe-add
+npm run test fhe-counter,fhe-add
 ```
 
 <p align="left">
-  <img src="https://i.ibb.co/0pJfbPZP/test-all.gif" alt="Test All Demo" width="600px" />
+  <img src="https://i.ibb.co/4wRP47Hs/test.gif" alt="Test All Demo" width="600px" />
 </p>
 
 > 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.

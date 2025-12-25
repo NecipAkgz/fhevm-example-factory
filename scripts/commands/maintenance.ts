@@ -3,12 +3,13 @@
 /**
  * Maintenance Tools - Utilities for project maintenance and testing.
  *
- * Includes the test-all runner which allows for efficient testing
+ * Includes the test runner which allows for efficient testing
  * of multiple examples in a temporary workspace.
  *
  * Usage:
- *   npm run test:all                      # Interactive selection
- *   npm run test:all fhe-counter,fhe-add  # Direct CLI
+ *   npm run test                          # Interactive selection
+ *   npm run test:all                      # Run all tests directly
+ *   npm run test example1,example2        # Test specific examples
  */
 
 import * as p from "@clack/prompts";
@@ -120,7 +121,9 @@ async function getExamplesToTest(cliExamples?: string[]): Promise<string[]> {
     );
     p.log.message(
       pc.green(
-        `✓ Selected ${selected.length} examples from ${(selectedCategories as string[]).length} categories`
+        `✓ Selected ${selected.length} examples from ${
+          (selectedCategories as string[]).length
+        } categories`
       )
     );
     return selected;
@@ -388,11 +391,12 @@ function showHelp(): void {
   log.message("");
   log.message("Available commands:");
   log.message("");
-  log.message("  test-all  Test examples");
+  log.message("  test  Test examples");
   log.message("");
   log.message("Usage:");
-  log.dim("  npm run test:all");
-  log.dim("  npm run test:all fhe-counter,fhe-add");
+  log.dim("  npm run test                       # Interactive selection");
+  log.dim("  npm run test:all                   # Run all tests");
+  log.dim("  npm run test fhe-counter,fhe-add   # Test specific examples");
 }
 
 async function main(): Promise<void> {
@@ -407,7 +411,14 @@ async function main(): Promise<void> {
   const command = args[0];
 
   switch (command) {
-    case "test-all": {
+    case "test": {
+      // Check for --all flag to run all tests directly
+      if (args.includes("--all")) {
+        const { getExampleNames } = await import("../shared/config");
+        await testAllExamples(getExampleNames());
+        break;
+      }
+
       const exampleArg = args[1];
       // Filter out help flags from example list
       const examples =

@@ -19,7 +19,7 @@ Launch the interactive CLI to create your project:
 npx create-fhevm-example
 ```
 
-![🎬 CLI Demo](https://i.ibb.co/d4YWwh7V/package.gif)
+![🎬 CLI Demo](https://i.ibb.co/PvtZSQyd/create-fhevm.gif)
 
 ---
 

@@ -380,7 +380,7 @@ Controls CLI behavior and help output:
 ```bash
 npm run create  # Sets LOCAL_DEV=1 automatically
 ```
-- Help shows: `npm run create`, `npm run test:all`, etc.
+- Help shows: `npm run create`, `npm run test`, `npm run test:all`, etc.
 - Enables "Generate documentation" option in interactive mode
 - Uses local files instead of downloading from GitHub
 - Displays developer-specific commands
