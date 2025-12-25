@@ -255,7 +255,7 @@ async function deployFixture() {
  * Rock-Paper-Scissors Tests
  *
  * Tests encrypted move submission and FHE-based winner determination.
- * Demonstrates commit-reveal pattern without trusted third party.
+ * Demonstrates a commit-reveal pattern without a trusted third party.
  */
 describe("RockPaperScissors", function () {
   let signers: Signers;
@@ -292,10 +292,11 @@ describe("RockPaperScissors", function () {
     });
 
     it("should allow first player to join", async function () {
-      // Create encrypted move (Rock = 0)
+      // 🔐 Encrypt the move locally:
+      // Rock = 0, Paper = 1, Scissors = 2.
       const encryptedMove = await fhevm
         .createEncryptedInput(rpsAddress, signers.player1.address)
-        .add8(0)
+        .add8(0) // Rock
         .encrypt();
 
       await rps
@@ -387,10 +388,13 @@ describe("RockPaperScissors", function () {
         .encrypt();
       await rps.connect(signers.player2).play(enc2.handles[0], enc2.inputProof);
 
-      // Determine winner
+      // 🛡️ Winner Determination:
+      // The contract uses FHE arithmetic and comparisons to decide the winner.
+      // 0 = Rock, 1 = Paper, 2 = Scissors.
+      // Logic: (Move1 - Move2 + 3) % 3. Results: 1 = P1 wins, 2 = P2 wins, 0 = Draw.
       await expect(rps.determineWinner()).to.emit(rps, "GameResult");
 
-      expect(await rps.state()).to.equal(2); // Revealed
+      expect(await rps.state()).to.equal(2); // 2 = Revealed
     });
 
     it("should prevent determineWinner before both players move", async function () {
@@ -430,6 +434,53 @@ describe("RockPaperScissors", function () {
     it("should prevent reset before game is finished", async function () {
       await expect(rps.resetGame()).to.be.revertedWith(
         "Current game not finished"
+      );
+    });
+  });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should accept any value as move (no on-chain validation)", async function () {
+      // FHE doesn't validate encrypted values on-chain
+      const encryptedMove = await fhevm
+        .createEncryptedInput(rpsAddress, signers.player1.address)
+        .add8(99) // Invalid move value
+        .encrypt();
+
+      // Contract accepts encrypted value without validation
+      await expect(
+        rps
+          .connect(signers.player1)
+          .play(encryptedMove.handles[0], encryptedMove.inputProof)
+      ).to.not.be.reverted;
+    });
+
+    it("should reject reset while game is in progress", async function () {
+      // Player 1 joins
+      const enc = await fhevm
+        .createEncryptedInput(rpsAddress, signers.player1.address)
+        .add8(0)
+        .encrypt();
+      await rps.connect(signers.player1).play(enc.handles[0], enc.inputProof);
+
+      // Try to reset
+      await expect(rps.resetGame()).to.be.revertedWith(
+        "Current game not finished"
+      );
+    });
+
+    it("should reject determine winner with only one player", async function () {
+      const enc = await fhevm
+        .createEncryptedInput(rpsAddress, signers.player1.address)
+        .add8(1)
+        .encrypt();
+      await rps.connect(signers.player1).play(enc.handles[0], enc.inputProof);
+
+      await expect(rps.determineWinner()).to.be.revertedWith(
+        "Not ready to determine winner"
       );
     });
   });

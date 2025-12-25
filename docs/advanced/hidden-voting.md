@@ -150,6 +150,7 @@ contract HiddenVoting is ZamaEthereumConfig {
         );
         _noVotes = FHE.add(_noVotes, noIncrement);
 
+        FHE.allowThis(_yesVotes);
         FHE.allowThis(_noVotes);
 
         hasVoted[msg.sender] = true;
@@ -238,6 +239,12 @@ import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 import * as hre from "hardhat";
 
+/**
+ * Hidden Voting Tests
+ *
+ * Tests the private voting mechanism and batched result decryption using FHE.
+ * Validates that individual votes remain secret while final tallies are computed on-chain.
+ */
 describe("HiddenVoting", function () {
   let voting: any;
   let owner: any;
@@ -287,11 +294,14 @@ describe("HiddenVoting", function () {
     });
 
     it("should accept Yes vote (1)", async function () {
+      // 🔐 Encrypt the vote locally:
+      // 1 = Yes, 0 = No.
       const encryptedVote = await fhevm
         .createEncryptedInput(await voting.getAddress(), voter1.address)
         .add8(1) // Yes
         .encrypt();
 
+      // 🚀 Submit the encrypted vote handle and proof:
       await expect(
         voting
           .connect(voter1)
@@ -443,11 +453,12 @@ describe("HiddenVoting", function () {
       const encYes = await voting.getEncryptedYesVotes();
       const encNo = await voting.getEncryptedNoVotes();
 
-      // Request public decryption
+      // 🔓 Revelation Process (Public Decryption):
+      // 1. Request decryption for the aggregated Yes and No vote counts.
       const handles = [encYes, encNo];
       const decryptResults = await fhevm.publicDecrypt(handles);
 
-      // Reveal results
+      // 2. Reveal results on-chain by providing the clear tallies and the KMS proof.
       await voting.revealResults(
         decryptResults.abiEncodedClearValues,
         decryptResults.decryptionProof
@@ -499,6 +510,57 @@ describe("HiddenVoting", function () {
       expect(await voting.revealedYesVotes()).to.equal(0n);
       expect(await voting.revealedNoVotes()).to.equal(3n);
       expect(await voting.hasPassed()).to.be.false;
+    });
+  });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    beforeEach(async function () {
+      voting = await deployVoting(3600);
+    });
+
+    it("should reject vote after voting closes", async function () {
+      // Fast forward past end time
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      await voting.connect(owner).closeVoting();
+
+      const encryptedVote = await fhevm
+        .createEncryptedInput(await voting.getAddress(), voter1.address)
+        .add8(1)
+        .encrypt();
+
+      await expect(
+        voting
+          .connect(voter1)
+          .vote(encryptedVote.handles[0], encryptedVote.inputProof)
+      ).to.be.revertedWith("Voting not active");
+    });
+
+    it("should allow closing with no votes", async function () {
+      // Contract allows closing with no votes
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      await expect(voting.connect(owner).closeVoting()).to.not.be.reverted;
+    });
+
+    it("should reject reveal before closing", async function () {
+      // Cast a vote
+      const enc = await fhevm
+        .createEncryptedInput(await voting.getAddress(), voter1.address)
+        .add8(1)
+        .encrypt();
+      await voting.connect(voter1).vote(enc.handles[0], enc.inputProof);
+
+      // Try to reveal without closing
+      await expect(voting.revealResults("0x", "0x")).to.be.revertedWith(
+        "Voting not closed"
+      );
     });
   });
 });

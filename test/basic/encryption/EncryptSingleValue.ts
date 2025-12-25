@@ -21,8 +21,10 @@ async function deployFixture() {
 }
 
 /**
- * This trivial example demonstrates the FHE encryption mechanism
- * and highlights a common pitfall developers may encounter.
+ * Encrypt Single Value Tests
+ *
+ * Tests the FHE encryption mechanism and common implementation pitfalls.
+ * Validates proper use of encrypted inputs and permissions.
  */
 describe("EncryptSingleValue", function () {
   let contract: EncryptSingleValue;

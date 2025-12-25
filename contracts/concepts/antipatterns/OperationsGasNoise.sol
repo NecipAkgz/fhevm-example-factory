@@ -116,16 +116,16 @@ contract FHEOperationsGasNoiseAntiPatterns is ZamaEthereumConfig {
     // ═══════════════════════════════════════════════════════════════════════
 
     /**
-     * ❌ WRONG: Using old TFHE.decrypt() pattern
+     * ❌ WRONG: Using old FHE.decrypt() pattern
      * @dev Deprecated in FHEVM v0.9+
      */
     function wrongDeprecatedAPI() external pure returns (string memory) {
         // ❌ OLD (v0.8 and earlier):
-        // TFHE.decrypt() - went through Zama Oracle
+        // FHE.decrypt() - went through Zama Oracle
         //
         // This pattern is deprecated and no longer supported
 
-        return "Don't use TFHE.decrypt() - it's deprecated";
+        return "Don't use FHE.decrypt() - it's deprecated";
     }
 
     /**

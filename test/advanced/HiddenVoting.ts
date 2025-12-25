@@ -2,6 +2,12 @@ import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 import * as hre from "hardhat";
 
+/**
+ * Hidden Voting Tests
+ *
+ * Tests the private voting mechanism and batched result decryption using FHE.
+ * Validates that individual votes remain secret while final tallies are computed on-chain.
+ */
 describe("HiddenVoting", function () {
   let voting: any;
   let owner: any;
@@ -51,11 +57,14 @@ describe("HiddenVoting", function () {
     });
 
     it("should accept Yes vote (1)", async function () {
+      // 🔐 Encrypt the vote locally:
+      // 1 = Yes, 0 = No.
       const encryptedVote = await fhevm
         .createEncryptedInput(await voting.getAddress(), voter1.address)
         .add8(1) // Yes
         .encrypt();
 
+      // 🚀 Submit the encrypted vote handle and proof:
       await expect(
         voting
           .connect(voter1)
@@ -207,11 +216,12 @@ describe("HiddenVoting", function () {
       const encYes = await voting.getEncryptedYesVotes();
       const encNo = await voting.getEncryptedNoVotes();
 
-      // Request public decryption
+      // 🔓 Revelation Process (Public Decryption):
+      // 1. Request decryption for the aggregated Yes and No vote counts.
       const handles = [encYes, encNo];
       const decryptResults = await fhevm.publicDecrypt(handles);
 
-      // Reveal results
+      // 2. Reveal results on-chain by providing the clear tallies and the KMS proof.
       await voting.revealResults(
         decryptResults.abiEncodedClearValues,
         decryptResults.decryptionProof

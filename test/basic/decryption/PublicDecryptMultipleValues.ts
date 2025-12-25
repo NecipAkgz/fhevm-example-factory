@@ -19,6 +19,12 @@ async function deployFixture() {
   return { highestDiceRoll, highestDiceRoll_address };
 }
 
+/**
+ * Public Decrypt Multiple Values Tests
+ *
+ * Tests asynchronous FHE public decryption for multiple values in a single batch.
+ * Validates strict ordering of handles and batched proof verification.
+ */
 describe("HighestDieRoll", function () {
   let contract: HighestDieRoll;
   let contractAddress: string;
@@ -109,7 +115,8 @@ describe("HighestDieRoll", function () {
     console.log(`   🎃 playerB.address: ${playerB.address}`);
     console.log(``);
 
-    // Starts a new Heads or Tails game. This will emit a `GameCreated` event
+    // 🚀 Starts a new Highest Die Roll game.
+    // Each player rolls an encrypted die. The handles are emitted in the `GameCreated` event.
     const tx = await contract
       .connect(signers.owner)
       .highestDieRoll(playerA, playerB);
@@ -130,16 +137,15 @@ describe("HighestDieRoll", function () {
     const playerADiceRoll = gameCreatedEvent.playerAEncryptedDiceRoll;
     const playerBDiceRoll = gameCreatedEvent.playerBEncryptedDiceRoll;
 
-    // Call the Zama Relayer to compute the decryption
+    // 🔓 Public Decryption Process (Multiple Values):
+    // 1. Request decryption for ALL handles in a specific order.
+    // ⚠️ The order MUST match how the contract expects to receive them.
     const publicDecryptResults = await fhevm.publicDecrypt([
       playerADiceRoll,
       playerBDiceRoll,
     ]);
 
-    // The Relayer returns a `PublicDecryptResults` object containing:
-    // - the ORDERED clear values (here we have only one single value)
-    // - the ORDERED clear values in ABI-encoded form
-    // - the KMS decryption proof associated with the ORDERED clear values in ABI-encoded form
+    // The gateway returns a single proof that validates the entire batch.
     const abiEncodedClearGameResult =
       publicDecryptResults.abiEncodedClearValues;
     const decryptionProof = publicDecryptResults.decryptionProof;
@@ -165,8 +171,8 @@ describe("HighestDieRoll", function () {
     console.log(`🎲 playerA's 8-sided die roll is ${a}`);
     console.log(`🎲 playerB's 8-sided die roll is ${b}`);
 
-    // Let's forward the `PublicDecryptResults` content to the on-chain contract whose job
-    // will simply be to verify the proof and store the final winner of the game
+    // 🛡️ Verification:
+    // Forward the batch results and the single proof back to the smart contract.
     await contract.recordAndVerifyWinner(
       gameId,
       abiEncodedClearGameResult,
@@ -197,7 +203,9 @@ describe("HighestDieRoll", function () {
     }
   });
 
-  // ❌ Test should fail because clear values are ABI-encoded in the wrong order.
+  // 🛡️ Security Test: Wrong Ordering
+  // The proof is cryptographically tied to the order of decrypted values.
+  // Swapping the order of clear values will cause the proof verification to fail.
   it("decryption should fail when ABI-encoding is wrongly ordered", async function () {
     // Test Case: Verify strict ordering is enforced for cryptographic proof generation.
     // The `decryptionProof` is generated based on the expected order (A, B). By ABI-encoding

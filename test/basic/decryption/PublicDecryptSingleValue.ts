@@ -18,6 +18,12 @@ async function deployFixture() {
   return { headsOrTails, headsOrTails_address };
 }
 
+/**
+ * Public Decrypt Single Value Tests
+ *
+ * Tests asynchronous FHE public decryption using the gateway/relayer.
+ * Validates on-chain verification of KMS proofs for single encrypted results.
+ */
 describe("HeadsOrTails", function () {
   let contract: HeadsOrTails;
   let contractAddress: string;
@@ -105,7 +111,9 @@ describe("HeadsOrTails", function () {
     console.log(`   🎃 playerB.address: ${playerB.address}`);
     console.log(``);
 
-    // Starts a new Heads or Tails game. This will emit a `GameCreated` event
+    // 🚀 Starts a new Heads or Tails game.
+    // The contract computes the winner using FHE and emits a `GameCreated` event
+    // with the handle of the encrypted result.
     const tx = await contract
       .connect(signers.owner)
       .headsOrTails(playerA, playerB);
@@ -125,19 +133,20 @@ describe("HeadsOrTails", function () {
     const gameId = gameCreatedEvent.gameId;
     const encryptedBool: string = gameCreatedEvent.encryptedHasHeadsWon;
 
-    // Call the Zama Relayer to compute the decryption
+    // 🔓 Public Decryption Process:
+    // 1. Request decryption from the (mock) FHEVM gateway.
     const publicDecryptResults = await fhevm.publicDecrypt([encryptedBool]);
 
-    // The Relayer returns a `PublicDecryptResults` object containing:
-    // - the ORDERED clear values (here we have only one single value)
-    // - the ORDERED clear values in ABI-encoded form
-    // - the KMS decryption proof associated with the ORDERED clear values in ABI-encoded form
+    // The gateway returns:
+    // - `abiEncodedClearValues`: The clear result, but ABI-encoded.
+    // - `decryptionProof`: A cryptographic proof from the KMS showing this is the correct decryption.
     const abiEncodedClearGameResult =
       publicDecryptResults.abiEncodedClearValues;
     const decryptionProof = publicDecryptResults.decryptionProof;
 
-    // Let's forward the `PublicDecryptResults` content to the on-chain contract whose job
-    // will simply be to verify the proof and declare the final winner of the game
+    // 🛡️ Verification:
+    // Forward the results and the proof back to the smart contract.
+    // The contract will use `KMSVerifier` to ensure the gateway provided the real value.
     await contract.recordAndVerifyWinner(
       gameId,
       abiEncodedClearGameResult,
@@ -158,7 +167,7 @@ describe("HeadsOrTails", function () {
     }
   });
 
-  // ❌ The test must fail if the decryption proof is invalid
+  // 🛡️ Security Test: Invalid Proof
   it("should fail when the decryption proof is invalid", async function () {
     const tx = await contract
       .connect(signers.owner)
@@ -184,8 +193,8 @@ describe("HeadsOrTails", function () {
     );
   });
 
-  // ❌ The test must fail if a malicious operator attempts to use a decryption proof
-  // with a forged game result.
+  // 🛡️ Security Test: Forged Result
+  // Malicious operator attempts to change the clear value but keep the same proof.
   it("should fail when using a decryption proof with a forged game result", async function () {
     const tx = await contract
       .connect(signers.owner)
@@ -225,9 +234,8 @@ describe("HeadsOrTails", function () {
     );
   });
 
-  // ❌ Two games (Game1 and Game2) are played between playerA and playerB.
-  // The test must fail if a malicious operator attempts to forge the result of Game1
-  // with the result of Game2
+  // 🛡️ Security Test: Mixing Results
+  // Malicious operator attempts to use the proof/result from Game 2 to settle Game 1.
   it("should fail when using the result of a different game", async function () {
     // Game 1
     const tx1 = await contract

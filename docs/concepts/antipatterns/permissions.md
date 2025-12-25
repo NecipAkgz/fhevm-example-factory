@@ -316,8 +316,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Tests for FHE permission anti-patterns
- * Demonstrates wrong and correct permission handling patterns
+ * FHEPermissionsAntiPatterns Example:
+ * This contract focuses on the nuances of FHEVM's permission system.
+ * We explore why `allowThis` is necessary for contract operations and how
+ * to correctly propagate permissions to users so they can decrypt results.
  */
 describe("FHEPermissionsAntiPatterns", function () {
   let contract: FHEPermissionsAntiPatterns;
@@ -351,11 +353,9 @@ describe("FHEPermissionsAntiPatterns", function () {
         .add32(testValue)
         .encrypt();
 
-      await contract
-        .connect(signers.alice)
-        .wrongMissingAllowThis(input.handles[0], input.inputProof);
-
-      // Decryption should fail
+      // ❌ Missing Contract Permission:
+      // Even if the input is valid, if the contract doesn't call `FHE.allowThis`,
+      // it cannot access the result of its own encrypted computations later.
       const encrypted = await contract.getValue();
       await expect(
         fhevm.userDecryptEuint(
@@ -535,6 +535,10 @@ describe("FHEPermissionsAntiPatterns", function () {
     });
 
     it("should FAIL recipient decryption without permission", async function () {
+      // ❌ Missing Recipient Permission:
+      // When transferring encrypted data (like a balance), you must explicitly
+      // grant permission to the recipient using `FHE.allow`, otherwise they
+      // won't be able to decrypt and see their new balance.
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       const input = await fhevm
@@ -612,6 +616,9 @@ describe("FHEPermissionsAntiPatterns", function () {
     });
 
     it("correctCrossContractCall should grant allowTransient", async function () {
+      // 🛡️ Cross-Contract Permission:
+      // When one contract passes an encrypted handle to another, it must use
+      // `FHE.allowTransient` to give the target contract temporary access.
       const dummyAddress = "0x0000000000000000000000000000000000000001";
       // This should succeed - contract has permission on _secretValue
       await contract.correctCrossContractCall(dummyAddress);

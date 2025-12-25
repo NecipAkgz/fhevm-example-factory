@@ -105,8 +105,10 @@ async function deployFixture() {
 }
 
 /**
- * This trivial example demonstrates the FHE encryption mechanism
- * and highlights a common pitfall developers may encounter.
+ * FHE Add Tests
+ *
+ * Tests basic encrypted addition (euint8).
+ * Validates multi-user value setting and homomorphic sum computation.
  */
 describe("FHEAdd", function () {
   let contract: FHEAdd;
@@ -141,7 +143,7 @@ describe("FHEAdd", function () {
     const a = 80;
     const b = 123;
 
-    // Alice encrypts and sets `a` as 80
+    // 🔐 Alice encrypts and sets `a` as 80
     const inputA = await fhevm
       .createEncryptedInput(contractAddress, signers.alice.address)
       .add8(a)
@@ -151,7 +153,7 @@ describe("FHEAdd", function () {
       .setA(inputA.handles[0], inputA.inputProof);
     await tx.wait();
 
-    // Alice encrypts and sets `b` as 203
+    // 🔐 Alice encrypts and sets `b` as 123
     const inputB = await fhevm
       .createEncryptedInput(contractAddress, signers.alice.address)
       .add8(b)
@@ -161,18 +163,20 @@ describe("FHEAdd", function () {
       .setB(inputB.handles[0], inputB.inputProof);
     await tx.wait();
 
-    // Why Bob has FHE permissions to execute the operation in this case ?
-    // See `computeAPlusB()` in `FHEAdd.sol` for a detailed answer
+    // 🚀 Bob triggers the on-chain computation.
+    // In FHEVM, anyone can trigger a computation if they have permission to access the result
+    // or if the logic allows it. See `FHEAdd.sol` for permissions logic.
     tx = await contract.connect(bob).computeAPlusB();
     await tx.wait();
 
+    // 🔓 Verification:
     const encryptedAplusB = await contract.result();
 
     const clearAplusB = await fhevm.userDecryptEuint(
-      FhevmType.euint8, // Specify the encrypted type
+      FhevmType.euint8, // Specify the encrypted type (euint8)
       encryptedAplusB,
-      contractAddress, // The contract address
-      bob // The user wallet
+      contractAddress,
+      bob // Bob decrypts since the result was granted to him
     );
 
     expect(clearAplusB).to.equal(a + b);

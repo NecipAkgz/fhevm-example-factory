@@ -151,8 +151,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Tests FHE access control patterns
- * Demonstrates correct and incorrect permission handling
+ * FHEAccessControl Example:
+ * This contract demonstrates how to manage permissions for encrypted data.
+ * In FHEVM, only authorized users or the contract itself can decrypt specific variables.
+ * We explore the patterns for granting access (allow) and the common pitfall of missing permissions.
  */
 describe("FHEAccessControl", function () {
   let contract: FHEAccessControl;
@@ -186,11 +188,13 @@ describe("FHEAccessControl", function () {
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
         .encrypt();
+      // 🛡️ Access Control Verification:
+      // The contract uses `FHE.allow` to give Alice permission to decrypt the stored value.
+      // Additionally, `FHE.allowThis` ensures the contract itself can use the value in future computations.
       await contract
         .connect(signers.alice)
         .storeWithFullAccess(input.handles[0], input.inputProof);
 
-      // Verify access was granted
       expect(await contract.hasAccess(signers.alice.address)).to.equal(true);
 
       // User should be able to decrypt
@@ -237,11 +241,14 @@ describe("FHEAccessControl", function () {
     it("should FAIL user decryption without allowThis", async function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
-      // Store value WITHOUT allowThis (wrong pattern)
+      // ❌ Missing Contract Permission (allowThis):
+      // Even if the user has permission, if the contract didn't allow *itself* to access
+      // the result of an operation, certain on-chain logic might fail or be restricted.
       const input = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
         .encrypt();
+
       await contract
         .connect(signers.alice)
         .storeWithoutAllowThis(input.handles[0], input.inputProof);

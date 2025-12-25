@@ -442,9 +442,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Comprehensive edge case tests for FHE operations
- * Tests overflow, underflow, max values, zero operations, type conversions,
- * gas consumption, permission handling, and encrypted conditionals
+ * FHE Edge Cases Tests
+ *
+ * Tests boundary conditions, overflows, and technical limits of FHEVM.
+ * Validates encrypted logic behavior in extreme scenarios compared to standard EVM.
  */
 describe("FHEEdgeCases", function () {
   let contract: FHEEdgeCases;
@@ -542,6 +543,9 @@ describe("FHEEdgeCases", function () {
 
   describe("Overflow & Maximum Value Tests", function () {
     it("should handle euint32 maximum value overflow", async function () {
+      // ⚠️ Overflow Warning:
+      // FHEVM arithmetic is modular. For instance, adding 1 to the maximum
+      // value of a `euint32` will wrap around to 0, just like standard `uint32`.
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       await contract.connect(signers.alice).testMaxEuint32();
@@ -720,6 +724,9 @@ describe("FHEEdgeCases", function () {
 
     describe("Gas Consumption Measurements", function () {
       it("should measure addition gas consumption", async function () {
+        // ⛽ Gas Tip:
+        // FHE operations are significantly more expensive than standard EVM operations.
+        // Always measure and optimize the number of encrypted computations.
         const tx = await contract.connect(signers.alice).measureAdditionGas();
         const receipt = await tx.wait();
 
@@ -795,6 +802,10 @@ describe("FHEEdgeCases", function () {
 
     describe("Encrypted Revert Scenarios", function () {
       it("should handle encrypted conditional with valid value", async function () {
+        // 🛡️ Encrypted Conditional (Revert Simulation):
+        // In FHE, you cannot "revert" based on a secret condition directly.
+        // Instead, you typically use `FHE.select` to choose between a meaningful
+        // result and a "zeroed out" or "null" result.
         const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
         const validInput = await fhevm

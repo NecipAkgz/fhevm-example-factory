@@ -104,8 +104,10 @@ async function deployFixture() {
 }
 
 /**
- * This trivial example demonstrates the FHE user decryption mechanism
- * and highlights a common pitfall developers may encounter.
+ * User Decrypt Single Value Tests
+ *
+ * Tests the FHE user decryption mechanism and authorization patterns.
+ * Validates re-encryption for authorized users and failure cases for unauthorized access.
  */
 describe("UserDecryptSingleValue", function () {
   let contract: UserDecryptSingleValue;
@@ -131,27 +133,32 @@ describe("UserDecryptSingleValue", function () {
 
   // ✅ Test should succeed
   it("user decryption should succeed", async function () {
+    // 🚀 Initialize the contract with a value.
+    // The contract might perform some computations (e.g., adding 1).
     const tx = await contract.connect(signers.alice).initializeUint32(123456);
     await tx.wait();
 
     const encryptedUint32 = await contract.encryptedUint32();
 
-    // The FHEVM Hardhat plugin provides a set of convenient helper functions
-    // that make it easy to perform FHEVM operations within your Hardhat environment.
+    // 🔓 Decryption Process:
+    // We use the FHEVM Hardhat plugin `userDecryptEuint` helper.
+    // This helper handles the re-encryption request and decryption locally.
     const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
     const clearUint32 = await fhevm.userDecryptEuint(
-      FhevmType.euint32, // Specify the encrypted type
+      FhevmType.euint32, // Specify the type (euint32)
       encryptedUint32,
-      contractAddress, // The contract address
-      signers.alice // The user wallet
+      contractAddress,
+      signers.alice // The authorized user
     );
 
     expect(clearUint32).to.equal(123456 + 1);
   });
 
   // ❌ Test should fail
+  // ❌ Test unauthorized decryption (Common Pitfall)
   it("user decryption should fail", async function () {
+    // This contract initialization DOES NOT grant permissions to the user.
     const tx = await contract
       .connect(signers.alice)
       .initializeUint32Wrong(123456);
@@ -159,6 +166,7 @@ describe("UserDecryptSingleValue", function () {
 
     const encryptedUint32 = await contract.encryptedUint32();
 
+    // Attempting to decrypt will fail because the contract didn't call `FHE.allow`.
     await expect(
       hre.fhevm.userDecryptEuint(
         FhevmType.euint32,

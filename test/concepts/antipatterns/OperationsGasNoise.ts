@@ -24,8 +24,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Tests for FHE operations, gas, and noise anti-patterns
- * Demonstrates performance issues and optimization techniques
+ * FHE Gas and Noise Anti-Pattern Tests
+ *
+ * Tests common performance and security mistakes in FHE development.
+ * Validates gas side-channel protections, noise management, and type optimization.
  */
 describe("FHEOperationsGasNoiseAntiPatterns", function () {
   let contract: FHEOperationsGasNoiseAntiPatterns;
@@ -50,6 +52,9 @@ describe("FHEOperationsGasNoiseAntiPatterns", function () {
     const testValue = 50;
 
     it("wrongGasLeak should store value", async function () {
+      // ⚠️ Side-Channel Leak:
+      // If a contract branches using plaintext logic on data that *should* be secret,
+      // the gas consumption will differ, revealing information to an observer.
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       const input = await fhevm
@@ -92,6 +97,10 @@ describe("FHEOperationsGasNoiseAntiPatterns", function () {
     const testValue = 2;
 
     it("wrongNoiseAccumulation should chain many operations", async function () {
+      // ⚠️ Noise Accumulation:
+      // Every FHE operation adds a small amount of "noise" to the ciphertext.
+      // Chaining too many operations without a "bootstrap" (handled by FHEVM)
+      // can eventually lead to decryption failures.
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       const input = await fhevm
@@ -147,6 +156,10 @@ describe("FHEOperationsGasNoiseAntiPatterns", function () {
     const testValue = 100;
 
     it("wrongOversizedType should use euint256 unnecessarily", async function () {
+      // ⛽ Gas Tip:
+      // Larger types (like euint64 or euint256) are much more computationally
+      // expensive than smaller types (euint8, euint32). Always use the smallest
+      // type that can fit your data.
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
       const input = await fhevm

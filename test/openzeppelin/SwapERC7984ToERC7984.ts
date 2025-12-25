@@ -1,6 +1,12 @@
 import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 
+/**
+ * Private ERC-7984 Swap Tests
+ *
+ * Tests purely private swaps between different confidential token pairs.
+ * Validates on-chain atomic swaps without revealing balances or trade amounts.
+ */
 describe("SwapERC7984ToERC7984", function () {
   let swap: any;
   let tokenA: any;
@@ -39,11 +45,9 @@ describe("SwapERC7984ToERC7984", function () {
 
     await tokenA
       .connect(owner)
-      ["confidentialTransfer(address,bytes32,bytes)"](
-        user.address,
-        encryptedInputA.handles[0],
-        encryptedInputA.inputProof
-      );
+      [
+        "confidentialTransfer(address,bytes32,bytes)"
+      ](user.address, encryptedInputA.handles[0], encryptedInputA.inputProof);
 
     // Transfer tokenB to swap contract
     const encryptedInputB = await fhevm
@@ -53,11 +57,9 @@ describe("SwapERC7984ToERC7984", function () {
 
     await tokenB
       .connect(owner)
-      ["confidentialTransfer(address,bytes32,bytes)"](
-        await swap.getAddress(),
-        encryptedInputB.handles[0],
-        encryptedInputB.inputProof
-      );
+      [
+        "confidentialTransfer(address,bytes32,bytes)"
+      ](await swap.getAddress(), encryptedInputB.handles[0], encryptedInputB.inputProof);
 
     // Set swap as operator for user's tokenA
     const maxTimestamp = Math.floor(Date.now() / 1000) + 3600;
@@ -73,6 +75,9 @@ describe("SwapERC7984ToERC7984", function () {
         .add64(100)
         .encrypt();
 
+      // 🚀 Private Swap:
+      // The swap is performed using FHE logic. The contract deducts TokenA
+      // and adds TokenB to the user's balances privately.
       await expect(
         swap
           .connect(user)

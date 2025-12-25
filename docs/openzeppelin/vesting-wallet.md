@@ -185,6 +185,12 @@ import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 import { time } from "@nomicfoundation/hardhat-network-helpers";
 
+/**
+ * Confidential Vesting Wallet Tests
+ *
+ * Tests vesting schedules for confidential ERC-7984 tokens.
+ * Validates private periodic releases and total amount concealment over time.
+ */
 describe("VestingWallet", function () {
   let vestingWallet: any;
   let token: any;
@@ -223,13 +229,14 @@ describe("VestingWallet", function () {
       .add64(VESTING_AMOUNT)
       .encrypt();
 
+    // 🔐 Fund the Vesting Wallet:
+    // The owner sends an encrypted amount of tokens to the vesting contract.
+    // The contract's confidential state now holds these tokens for the beneficiary.
     await token
       .connect(owner)
-      ["confidentialTransfer(address,bytes32,bytes)"](
-        await vestingWallet.getAddress(),
-        encryptedInput.handles[0],
-        encryptedInput.inputProof
-      );
+      [
+        "confidentialTransfer(address,bytes32,bytes)"
+      ](await vestingWallet.getAddress(), encryptedInput.handles[0], encryptedInput.inputProof);
   });
 
   describe("Initialization", function () {
@@ -253,6 +260,9 @@ describe("VestingWallet", function () {
       const endTime = await vestingWallet.end();
       await time.increaseTo(endTime + BigInt(100));
 
+      // 🚀 Release Tokens:
+      // Once the vesting duration has passed, the beneficiary can trigger a release.
+      // The contract calculates the vested amount privately and transfers it to the beneficiary.
       await expect(
         vestingWallet.connect(beneficiary).release(await token.getAddress())
       ).to.emit(vestingWallet, "VestingWalletConfidentialTokenReleased");

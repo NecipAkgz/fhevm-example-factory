@@ -78,6 +78,8 @@ describe("EncryptedLottery", function () {
 
   describe("Ticket Purchase", function () {
     it("should allow ticket purchase with encrypted number", async function () {
+      // 🔐 Encrypt the ticket number locally:
+      // The player picks a secret number, which is never revealed to the public.
       const encryptedNumber = await fhevm
         .createEncryptedInput(lotteryAddress, signers.player1.address)
         .add64(123456789n)
@@ -177,11 +179,14 @@ describe("EncryptedLottery", function () {
       await ethers.provider.send("evm_increaseTime", [DURATION + 1]);
       await ethers.provider.send("evm_mine", []);
 
+      // 🛡️ State Transition:
+      // The lottery moves to the "Drawing" state. Actual winner determination
+      // happens using FHE operations on the hidden ticket numbers.
       await expect(lottery.startDrawing())
         .to.emit(lottery, "DrawingStarted")
         .withArgs(1);
 
-      expect(await lottery.state()).to.equal(1); // Drawing
+      expect(await lottery.state()).to.equal(1); // 1 = Drawing
     });
   });
 

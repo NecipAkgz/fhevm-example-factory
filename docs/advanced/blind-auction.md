@@ -261,6 +261,12 @@ import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 import * as hre from "hardhat";
 
+/**
+ * Blind Auction Tests
+ *
+ * Tests the private bidding process and winner determination using FHE.
+ * Validates bid privacy during the auction and public disclosure of results after closing.
+ */
 describe("BlindAuction", function () {
   let auction: any;
   let owner: any;
@@ -311,11 +317,14 @@ describe("BlindAuction", function () {
     });
 
     it("should accept encrypted bid", async function () {
+      // 🔐 Encrypt the bid locally:
+      // We use `add64` because the contract expects a `euint64` handle.
       const encryptedBid = await fhevm
         .createEncryptedInput(await auction.getAddress(), bidder1.address)
         .add64(500)
         .encrypt();
 
+      // 🚀 Submit the encrypted bid handle and proof:
       await expect(
         auction
           .connect(bidder1)
@@ -483,23 +492,77 @@ describe("BlindAuction", function () {
       const encWinningBid = await auction.getEncryptedWinningBid();
       const encWinnerIndex = await auction.getEncryptedWinnerIndex();
 
-      // Request public decryption
+      // 🔓 Revelation Process (Public Decryption):
+      // 1. Request decryption for the winning bid and winner's index.
       const handles = [encWinningBid, encWinnerIndex];
       const decryptResults = await fhevm.publicDecrypt(handles);
 
-      // Reveal winner
+      // 2. Reveal winner on-chain by providing the clear results and the KMS proof.
       await auction.revealWinner(
         decryptResults.abiEncodedClearValues,
         decryptResults.decryptionProof
       );
 
-      // Verify results
+      // 🛡️ Verify final public state
       expect(await auction.auctionState()).to.equal(2); // Revealed
       expect(await auction.winner()).to.equal(bidder2.address);
       expect(await auction.winningAmount()).to.equal(500n);
 
       console.log(`🏆 Winner: ${await auction.winner()}`);
       console.log(`💰 Winning Amount: ${await auction.winningAmount()}`);
+    });
+  });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    beforeEach(async function () {
+      const deployment = await deployAuction(3600);
+      auction = deployment.auction;
+    });
+
+    it("should accept minimum bid (boundary test)", async function () {
+      const encryptedBid = await fhevm
+        .createEncryptedInput(await auction.getAddress(), bidder1.address)
+        .add64(Number(MINIMUM_BID)) // Exactly minimum
+        .encrypt();
+
+      await expect(
+        auction
+          .connect(bidder1)
+          .bid(encryptedBid.handles[0], encryptedBid.inputProof)
+      ).to.not.be.reverted;
+
+      expect(await auction.hasBid(bidder1.address)).to.be.true;
+    });
+
+    it("should reject bid after auction ends", async function () {
+      // Fast forward past end time
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      const encryptedBid = await fhevm
+        .createEncryptedInput(await auction.getAddress(), bidder1.address)
+        .add64(500)
+        .encrypt();
+
+      await expect(
+        auction
+          .connect(bidder1)
+          .bid(encryptedBid.handles[0], encryptedBid.inputProof)
+      ).to.be.revertedWith("Auction has ended");
+    });
+
+    it("should handle auction with no bids", async function () {
+      // End auction without any bids
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      await expect(auction.connect(owner).endAuction()).to.be.revertedWith(
+        "No bids placed"
+      );
     });
   });
 });

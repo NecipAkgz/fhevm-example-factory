@@ -327,6 +327,12 @@ import { ethers, fhevm } from "hardhat";
 import { EncryptedEscrow, EncryptedEscrow__factory } from "../types";
 import { expect } from "chai";
 
+/**
+ * Encrypted Escrow Tests
+ *
+ * Tests the private escrow process and dispute resolution using FHE.
+ * Validates that transaction amounts remain secret while permitting conditional releases.
+ */
 type Signers = {
   buyer: HardhatEthersSigner;
   seller: HardhatEthersSigner;
@@ -393,6 +399,8 @@ describe("EncryptedEscrow", function () {
       const block = await ethers.provider.getBlock("latest");
       const deadline = (block?.timestamp || 0) + DEADLINE_OFFSET;
 
+      // 🔐 Encrypt the escrow amount:
+      // This amount serves as a private commitment that the contract will enforce.
       const encryptedAmount = await fhevm
         .createEncryptedInput(escrowAddress, signers.buyer.address)
         .add64(amount)
@@ -483,7 +491,7 @@ describe("EncryptedEscrow", function () {
 
       const info = await escrow.getEscrow(escrowId);
       expect(info.depositedAmount).to.equal(amount);
-      expect(info.state).to.equal(1); // Funded
+      expect(info.state).to.equal(1); // 1 = Funded
     });
 
     it("should prevent non-buyer from funding", async function () {
@@ -577,7 +585,7 @@ describe("EncryptedEscrow", function () {
         .withArgs(escrowId, signers.buyer.address);
 
       const info = await escrow.getEscrow(escrowId);
-      expect(info.state).to.equal(4); // Disputed
+      expect(info.state).to.equal(4); // 4 = Disputed
     });
 
     it("should allow arbiter to resolve in favor of buyer", async function () {
@@ -596,7 +604,8 @@ describe("EncryptedEscrow", function () {
       const buyerBalanceAfter = await ethers.provider.getBalance(
         signers.buyer.address
       );
-      // Buyer receives 99% (1% arbiter fee)
+      // 🛡️ Resolution logic:
+      // Buyer receives the original amount minus the arbiter's fee (1% in this test).
       const expected = DEPOSIT - DEPOSIT / 100n;
       expect(buyerBalanceAfter - buyerBalanceBefore).to.equal(expected);
     });
@@ -614,6 +623,67 @@ describe("EncryptedEscrow", function () {
     it("should check deadline status", async function () {
       // Non-existent escrow with deadline = 0 means timestamp > 0 is always true
       expect(await escrow.isDeadlinePassed(999)).to.be.true;
+    });
+  });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    let escrowId: bigint;
+
+    beforeEach(async function () {
+      const block = await ethers.provider.getBlock("latest");
+      const deadline = (block?.timestamp || 0) + DEADLINE_OFFSET;
+
+      // Create encrypted amount for escrow creation
+      const encryptedAmount = await fhevm
+        .createEncryptedInput(escrowAddress, signers.buyer.address)
+        .add64(1000)
+        .encrypt();
+
+      const tx = await escrow
+        .connect(signers.buyer)
+        .createEscrow(
+          signers.seller.address,
+          signers.arbiter.address,
+          encryptedAmount.handles[0],
+          encryptedAmount.inputProof,
+          deadline
+        );
+      const receipt = await tx.wait();
+      const event = receipt?.logs.find(
+        (log: any) => log.fragment?.name === "EscrowCreated"
+      );
+      escrowId = event?.args?.[0] || 1n;
+    });
+
+    it("should reject double funding", async function () {
+      // First funding
+      await escrow.connect(signers.buyer).fundEscrow(escrowId, { value: 1000 });
+
+      // Second funding attempt
+      await expect(
+        escrow.connect(signers.buyer).fundEscrow(escrowId, { value: 500 })
+      ).to.be.revertedWith("Invalid state");
+    });
+
+    it("should allow release before deadline", async function () {
+      // Fund escrow
+      await escrow.connect(signers.buyer).fundEscrow(escrowId, { value: 1000 });
+
+      // Release should work before deadline
+      await expect(escrow.connect(signers.buyer).release(escrowId)).to.not.be
+        .reverted;
+    });
+
+    it("should reject operations on invalid escrow ID", async function () {
+      const invalidId = 999n;
+
+      await expect(
+        escrow.connect(signers.buyer).fundEscrow(invalidId, { value: 1000 })
+      ).to.be.revertedWith("Only buyer can fund");
     });
   });
 });

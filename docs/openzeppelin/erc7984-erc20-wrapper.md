@@ -76,6 +76,12 @@ contract ERC7984ERC20WrapperExample is
 import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 
+/**
+ * ERC-7984 / ERC-20 Wrapper Tests
+ *
+ * Tests the wrapping of public ERC-20 tokens into confidential ERC-7984 tokens.
+ * Validates the on-ramp process from public funds to a private financial layer.
+ */
 describe("ERC7984ERC20Wrapper", function () {
   let wrapper: any;
   let erc20Mock: any;
@@ -133,7 +139,10 @@ describe("ERC7984ERC20Wrapper", function () {
         WRAP_AMOUNT
       );
 
-      // Check confidential balance exists
+      // 🔐 Wrapping Process:
+      // The public ERC-20 tokens are locked in this contract, and an equivalent
+      // amount of confidential ERC-7984 handles are "minted" for the user.
+      // From this point on, the user's balance and transfers are private.
       const balanceHandle = await wrapper.confidentialBalanceOf(user.address);
       expect(balanceHandle).to.not.be.undefined;
     });

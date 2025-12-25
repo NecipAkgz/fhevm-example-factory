@@ -1,6 +1,12 @@
 import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 
+/**
+ * ERC-7984 to ERC-20 Swap Tests
+ *
+ * Tests the swapping of confidential ERC-7984 tokens for public ERC-20 tokens.
+ * Validates the off-ramp process from private state to public financial state.
+ */
 describe("SwapERC7984ToERC20", function () {
   let swap: any;
   let erc7984: any;
@@ -44,13 +50,13 @@ describe("SwapERC7984ToERC20", function () {
       .add64(1000)
       .encrypt();
 
+    // 🔐 Setup Confidential State:
+    // We first transfer encrypted tokens to the user to prepare for the swap.
     await erc7984
       .connect(owner)
-      ["confidentialTransfer(address,bytes32,bytes)"](
-        user.address,
-        encryptedInput.handles[0],
-        encryptedInput.inputProof
-      );
+      [
+        "confidentialTransfer(address,bytes32,bytes)"
+      ](user.address, encryptedInput.handles[0], encryptedInput.inputProof);
 
     // Set swap contract as operator for user
     const maxTimestamp = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
@@ -66,6 +72,10 @@ describe("SwapERC7984ToERC20", function () {
         .add64(100)
         .encrypt();
 
+      // 🚀 Initiate Swap:
+      // The user initiates a swap by providing an encrypted amount.
+      // The contract will deduce this amount from the user's private balance
+      // and eventually "off-ramp" it into a public ERC-20 token.
       await expect(
         swap
           .connect(user)

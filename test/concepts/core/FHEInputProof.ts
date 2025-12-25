@@ -20,8 +20,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Tests input proof validation patterns
- * Demonstrates single and multiple encrypted inputs with proofs
+ * FHE Input Proof Tests
+ *
+ * Tests encrypted input submission and Zero-Knowledge Proof (ZKP) verification.
+ * Validates that only correctly encrypted and proven values are accepted by the FHEVM.
  */
 describe("FHEInputProof", function () {
   let contract: FHEInputProof;
@@ -47,7 +49,8 @@ describe("FHEInputProof", function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
       const secretValue = 123;
 
-      // Create encrypted input with proof
+      // 🔐 Create an encrypted input with a proof:
+      // The `encrypt()` method generates both the `handles` and a single `inputProof`.
       const encryptedInput = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(secretValue)
@@ -76,7 +79,9 @@ describe("FHEInputProof", function () {
       const valueA = 100;
       const valueB = 200n; // uint64
 
-      // Create batched encrypted input
+      // 🔐 Batching multiple inputs:
+      // A single `inputProof` can validate multiple `handles` created in the same call.
+      // This is more gas-efficient than submitting multiple proofs.
       const encryptedInput = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(valueA) // index 0 -> handles[0]

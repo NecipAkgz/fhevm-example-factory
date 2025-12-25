@@ -415,7 +415,8 @@ describe("EncryptedPoker", function () {
 
   describe("Joining Game", function () {
     it("should allow first player to join with encrypted cards", async function () {
-      // Player 0 joins with cards (King=13, Queen=12)
+      // 🔐 Encrypt hole cards locally:
+      // Hole cards are private to each player. Here, Player 0 has King (13) and Queen (12).
       const enc = await fhevm
         .createEncryptedInput(pokerAddress, signers.player0.address)
         .add8(13) // King
@@ -514,9 +515,10 @@ describe("EncryptedPoker", function () {
         });
     });
 
-    it("should allow betting", async function () {
+    it("should allow player to place a bet", async function () {
       const betAmount = ethers.parseEther("0.05");
-
+      // 🚀 Placing a Bet:
+      // Players can bet based on their private knowledge of their hole cards.
       await expect(poker.connect(signers.player0).bet({ value: betAmount }))
         .to.emit(poker, "BetPlaced")
         .withArgs(signers.player0.address, betAmount);
@@ -617,6 +619,8 @@ describe("EncryptedPoker", function () {
     });
 
     it("should start showdown and emit event", async function () {
+      // 🛡️ Showdown Phase:
+      // Once betting is over, the contract compares the encrypted cards of both players.
       await expect(poker.showdown()).to.emit(poker, "ShowdownStarted");
 
       const info = await poker.getGameInfo();
@@ -693,6 +697,66 @@ describe("EncryptedPoker", function () {
         });
 
       expect(await poker.isPlayer(signers.player0.address)).to.be.true;
+    });
+  });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should reject same player joining twice", async function () {
+      const enc = await fhevm
+        .createEncryptedInput(pokerAddress, signers.player0.address)
+        .add8(10)
+        .add8(10)
+        .encrypt();
+
+      await poker
+        .connect(signers.player0)
+        .joinGame(enc.handles[0], enc.handles[1], enc.inputProof, {
+          value: MIN_BET,
+        });
+
+      // Try to join again
+      const enc2 = await fhevm
+        .createEncryptedInput(pokerAddress, signers.player0.address)
+        .add8(5)
+        .add8(5)
+        .encrypt();
+
+      await expect(
+        poker
+          .connect(signers.player0)
+          .joinGame(enc2.handles[0], enc2.handles[1], enc2.inputProof, {
+            value: MIN_BET,
+          })
+      ).to.be.revertedWith("Already in game");
+    });
+
+    it("should reject bet before cards dealt", async function () {
+      // Only one player joined
+      const enc = await fhevm
+        .createEncryptedInput(pokerAddress, signers.player0.address)
+        .add8(10)
+        .add8(10)
+        .encrypt();
+
+      await poker
+        .connect(signers.player0)
+        .joinGame(enc.handles[0], enc.handles[1], enc.inputProof, {
+          value: MIN_BET,
+        });
+
+      await expect(
+        poker.connect(signers.player0).bet({ value: MIN_BET })
+      ).to.be.revertedWith("Not betting phase");
+    });
+
+    it("should reject showdown before cards dealt", async function () {
+      await expect(poker.showdown()).to.be.revertedWith(
+        "Not ready for showdown"
+      );
     });
   });
 });

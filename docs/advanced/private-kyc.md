@@ -394,7 +394,8 @@ describe("PrivateKYC", function () {
 
   describe("KYC Submission", function () {
     it("should allow user to submit encrypted KYC", async function () {
-      // User1: 25 years old, US, credit score 750
+      // 🔐 Encrypt personal data locally:
+      // We bundle age, country, and credit score into a single encrypted input.
       const enc = await fhevm
         .createEncryptedInput(kycAddress, signers.user1.address)
         .add8(25) // age
@@ -517,7 +518,9 @@ describe("PrivateKYC", function () {
     });
 
     it("should return encrypted result for age verification", async function () {
-      // Verify age 18+ returns encrypted boolean handle
+      // 🛡️ Predicate Verification:
+      // Calling `verifyAge18` returns an encrypted boolean (`ebool`) handle.
+      // The caller knows *that* the verification was performed, but not the result yet.
       const result = await kyc.verifyAge18.staticCall(signers.user1.address);
       expect(result).to.not.equal(0n);
     });
@@ -698,6 +701,46 @@ describe("PrivateKYC", function () {
       await expect(
         kyc.connect(signers.user1).getMyIdentity()
       ).to.be.revertedWith("No KYC submitted");
+    });
+  });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should reject revoke for non-submitted user", async function () {
+      await expect(kyc.connect(signers.user1).revokeKYC()).to.be.revertedWith(
+        "No KYC submitted"
+      );
+    });
+
+    it("should reject age verification for unsubmitted user", async function () {
+      await expect(
+        kyc.verifyAge18.staticCall(signers.user1.address)
+      ).to.be.revertedWith("No KYC submitted");
+    });
+
+    it("should accept KYC from blocked country (validation happens at verification)", async function () {
+      // Submit KYC with blocked country
+      const enc = await fhevm
+        .createEncryptedInput(kycAddress, signers.user1.address)
+        .add8(25)
+        .add8(COUNTRY_BLOCKED) // Blocked country
+        .add16(750)
+        .encrypt();
+
+      // Contract accepts encrypted data without validation
+      await expect(
+        kyc
+          .connect(signers.user1)
+          .submitKYC(
+            enc.handles[0],
+            enc.handles[1],
+            enc.handles[2],
+            enc.inputProof
+          )
+      ).to.not.be.reverted;
     });
   });
 });

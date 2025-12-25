@@ -113,8 +113,10 @@ async function deployFixture() {
 }
 
 /**
- * This trivial example demonstrates the FHE user decryption mechanism
- * and highlights a common pitfall developers may encounter.
+ * User Decrypt Multiple Values Tests
+ *
+ * Tests the FHE user decryption mechanism for multiple values in a single batch.
+ * Validates EIP-712 signed authorization for re-encryption of multiple handles.
  */
 describe("UserDecryptMultipleValues", function () {
   let contract: UserDecryptMultipleValues;
@@ -140,6 +142,7 @@ describe("UserDecryptMultipleValues", function () {
 
   // ✅ Test should succeed
   it("user decryption should succeed", async function () {
+    // 🚀 Initialize the contract with multiple values.
     const tx = await contract
       .connect(signers.alice)
       .initialize(true, 123456, 78901234567);
@@ -149,21 +152,24 @@ describe("UserDecryptMultipleValues", function () {
     const encryptedUint32 = await contract.encryptedUint32();
     const encryptedUint64 = await contract.encryptedUint64();
 
-    // The FHEVM Hardhat plugin provides a set of convenient helper functions
-    // that make it easy to perform FHEVM operations within your Hardhat environment.
+    // 🔓 Decryption Process for Multiple Values:
     const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
+    // 1. Generate a temporary keypair for the decryption request.
     const aliceKeypair = fhevm.generateKeypair();
 
     const startTimestamp = fhevm_utils.timestampNow();
     const durationDays = 365;
 
+    // 2. Create an EIP-712 request to authorize decryption of these handles.
     const aliceEip712 = fhevm.createEIP712(
       aliceKeypair.publicKey,
       [contractAddress],
       startTimestamp,
       durationDays
     );
+
+    // 3. User (Alice) signs the EIP-712 request.
     const aliceSignature = await signers.alice.signTypedData(
       aliceEip712.domain,
       {
@@ -173,6 +179,9 @@ describe("UserDecryptMultipleValues", function () {
       aliceEip712.message
     );
 
+    // 4. Perform the batch decryption.
+    // This sends the request to the (mock) relayer, which re-encrypts the values
+    // for Alice's temporary public key and then decrypts them.
     const decrytepResults: DecryptedResults = await fhevm.userDecrypt(
       [
         { handle: encryptedBool, contractAddress: contractAddress },

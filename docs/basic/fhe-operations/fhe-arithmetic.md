@@ -147,8 +147,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Demonstrates all FHE arithmetic operations on encrypted integers.
- * Tests: add, sub, mul, div, rem, min, max
+ * FHE Arithmetic Tests
+ *
+ * Tests various FHE arithmetic operations (add, sub, mul, div, rem, min, max).
+ * Validates homomorphic computation accuracy on encrypted integers.
  */
 describe("FHEArithmetic", function () {
   let contract: FHEArithmetic;
@@ -176,7 +178,8 @@ describe("FHEArithmetic", function () {
     beforeEach(async function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
-      // Set encrypted values A and B
+      // 🔐 Encryption Process:
+      // Values are encrypted locally before being sent to the contract.
       const inputA = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(valueA)
@@ -194,10 +197,13 @@ describe("FHEArithmetic", function () {
         .setB(inputB.handles[0], inputB.inputProof);
     });
 
+    // ✅ Test Addition
     it("should compute addition correctly (100 + 25 = 125)", async function () {
+      // Trigger the on-chain FHE operation
       await contract.connect(signers.alice).computeAdd();
       const encrypted = await contract.getResult();
 
+      // 🔓 Decrypt to verify the result
       const decrypted = await hre.fhevm.userDecryptEuint(
         FhevmType.euint32,
         encrypted,
@@ -207,6 +213,7 @@ describe("FHEArithmetic", function () {
       expect(decrypted).to.equal(valueA + valueB);
     });
 
+    // ✅ Test Subtraction
     it("should compute subtraction correctly (100 - 25 = 75)", async function () {
       await contract.connect(signers.alice).computeSub();
       const encrypted = await contract.getResult();
@@ -220,6 +227,7 @@ describe("FHEArithmetic", function () {
       expect(decrypted).to.equal(valueA - valueB);
     });
 
+    // ✅ Test Multiplication
     it("should compute multiplication correctly (100 * 25 = 2500)", async function () {
       await contract.connect(signers.alice).computeMul();
       const encrypted = await contract.getResult();
@@ -233,6 +241,7 @@ describe("FHEArithmetic", function () {
       expect(decrypted).to.equal(valueA * valueB);
     });
 
+    // ✅ Test Division
     it("should compute division correctly (100 / 25 = 4)", async function () {
       await contract.connect(signers.alice).computeDiv(valueB);
       const encrypted = await contract.getResult();
@@ -246,6 +255,7 @@ describe("FHEArithmetic", function () {
       expect(decrypted).to.equal(Math.floor(valueA / valueB));
     });
 
+    // ✅ Test Remainder
     it("should compute remainder correctly (100 % 25 = 0)", async function () {
       await contract.connect(signers.alice).computeRem(valueB);
       const encrypted = await contract.getResult();
@@ -259,6 +269,7 @@ describe("FHEArithmetic", function () {
       expect(decrypted).to.equal(valueA % valueB);
     });
 
+    // ✅ Test Minimum
     it("should compute minimum correctly (min(100, 25) = 25)", async function () {
       await contract.connect(signers.alice).computeMin();
       const encrypted = await contract.getResult();
@@ -272,6 +283,7 @@ describe("FHEArithmetic", function () {
       expect(decrypted).to.equal(Math.min(valueA, valueB));
     });
 
+    // ✅ Test Maximum
     it("should compute maximum correctly (max(100, 25) = 100)", async function () {
       await contract.connect(signers.alice).computeMax();
       const encrypted = await contract.getResult();

@@ -1,6 +1,12 @@
 import { expect } from "chai";
 import { ethers, fhevm } from "hardhat";
 
+/**
+ * ERC-7984 Confidential Token Tests
+ *
+ * Tests the ERC-7984 standard for private on-chain assets.
+ * Validates encrypted balance management and confidential transfer mechanics.
+ */
 describe("ERC7984Example", function () {
   let token: any;
   let owner: any;
@@ -37,6 +43,9 @@ describe("ERC7984Example", function () {
     });
 
     it("should mint initial amount to owner", async function () {
+      // 🛡️ Privacy Check:
+      // Even the owner's balance is stored as an encrypted handle.
+      // One cannot see the balance by simply reading the contract state.
       const balanceHandle = await token.confidentialBalanceOf(owner.address);
       expect(balanceHandle).to.not.be.undefined;
     });
@@ -49,14 +58,16 @@ describe("ERC7984Example", function () {
         .add64(TRANSFER_AMOUNT)
         .encrypt();
 
+      // 🔐 Confidential Transfer:
+      // The transfer amount is encrypted locally. The contract updates both
+      // the sender's and receiver's balances using FHE arithmetic without
+      // ever knowing the actual amount being moved.
       await expect(
         token
           .connect(owner)
-          ["confidentialTransfer(address,bytes32,bytes)"](
-            recipient.address,
-            encryptedInput.handles[0],
-            encryptedInput.inputProof
-          )
+          [
+            "confidentialTransfer(address,bytes32,bytes)"
+          ](recipient.address, encryptedInput.handles[0], encryptedInput.inputProof)
       ).to.not.be.reverted;
 
       const recipientBalanceHandle = await token.confidentialBalanceOf(
@@ -78,11 +89,9 @@ describe("ERC7984Example", function () {
 
       await token
         .connect(owner)
-        ["confidentialTransfer(address,bytes32,bytes)"](
-          recipient.address,
-          encryptedInput1.handles[0],
-          encryptedInput1.inputProof
-        );
+        [
+          "confidentialTransfer(address,bytes32,bytes)"
+        ](recipient.address, encryptedInput1.handles[0], encryptedInput1.inputProof);
 
       // Second transfer from recipient to other
       const encryptedInput2 = await fhevm
@@ -93,11 +102,9 @@ describe("ERC7984Example", function () {
       await expect(
         token
           .connect(recipient)
-          ["confidentialTransfer(address,bytes32,bytes)"](
-            other.address,
-            encryptedInput2.handles[0],
-            encryptedInput2.inputProof
-          )
+          [
+            "confidentialTransfer(address,bytes32,bytes)"
+          ](other.address, encryptedInput2.handles[0], encryptedInput2.inputProof)
       ).to.not.be.reverted;
     });
 
@@ -110,11 +117,9 @@ describe("ERC7984Example", function () {
       await expect(
         token
           .connect(recipient)
-          ["confidentialTransfer(address,bytes32,bytes)"](
-            other.address,
-            encryptedInput.handles[0],
-            encryptedInput.inputProof
-          )
+          [
+            "confidentialTransfer(address,bytes32,bytes)"
+          ](other.address, encryptedInput.handles[0], encryptedInput.inputProof)
       )
         .to.be.revertedWithCustomError(token, "ERC7984ZeroBalance")
         .withArgs(recipient.address);
@@ -129,11 +134,9 @@ describe("ERC7984Example", function () {
       await expect(
         token
           .connect(owner)
-          ["confidentialTransfer(address,bytes32,bytes)"](
-            ethers.ZeroAddress,
-            encryptedInput.handles[0],
-            encryptedInput.inputProof
-          )
+          [
+            "confidentialTransfer(address,bytes32,bytes)"
+          ](ethers.ZeroAddress, encryptedInput.handles[0], encryptedInput.inputProof)
       )
         .to.be.revertedWithCustomError(token, "ERC7984InvalidReceiver")
         .withArgs(ethers.ZeroAddress);

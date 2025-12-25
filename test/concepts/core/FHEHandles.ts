@@ -20,8 +20,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Tests FHE handle lifecycle and operations
- * Demonstrates handle creation, computation, and immutability
+ * FHE Handles Tests
+ *
+ * Tests the creation, computation, and immutability of FHE handles.
+ * Validates that handles act as secure references to encrypted state without leaking data.
  */
 describe("FHEHandles", function () {
   let contract: FHEHandles;
@@ -52,6 +54,9 @@ describe("FHEHandles", function () {
         .add32(value)
         .encrypt();
 
+      // 🔐 Creating a Handle from External Input:
+      // When a user provides an encrypted input, the contract creates a new handle
+      // that points to this encryption.
       await contract
         .connect(signers.alice)
         .createFromExternal(input.handles[0], input.inputProof);
@@ -93,7 +98,8 @@ describe("FHEHandles", function () {
     it("should create new handle when computing", async function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
-      // computeNewHandle adds 10 to stored value
+      // 🚀 Every FHE operation generates a NEW handle.
+      // The original handle remains unchanged because the underlying data is immutable.
       await contract.connect(signers.alice).computeNewHandle();
 
       const encrypted = await contract.getComputedValue();

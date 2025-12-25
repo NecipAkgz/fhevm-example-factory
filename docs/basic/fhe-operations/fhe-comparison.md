@@ -158,8 +158,10 @@ async function deployFixture() {
 }
 
 /**
- * @notice Demonstrates all FHE comparison operations on encrypted integers.
- * Tests: eq, ne, gt, lt, ge, le, select
+ * FHE Comparison Tests
+ *
+ * Tests FHE comparison operations and encrypted conditional selection.
+ * Validates equality, inequality, and order checks producing encrypted booleans.
  */
 describe("FHEComparison", function () {
   let contract: FHEComparison;
@@ -187,6 +189,7 @@ describe("FHEComparison", function () {
     beforeEach(async function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
+      // 🔐 Encrypt input values A and B locally.
       const inputA = await fhevm
         .createEncryptedInput(contractAddress, signers.alice.address)
         .add32(valueA)
@@ -204,6 +207,7 @@ describe("FHEComparison", function () {
         .setB(inputB.handles[0], inputB.inputProof);
     });
 
+    // ✅ Test Equality (==)
     it("should compute equality correctly (100 == 25 is false)", async function () {
       await contract.connect(signers.alice).computeEq();
       const encrypted = await contract.getBoolResult();
@@ -216,6 +220,7 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(false);
     });
 
+    // ✅ Test Inequality (!=)
     it("should compute inequality correctly (100 != 25 is true)", async function () {
       await contract.connect(signers.alice).computeNe();
       const encrypted = await contract.getBoolResult();
@@ -228,6 +233,7 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(true);
     });
 
+    // ✅ Test Greater Than (>)
     it("should compute greater than correctly (100 > 25 is true)", async function () {
       await contract.connect(signers.alice).computeGt();
       const encrypted = await contract.getBoolResult();
@@ -240,6 +246,7 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(true);
     });
 
+    // ✅ Test Less Than (<)
     it("should compute less than correctly (100 < 25 is false)", async function () {
       await contract.connect(signers.alice).computeLt();
       const encrypted = await contract.getBoolResult();
@@ -252,6 +259,7 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(false);
     });
 
+    // ✅ Test Greater or Equal (>=)
     it("should compute greater or equal correctly (100 >= 25 is true)", async function () {
       await contract.connect(signers.alice).computeGe();
       const encrypted = await contract.getBoolResult();
@@ -264,6 +272,7 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(true);
     });
 
+    // ✅ Test Less or Equal (<=)
     it("should compute less or equal correctly (100 <= 25 is false)", async function () {
       await contract.connect(signers.alice).computeLe();
       const encrypted = await contract.getBoolResult();
@@ -276,6 +285,8 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(false);
     });
 
+    // 🛡️ Test Max Via Select:
+    // This demonstrates how to use an encrypted boolean to choose between two encrypted values.
     it("should compute max via select correctly (max(100, 25) = 100)", async function () {
       await contract.connect(signers.alice).computeMaxViaSelect();
       const encrypted = await contract.getSelectedResult();
@@ -289,6 +300,7 @@ describe("FHEComparison", function () {
       expect(decrypted).to.equal(valueA);
     });
 
+    // 🛡️ Test Min Via Select:
     it("should compute min via select correctly (min(100, 25) = 25)", async function () {
       await contract.connect(signers.alice).computeMinViaSelect();
       const encrypted = await contract.getSelectedResult();

@@ -67,6 +67,8 @@ describe("PrivatePayroll", function () {
     it("should add employee with encrypted salary", async function () {
       const salary = 5000n;
 
+      // 🔐 Encrypt the salary locally:
+      // Only the employer's handle will be stored, keeping the salary secret.
       const encryptedSalary = await fhevm
         .createEncryptedInput(payrollAddress, signers.employer.address)
         .add64(salary)
@@ -222,7 +224,9 @@ describe("PrivatePayroll", function () {
         enc.inputProof
       );
 
-      // Employee should be able to call getMySalary
+      // 🛡️ Access Control & Privacy:
+      // Employees can fetch THEIR OWN encrypted salary handle.
+      // They cannot see other employees' salaries.
       const salaryHandle = await payroll
         .connect(signers.employee1)
         .getMySalary();

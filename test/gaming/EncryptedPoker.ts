@@ -66,7 +66,8 @@ describe("EncryptedPoker", function () {
 
   describe("Joining Game", function () {
     it("should allow first player to join with encrypted cards", async function () {
-      // Player 0 joins with cards (King=13, Queen=12)
+      // 🔐 Encrypt hole cards locally:
+      // Hole cards are private to each player. Here, Player 0 has King (13) and Queen (12).
       const enc = await fhevm
         .createEncryptedInput(pokerAddress, signers.player0.address)
         .add8(13) // King
@@ -165,9 +166,10 @@ describe("EncryptedPoker", function () {
         });
     });
 
-    it("should allow betting", async function () {
+    it("should allow player to place a bet", async function () {
       const betAmount = ethers.parseEther("0.05");
-
+      // 🚀 Placing a Bet:
+      // Players can bet based on their private knowledge of their hole cards.
       await expect(poker.connect(signers.player0).bet({ value: betAmount }))
         .to.emit(poker, "BetPlaced")
         .withArgs(signers.player0.address, betAmount);
@@ -268,6 +270,8 @@ describe("EncryptedPoker", function () {
     });
 
     it("should start showdown and emit event", async function () {
+      // 🛡️ Showdown Phase:
+      // Once betting is over, the contract compares the encrypted cards of both players.
       await expect(poker.showdown()).to.emit(poker, "ShowdownStarted");
 
       const info = await poker.getGameInfo();

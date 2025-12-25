@@ -22,8 +22,10 @@ async function deployFixture() {
 }
 
 /**
- * This trivial example demonstrates the FHE encryption mechanism
- * and highlights a common pitfall developers may encounter.
+ * FHE If-Then-Else Tests
+ *
+ * Tests conditional logic and encrypted selection using FHE.
+ * Validates result selection based on encrypted booleans without revealing inputs.
  */
 describe("FHEIfThenElse", function () {
   let contract: FHEIfThenElse;
@@ -58,7 +60,7 @@ describe("FHEIfThenElse", function () {
     const a = 80;
     const b = 123;
 
-    // Alice encrypts and sets `a` as 80
+    // 🔐 Alice encrypts and sets `a` as 80
     const inputA = await fhevm
       .createEncryptedInput(contractAddress, signers.alice.address)
       .add8(a)
@@ -68,7 +70,7 @@ describe("FHEIfThenElse", function () {
       .setA(inputA.handles[0], inputA.inputProof);
     await tx.wait();
 
-    // Alice encrypts and sets `b` as 203
+    // 🔐 Alice encrypts and sets `b` as 123
     const inputB = await fhevm
       .createEncryptedInput(contractAddress, signers.alice.address)
       .add8(b)
@@ -78,18 +80,19 @@ describe("FHEIfThenElse", function () {
       .setB(inputB.handles[0], inputB.inputProof);
     await tx.wait();
 
-    // Why Bob has FHE permissions to execute the operation in this case ?
-    // See `computeAPlusB()` in `FHEAdd.sol` for a detailed answer
+    // 🚀 Bob triggers the max computation.
+    // The contract uses `FHE.select` internally to perform the if-then-else logic.
     tx = await contract.connect(bob).computeMax();
     await tx.wait();
 
+    // 🔓 Verification:
     const encryptedMax = await contract.result();
 
     const clearMax = await fhevm.userDecryptEuint(
-      FhevmType.euint8, // Specify the encrypted type
+      FhevmType.euint8,
       encryptedMax,
-      contractAddress, // The contract address
-      bob // The user wallet
+      contractAddress,
+      bob // Bob decrypts the result
     );
 
     expect(clearMax).to.equal(a >= b ? a : b);

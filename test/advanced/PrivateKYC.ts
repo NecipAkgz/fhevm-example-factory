@@ -73,7 +73,8 @@ describe("PrivateKYC", function () {
 
   describe("KYC Submission", function () {
     it("should allow user to submit encrypted KYC", async function () {
-      // User1: 25 years old, US, credit score 750
+      // 🔐 Encrypt personal data locally:
+      // We bundle age, country, and credit score into a single encrypted input.
       const enc = await fhevm
         .createEncryptedInput(kycAddress, signers.user1.address)
         .add8(25) // age
@@ -196,7 +197,9 @@ describe("PrivateKYC", function () {
     });
 
     it("should return encrypted result for age verification", async function () {
-      // Verify age 18+ returns encrypted boolean handle
+      // 🛡️ Predicate Verification:
+      // Calling `verifyAge18` returns an encrypted boolean (`ebool`) handle.
+      // The caller knows *that* the verification was performed, but not the result yet.
       const result = await kyc.verifyAge18.staticCall(signers.user1.address);
       expect(result).to.not.equal(0n);
     });

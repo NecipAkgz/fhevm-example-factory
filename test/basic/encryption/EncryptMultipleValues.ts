@@ -26,8 +26,10 @@ async function deployFixture() {
 }
 
 /**
- * This trivial example demonstrates the FHE encryption mechanism
- * and highlights a common pitfall developers may encounter.
+ * Encrypt Multiple Values Tests
+ *
+ * Tests the FHE encryption mechanism for multiple values in a single transaction.
+ * Validates handle binding and zero-knowledge proof verification for batched inputs.
  */
 describe("EncryptMultipleValues", function () {
   let contract: EncryptMultipleValues;
@@ -57,50 +59,59 @@ describe("EncryptMultipleValues", function () {
     // to perform FHEVM input encryptions.
     const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
+    // 🔐 Encryption Process:
+    // Create an encrypted input bound to this contract and Alice.
     const input = fhevm.createEncryptedInput(
       contractAddress,
       signers.alice.address
     );
 
+    // Add multiple values of different types to the same input object.
     input.addBool(true);
     input.add32(123456);
     input.addAddress(signers.owner.address);
 
+    // Perform the local encryption.
+    // This produces:
+    // - `handles`: an array where each index corresponds to the value added above.
+    // - `inputProof`: a single ZKP that validates ALL handles in this input.
     const enc = await input.encrypt();
 
-    const inputEbool = enc.handles[0];
-    const inputEuint32 = enc.handles[1];
-    const inputEaddress = enc.handles[2];
+    const inputEbool = enc.handles[0]; // Handle for the boolean
+    const inputEuint32 = enc.handles[1]; // Handle for the uint32
+    const inputEaddress = enc.handles[2]; // Handle for the address
     const inputProof = enc.inputProof;
 
-    // Don't forget to call `connect(signers.alice)` to make sure
-    // the Solidity `msg.sender` is `signers.alice.address`.
+    // 🚀 Submit the transaction:
+    // We pass all handles and the single input proof.
     const tx = await contract
       .connect(signers.alice)
       .initialize(inputEbool, inputEuint32, inputEaddress, inputProof);
     await tx.wait();
 
+    // 🔓 Verification:
     const encryptedBool = await contract.encryptedBool();
     const encryptedUint32 = await contract.encryptedUint32();
     const encryptedAddress = await contract.encryptedAddress();
 
+    // Use specific decryption helpers for each FHE type.
     const clearBool = await fhevm.userDecryptEbool(
       encryptedBool,
-      contractAddress, // The contract address
-      signers.alice // The user wallet
+      contractAddress,
+      signers.alice
     );
 
     const clearUint32 = await fhevm.userDecryptEuint(
-      FhevmType.euint32, // Specify the encrypted type
+      FhevmType.euint32,
       encryptedUint32,
-      contractAddress, // The contract address
-      signers.alice // The user wallet
+      contractAddress,
+      signers.alice
     );
 
     const clearAddress = await fhevm.userDecryptEaddress(
       encryptedAddress,
-      contractAddress, // The contract address
-      signers.alice // The user wallet
+      contractAddress,
+      signers.alice
     );
 
     expect(clearBool).to.equal(true);

@@ -224,8 +224,11 @@ async function deployFixture() {
 }
 
 /**
- * @notice Tests for FHE control flow anti-patterns
- * Demonstrates wrong and correct patterns for conditional logic and loops
+ * FHEControlFlowAntiPatterns Example:
+ * This contract highlights the most common mistake in FHE development:
+ * trying to use encrypted variables in standard control flow (if/else, while).
+ * Since the blockchain must execute logic deterministically, it cannot
+ * "branch" based on data it cannot see.
  */
 describe("FHEControlFlowAntiPatterns", function () {
   let contract: FHEControlFlowAntiPatterns;
@@ -263,6 +266,9 @@ describe("FHEControlFlowAntiPatterns", function () {
     it("should execute correctConditional without leaking information", async function () {
       const fhevm: HardhatFhevmRuntimeEnvironment = hre.fhevm;
 
+      // ✅ Correct Pattern:
+      // Use `FHE.select` to perform conditional logic. The contract executes
+      // both "branches" mathematically, and the result is chosen based on the encrypted boolean.
       await contract.connect(signers.alice).correctConditional();
 
       const encrypted = await contract.getBalance();
@@ -303,6 +309,9 @@ describe("FHEControlFlowAntiPatterns", function () {
     });
 
     it("wrongRequire should return explanation string", async function () {
+      // ❌ Antipattern: `require(encryptedCondition)`
+      // This will always fail or behave unexpectedly because the EVM
+      // cannot evaluate an encrypted boolean handle as a truthy/falsy value.
       const result = await contract.wrongRequire();
       expect(result).to.include("doesn't work with encrypted values");
     });
@@ -319,6 +328,9 @@ describe("FHEControlFlowAntiPatterns", function () {
     });
 
     it("wrongEncryptedLoop should return explanation string", async function () {
+      // ❌ Antipattern: Loops with encrypted exit conditions.
+      // Loops must have plaintext boundaries to avoid leaking sensitive information
+      // through the number of iterations (which is visible to everyone).
       const result = await contract.wrongEncryptedLoop();
       expect(result).to.include("Loop iterations leak");
     });
