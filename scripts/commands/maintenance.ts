@@ -55,6 +55,78 @@ async function getExamplesToTest(cliExamples?: string[]): Promise<string[]> {
     return cliExamples;
   }
 
+  // Get unique categories
+  const categories = [
+    ...new Set(Object.values(EXAMPLES).map((e) => e.category)),
+  ];
+
+  // First, ask for selection mode
+  const selectionMode = await p.select({
+    message: "How would you like to select examples?",
+    options: [
+      {
+        value: "manual",
+        label: "✋ Manual selection",
+        hint: "Pick individual examples",
+      },
+      {
+        value: "category",
+        label: "📁 Select by category",
+        hint: "Select categories to test",
+      },
+      {
+        value: "all",
+        label: "🚀 Test all examples (it will take a while)",
+        hint: `${allExamples.length} examples`,
+      },
+    ],
+  });
+
+  if (p.isCancel(selectionMode)) {
+    p.cancel("Operation cancelled");
+    process.exit(0);
+  }
+
+  // Handle "all" selection
+  if (selectionMode === "all") {
+    p.log.message(pc.green(`✓ Selected all ${allExamples.length} examples`));
+    return allExamples;
+  }
+
+  // Handle category selection
+  if (selectionMode === "category") {
+    const selectedCategories = await p.multiselect({
+      message: "Select categories to test:",
+      options: categories.map((cat) => {
+        const count = Object.values(EXAMPLES).filter(
+          (e) => e.category === cat
+        ).length;
+        return {
+          value: cat,
+          label: cat,
+          hint: `${count} examples`,
+        };
+      }),
+      required: true,
+    });
+
+    if (p.isCancel(selectedCategories)) {
+      p.cancel("Operation cancelled");
+      process.exit(0);
+    }
+
+    const selected = allExamples.filter((ex) =>
+      (selectedCategories as string[]).includes(EXAMPLES[ex]?.category || "")
+    );
+    p.log.message(
+      pc.green(
+        `✓ Selected ${selected.length} examples from ${(selectedCategories as string[]).length} categories`
+      )
+    );
+    return selected;
+  }
+
+  // Handle manual selection
   const selected = await p.multiselect({
     message: "Select examples to test (space to toggle, enter to confirm):",
     options: allExamples.map((ex) => ({
