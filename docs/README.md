@@ -131,7 +131,7 @@ npx create-fhevm-example --category advanced
 | Category | Examples | Description |
 | :--- | :---: | :--- |
 | 🎓 **Basic** | 11 | Fundamentals: counters, encryption, decryption |
-| 💡 **Concepts** | 7 | Access control, handles, input proofs, anti-patterns |
+| 💡 **Concepts** | 8 | Access control, handles, input proofs, edge cases, anti-patterns |
 | 🎮 **Gaming** | 3 | Poker, lottery, rock-paper-scissors |
 | 🏛️ **OpenZeppelin** | 5 | ERC7984, wrappers, swaps, vesting |
 | 🎯 **Advanced** | 5 | Blind auction, escrow, voting, KYC, payroll |

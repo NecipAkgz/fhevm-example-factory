@@ -25,6 +25,7 @@
   - [Access Control](concepts/core/fhe-access-control.md)
   - [Input Proofs](concepts/core/fhe-input-proof.md)
   - [Handles & Lifecycle](concepts/core/fhe-handles.md)
+  - [Edge Cases & Testing](concepts/core/fhe-edge-cases.md)
 - Anti-Patterns
   - [Control Flow](concepts/antipatterns/control-flow.md)
   - [Permissions](concepts/antipatterns/permissions.md)

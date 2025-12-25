@@ -33,7 +33,7 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ### Key Features
 
-- 🎯 **30+ Examples** - encryption, decryption, operations,  OpenZeppelin and more
+- 🎯 **31 Examples** - encryption, decryption, operations, OpenZeppelin and more
 - 🛠️ **Interactive CLI** - Modern command-line interface with beautiful prompts
 - 📦 **Standalone Projects** - Generate, runnable Hardhat projects from any example
 - 📚 **Auto Documentation** - GitBook-formatted documentation automatically
@@ -149,7 +149,7 @@ This will:
 
 ## 📋 Available Examples
 
-**30 examples total** - Click to expand each category:
+**31 examples total** - Click to expand each category:
 
 <details>
 <summary><b>🔐 Encryption Examples (3)</b></summary>
@@ -181,11 +181,12 @@ This will:
 </details>
 
 <details>
-<summary><b>🧠 Critical Concepts (7)</b></summary>
+<summary><b>🧠 Critical Concepts (8)</b></summary>
 
 - `fhe-access-control` - `FHE.allow`, `FHE.allowThis`, `FHE.allowTransient` patterns
 - `fhe-input-proof` - Input proof validation, batched inputs
 - `fhe-handles` - Handle creation, computation, immutability
+- `fhe-edge-cases` - Overflow, underflow, gas benchmarks, permission edge cases
 
 **Anti-Patterns:**
 - `control-flow` - Conditional logic and loop anti-patterns with encrypted values

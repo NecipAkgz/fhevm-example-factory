@@ -220,6 +220,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/concepts/core/fhe-access-control.md",
     title: "FHE Access Control"
   },
+  "fhe-edge-cases": {
+    contract: "contracts/concepts/core/FHEEdgeCases.sol",
+    test: "test/concepts/core/FHEEdgeCases.ts",
+    description:
+      "Comprehensive edge case demonstrations for FHE operations. Tests boundary conditions, overflow/underflow, empty inputs, maximum values, gas consumption, and encrypted revert scenarios.",
+    category: "Concepts - Core",
+    docsOutput: "docs/concepts/core/fhe-edge-cases.md",
+    title: "FHE Edge Cases"
+  },
   "fhe-handles": {
     contract: "contracts/concepts/core/FHEHandles.sol",
     test: "test/concepts/core/FHEHandles.ts",
@@ -414,6 +423,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/concepts/core/FHEAccessControl.sol",
         test: "test/concepts/core/FHEAccessControl.ts",
+      },
+      {
+        sol: "contracts/concepts/core/FHEEdgeCases.sol",
+        test: "test/concepts/core/FHEEdgeCases.ts",
       },
       {
         sol: "contracts/concepts/core/FHEHandles.sol",
