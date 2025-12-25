@@ -211,4 +211,63 @@ describe("EncryptedLottery", function () {
       ).to.be.revertedWith("Only owner");
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should allow multiple tickets from same player", async function () {
+      const enc1 = await fhevm
+        .createEncryptedInput(lotteryAddress, signers.player1.address)
+        .add64(111111n)
+        .encrypt();
+      await lottery
+        .connect(signers.player1)
+        .buyTicket(enc1.handles[0], enc1.inputProof, { value: TICKET_PRICE });
+
+      const enc2 = await fhevm
+        .createEncryptedInput(lotteryAddress, signers.player1.address)
+        .add64(222222n)
+        .encrypt();
+      await lottery
+        .connect(signers.player1)
+        .buyTicket(enc2.handles[0], enc2.inputProof, { value: TICKET_PRICE });
+
+      const playerTickets = await lottery.getPlayerTickets(
+        signers.player1.address
+      );
+      expect(playerTickets.length).to.equal(2);
+    });
+
+    it("should reject ticket purchase after lottery ends", async function () {
+      // Fast forward past end time
+      await ethers.provider.send("evm_increaseTime", [DURATION + 1]);
+      await ethers.provider.send("evm_mine", []);
+
+      const enc = await fhevm
+        .createEncryptedInput(lotteryAddress, signers.player1.address)
+        .add64(123456n)
+        .encrypt();
+
+      await expect(
+        lottery
+          .connect(signers.player1)
+          .buyTicket(enc.handles[0], enc.inputProof, { value: TICKET_PRICE })
+      ).to.be.revertedWith("Lottery ended");
+    });
+
+    it("should accept exact payment amount", async function () {
+      const enc = await fhevm
+        .createEncryptedInput(lotteryAddress, signers.player1.address)
+        .add64(123456n)
+        .encrypt();
+
+      await expect(
+        lottery
+          .connect(signers.player1)
+          .buyTicket(enc.handles[0], enc.inputProof, { value: TICKET_PRICE })
+      ).to.not.be.reverted;
+    });
+  });
 });

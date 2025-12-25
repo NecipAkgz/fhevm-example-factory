@@ -202,4 +202,51 @@ describe("RockPaperScissors", function () {
       );
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should accept any value as move (no on-chain validation)", async function () {
+      // FHE doesn't validate encrypted values on-chain
+      const encryptedMove = await fhevm
+        .createEncryptedInput(rpsAddress, signers.player1.address)
+        .add8(99) // Invalid move value
+        .encrypt();
+
+      // Contract accepts encrypted value without validation
+      await expect(
+        rps
+          .connect(signers.player1)
+          .play(encryptedMove.handles[0], encryptedMove.inputProof)
+      ).to.not.be.reverted;
+    });
+
+    it("should reject reset while game is in progress", async function () {
+      // Player 1 joins
+      const enc = await fhevm
+        .createEncryptedInput(rpsAddress, signers.player1.address)
+        .add8(0)
+        .encrypt();
+      await rps.connect(signers.player1).play(enc.handles[0], enc.inputProof);
+
+      // Try to reset
+      await expect(rps.resetGame()).to.be.revertedWith(
+        "Current game not finished"
+      );
+    });
+
+    it("should reject determine winner with only one player", async function () {
+      const enc = await fhevm
+        .createEncryptedInput(rpsAddress, signers.player1.address)
+        .add8(1)
+        .encrypt();
+      await rps.connect(signers.player1).play(enc.handles[0], enc.inputProof);
+
+      await expect(rps.determineWinner()).to.be.revertedWith(
+        "Not ready to determine winner"
+      );
+    });
+  });
 });

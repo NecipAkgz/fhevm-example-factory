@@ -116,6 +116,7 @@ contract HiddenVoting is ZamaEthereumConfig {
         );
         _noVotes = FHE.add(_noVotes, noIncrement);
 
+        FHE.allowThis(_yesVotes);
         FHE.allowThis(_noVotes);
 
         hasVoted[msg.sender] = true;

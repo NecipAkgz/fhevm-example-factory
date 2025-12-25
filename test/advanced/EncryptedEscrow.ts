@@ -292,4 +292,65 @@ describe("EncryptedEscrow", function () {
       expect(await escrow.isDeadlinePassed(999)).to.be.true;
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    let escrowId: bigint;
+
+    beforeEach(async function () {
+      const block = await ethers.provider.getBlock("latest");
+      const deadline = (block?.timestamp || 0) + DEADLINE_OFFSET;
+
+      // Create encrypted amount for escrow creation
+      const encryptedAmount = await fhevm
+        .createEncryptedInput(escrowAddress, signers.buyer.address)
+        .add64(1000)
+        .encrypt();
+
+      const tx = await escrow
+        .connect(signers.buyer)
+        .createEscrow(
+          signers.seller.address,
+          signers.arbiter.address,
+          encryptedAmount.handles[0],
+          encryptedAmount.inputProof,
+          deadline
+        );
+      const receipt = await tx.wait();
+      const event = receipt?.logs.find(
+        (log: any) => log.fragment?.name === "EscrowCreated"
+      );
+      escrowId = event?.args?.[0] || 1n;
+    });
+
+    it("should reject double funding", async function () {
+      // First funding
+      await escrow.connect(signers.buyer).fundEscrow(escrowId, { value: 1000 });
+
+      // Second funding attempt
+      await expect(
+        escrow.connect(signers.buyer).fundEscrow(escrowId, { value: 500 })
+      ).to.be.revertedWith("Invalid state");
+    });
+
+    it("should allow release before deadline", async function () {
+      // Fund escrow
+      await escrow.connect(signers.buyer).fundEscrow(escrowId, { value: 1000 });
+
+      // Release should work before deadline
+      await expect(escrow.connect(signers.buyer).release(escrowId)).to.not.be
+        .reverted;
+    });
+
+    it("should reject operations on invalid escrow ID", async function () {
+      const invalidId = 999n;
+
+      await expect(
+        escrow.connect(signers.buyer).fundEscrow(invalidId, { value: 1000 })
+      ).to.be.revertedWith("Only buyer can fund");
+    });
+  });
 });

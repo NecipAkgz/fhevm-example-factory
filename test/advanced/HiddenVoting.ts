@@ -265,4 +265,55 @@ describe("HiddenVoting", function () {
       expect(await voting.hasPassed()).to.be.false;
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    beforeEach(async function () {
+      voting = await deployVoting(3600);
+    });
+
+    it("should reject vote after voting closes", async function () {
+      // Fast forward past end time
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      await voting.connect(owner).closeVoting();
+
+      const encryptedVote = await fhevm
+        .createEncryptedInput(await voting.getAddress(), voter1.address)
+        .add8(1)
+        .encrypt();
+
+      await expect(
+        voting
+          .connect(voter1)
+          .vote(encryptedVote.handles[0], encryptedVote.inputProof)
+      ).to.be.revertedWith("Voting not active");
+    });
+
+    it("should allow closing with no votes", async function () {
+      // Contract allows closing with no votes
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      await expect(voting.connect(owner).closeVoting()).to.not.be.reverted;
+    });
+
+    it("should reject reveal before closing", async function () {
+      // Cast a vote
+      const enc = await fhevm
+        .createEncryptedInput(await voting.getAddress(), voter1.address)
+        .add8(1)
+        .encrypt();
+      await voting.connect(voter1).vote(enc.handles[0], enc.inputProof);
+
+      // Try to reveal without closing
+      await expect(voting.revealResults("0x", "0x")).to.be.revertedWith(
+        "Voting not closed"
+      );
+    });
+  });
 });

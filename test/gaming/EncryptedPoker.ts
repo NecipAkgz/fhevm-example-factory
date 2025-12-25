@@ -346,4 +346,64 @@ describe("EncryptedPoker", function () {
       expect(await poker.isPlayer(signers.player0.address)).to.be.true;
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should reject same player joining twice", async function () {
+      const enc = await fhevm
+        .createEncryptedInput(pokerAddress, signers.player0.address)
+        .add8(10)
+        .add8(10)
+        .encrypt();
+
+      await poker
+        .connect(signers.player0)
+        .joinGame(enc.handles[0], enc.handles[1], enc.inputProof, {
+          value: MIN_BET,
+        });
+
+      // Try to join again
+      const enc2 = await fhevm
+        .createEncryptedInput(pokerAddress, signers.player0.address)
+        .add8(5)
+        .add8(5)
+        .encrypt();
+
+      await expect(
+        poker
+          .connect(signers.player0)
+          .joinGame(enc2.handles[0], enc2.handles[1], enc2.inputProof, {
+            value: MIN_BET,
+          })
+      ).to.be.revertedWith("Already in game");
+    });
+
+    it("should reject bet before cards dealt", async function () {
+      // Only one player joined
+      const enc = await fhevm
+        .createEncryptedInput(pokerAddress, signers.player0.address)
+        .add8(10)
+        .add8(10)
+        .encrypt();
+
+      await poker
+        .connect(signers.player0)
+        .joinGame(enc.handles[0], enc.handles[1], enc.inputProof, {
+          value: MIN_BET,
+        });
+
+      await expect(
+        poker.connect(signers.player0).bet({ value: MIN_BET })
+      ).to.be.revertedWith("Not betting phase");
+    });
+
+    it("should reject showdown before cards dealt", async function () {
+      await expect(poker.showdown()).to.be.revertedWith(
+        "Not ready for showdown"
+      );
+    });
+  });
 });

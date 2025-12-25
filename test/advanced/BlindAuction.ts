@@ -243,4 +243,57 @@ describe("BlindAuction", function () {
       console.log(`💰 Winning Amount: ${await auction.winningAmount()}`);
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    beforeEach(async function () {
+      const deployment = await deployAuction(3600);
+      auction = deployment.auction;
+    });
+
+    it("should accept minimum bid (boundary test)", async function () {
+      const encryptedBid = await fhevm
+        .createEncryptedInput(await auction.getAddress(), bidder1.address)
+        .add64(Number(MINIMUM_BID)) // Exactly minimum
+        .encrypt();
+
+      await expect(
+        auction
+          .connect(bidder1)
+          .bid(encryptedBid.handles[0], encryptedBid.inputProof)
+      ).to.not.be.reverted;
+
+      expect(await auction.hasBid(bidder1.address)).to.be.true;
+    });
+
+    it("should reject bid after auction ends", async function () {
+      // Fast forward past end time
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      const encryptedBid = await fhevm
+        .createEncryptedInput(await auction.getAddress(), bidder1.address)
+        .add64(500)
+        .encrypt();
+
+      await expect(
+        auction
+          .connect(bidder1)
+          .bid(encryptedBid.handles[0], encryptedBid.inputProof)
+      ).to.be.revertedWith("Auction has ended");
+    });
+
+    it("should handle auction with no bids", async function () {
+      // End auction without any bids
+      await hre.network.provider.send("evm_increaseTime", [3601]);
+      await hre.network.provider.send("evm_mine");
+
+      await expect(auction.connect(owner).endAuction()).to.be.revertedWith(
+        "No bids placed"
+      );
+    });
+  });
 });

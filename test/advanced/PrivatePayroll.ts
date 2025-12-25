@@ -250,4 +250,57 @@ describe("PrivatePayroll", function () {
       expect(await payroll.isPaymentDue(signers.employee1.address)).to.be.false;
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should reject removing non-existent employee", async function () {
+      await expect(
+        payroll.removeEmployee(signers.employee1.address)
+      ).to.be.revertedWith("Not an employee");
+    });
+
+    it("should reject updating salary for non-employee", async function () {
+      const encryptedSalary = await fhevm
+        .createEncryptedInput(payrollAddress, signers.employer.address)
+        .add64(6000)
+        .encrypt();
+
+      await expect(
+        payroll.updateSalary(
+          signers.employee1.address,
+          encryptedSalary.handles[0],
+          encryptedSalary.inputProof
+        )
+      ).to.be.revertedWith("Not an employee");
+    });
+
+    it("should reject zero funding", async function () {
+      await expect(payroll.fund({ value: 0 })).to.be.revertedWith(
+        "Must send funds"
+      );
+    });
+
+    it("should reject non-employer from removing employee", async function () {
+      // First add an employee
+      const enc = await fhevm
+        .createEncryptedInput(payrollAddress, signers.employer.address)
+        .add64(5000)
+        .encrypt();
+      await payroll.addEmployee(
+        signers.employee1.address,
+        enc.handles[0],
+        enc.inputProof
+      );
+
+      // Try to remove as non-employer
+      await expect(
+        payroll
+          .connect(signers.employee1)
+          .removeEmployee(signers.employee1.address)
+      ).to.be.revertedWith("Only employer");
+    });
+  });
 });

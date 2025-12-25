@@ -379,4 +379,44 @@ describe("PrivateKYC", function () {
       ).to.be.revertedWith("No KYC submitted");
     });
   });
+
+  // ============================================
+  // EDGE CASES
+  // ============================================
+
+  describe("Edge Cases", function () {
+    it("should reject revoke for non-submitted user", async function () {
+      await expect(kyc.connect(signers.user1).revokeKYC()).to.be.revertedWith(
+        "No KYC submitted"
+      );
+    });
+
+    it("should reject age verification for unsubmitted user", async function () {
+      await expect(
+        kyc.verifyAge18.staticCall(signers.user1.address)
+      ).to.be.revertedWith("No KYC submitted");
+    });
+
+    it("should accept KYC from blocked country (validation happens at verification)", async function () {
+      // Submit KYC with blocked country
+      const enc = await fhevm
+        .createEncryptedInput(kycAddress, signers.user1.address)
+        .add8(25)
+        .add8(COUNTRY_BLOCKED) // Blocked country
+        .add16(750)
+        .encrypt();
+
+      // Contract accepts encrypted data without validation
+      await expect(
+        kyc
+          .connect(signers.user1)
+          .submitKYC(
+            enc.handles[0],
+            enc.handles[1],
+            enc.handles[2],
+            enc.inputProof
+          )
+      ).to.not.be.reverted;
+    });
+  });
 });
