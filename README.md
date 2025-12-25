@@ -88,7 +88,7 @@ npm run create:example fhe-counter ./my-fhe-counter
 npm run create:category basic ./my-basic-examples
 
 # Generate documentation
-npm run create:docs [example]  # No arg = all docs, with name = specific doc
+npm run generate:docs [example]  # No arg = all docs, with name = specific doc
 
 # Show help
 npm run help:create
@@ -271,8 +271,8 @@ Automatically builds GitBook-ready markdown files directly from your source code
 - 📑 **Updates** the documentation index (`SUMMARY.md`)
 
 ```bash
-npm run create:docs fhe-counter    # Single example
-npm run create:docs                # All examples
+npm run generate:docs fhe-counter    # Single example
+npm run generate:docs                # All examples
 ```
 
 ---
@@ -283,7 +283,7 @@ npm run create:docs                # All examples
 - `npm run create` - Interactive CLI
 - `npm run create:example [name] [path]` - Generate single example
 - `npm run create:category [name] [path]` - Generate category project
-- `npm run create:docs [example]` - Generate docs (all or specific)
+- `npm run generate:docs [example]` - Generate docs (all or specific)
 - `npm run generate:config` - Auto-discover contracts and generate config
 - `npm run test` - Test examples (interactive selection)
 - `npm run test:all` - Test all examples directly
@@ -317,7 +317,7 @@ npm run test fhe-counter,fhe-add
 ```
 
 <p align="left">
-  <img src="https://i.ibb.co/4wRP47Hs/test.gif" alt="Test All Demo" width="600px" />
+  <img src="https://i.ibb.co/4wRP47Hs/test.gif" alt="Test Demo" width="600px" />
 </p>
 
 > 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.
@@ -444,7 +444,7 @@ When `@fhevm/solidity` or related packages release new versions:
 
 3. **Regenerate documentation if APIs changed:**
    ```bash
-   npm run create:docs
+   npm run generate:docs
    ```
 
 ---

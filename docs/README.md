@@ -43,7 +43,7 @@ bunx create-fhevm-example
 {% endtab %}
 {% endtabs %}
 
-![🎬 Watch the CLI in action — scaffold a project in seconds!](https://i.ibb.co/d4YWwh7V/package.gif)
+![🎬 Watch the CLI in action — scaffold a project in seconds!](https://i.ibb.co/PvtZSQyd/create-fhevm.gif)
 
 ***
 

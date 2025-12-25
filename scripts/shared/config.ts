@@ -247,6 +247,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/concepts/core/fhe-input-proof.md",
     title: "FHE Input Proof"
   },
+  "encrypted-blackjack": {
+    contract: "contracts/gaming/EncryptedBlackjack.sol",
+    test: "test/gaming/EncryptedBlackjack.ts",
+    description:
+      "On-chain Blackjack with encrypted cards and FHE-based hand comparison. Player and dealer cards remain hidden. Hand sums are computed using FHE, demonstrating multi-card aggregation and bust detection patterns.",
+    category: "Gaming",
+    docsOutput: "docs/gaming/encrypted-blackjack.md",
+    title: "Encrypted Blackjack"
+  },
   "encrypted-lottery": {
     contract: "contracts/gaming/EncryptedLottery.sol",
     test: "test/gaming/EncryptedLottery.ts",
@@ -458,6 +467,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
   gaming: {
     name: "Gaming",
     contracts: [
+      {
+        sol: "contracts/gaming/EncryptedBlackjack.sol",
+        test: "test/gaming/EncryptedBlackjack.ts",
+      },
       {
         sol: "contracts/gaming/EncryptedLottery.sol",
         test: "test/gaming/EncryptedLottery.ts",

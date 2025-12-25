@@ -372,7 +372,7 @@ ${pc.cyan(pc.bold("📋 CREATE COMMANDS"))}
   ${pc.green("npm run create:category")} ${pc.dim(
       "<name>"
     )} Create category project
-  ${pc.green("npm run create:docs")}         Generate documentation
+  ${pc.green("npm run generate:docs")}         Generate documentation
 
 ${pc.cyan(pc.bold("🛠️  MAINTENANCE"))}
 

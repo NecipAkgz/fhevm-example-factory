@@ -189,7 +189,7 @@ These scripts are defined in `package.json` for convenience:
 | `npm run create` | Run CLI in interactive mode (local dev) |
 | `npm run create:example` | Create a single example |
 | `npm run create:category` | Create a category project |
-| `npm run create:docs` | Generate GitBook documentation |
+| `npm run generate:docs` | Generate GitBook documentation |
 | `npm run test` | Run tests (interactive selection) |
 | `npm run test:all` | Run all tests directly |
 | `npm run doctor` | Check environment health |

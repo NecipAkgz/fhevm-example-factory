@@ -129,7 +129,7 @@ export async function handleInteractiveDocs(): Promise<void> {
 
     p.log.message("");
     p.log.message(
-      pc.dim("💡 Tip: Run 'npm run create:docs' to regenerate all docs")
+      pc.dim("💡 Tip: Run 'npm run generate:docs' to regenerate all docs")
     );
     p.outro(pc.green("🎉 Documentation generated!"));
   } catch (error) {
@@ -170,14 +170,14 @@ function showHelp(): void {
   log.info("📚 FHEVM Documentation Generator");
   log.message("");
   log.message("Usage:");
-  log.message("  npm run create:docs              Generate all docs");
+  log.message("  npm run generate:docs              Generate all docs");
   log.message(
-    "  npm run create:docs <example>    Generate specific example doc"
+    "  npm run generate:docs <example>    Generate specific example doc"
   );
   log.message("");
   log.message("Examples:");
-  log.dim("  npm run create:docs");
-  log.dim("  npm run create:docs fhe-counter");
+  log.dim("  npm run generate:docs");
+  log.dim("  npm run generate:docs fhe-counter");
 }
 
 // =============================================================================

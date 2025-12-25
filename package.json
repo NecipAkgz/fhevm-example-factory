@@ -1,6 +1,6 @@
 {
   "name": "create-fhevm-example",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "description": "Create FHEVM example projects with a single command - A comprehensive toolkit for building privacy-preserving smart contracts",
   "bin": {
     "create-fhevm-example": "./dist/scripts/index.js"
@@ -17,14 +17,14 @@
     "create": "LOCAL_DEV=1 ts-node scripts/index.ts",
     "create:example": "ts-node scripts/index.ts --example",
     "create:category": "ts-node scripts/index.ts --category",
-    "create:docs": "ts-node scripts/commands/generate-docs.ts",
     "test": "ts-node scripts/commands/maintenance.ts test",
     "test:all": "ts-node scripts/commands/maintenance.ts test --all",
+    "generate:docs": "ts-node scripts/commands/generate-docs.ts",
     "generate:config": "ts-node scripts/commands/generate-config.ts",
-    "doctor": "ts-node scripts/commands/doctor.ts",
     "help:create": "LOCAL_DEV=1 ts-node scripts/index.ts --help",
     "help:docs": "ts-node scripts/commands/generate-docs.ts --help",
     "help:test": "ts-node scripts/commands/maintenance.ts test-all --help",
+    "doctor": "ts-node scripts/commands/doctor.ts",
     "prepare": "git submodule update --init --recursive || true",
     "prepublishOnly": "npm run build",
     "prepack": "mv README.md GITHUB_README.md && cp NPM_README.md README.md",

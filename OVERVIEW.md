@@ -334,7 +334,7 @@ npm run create:example my-example ./test-output
 cd test-output && npm install && npm test
 
 # Generate documentation
-npm run create:docs my-example
+npm run generate:docs my-example
 ```
 
 ---
