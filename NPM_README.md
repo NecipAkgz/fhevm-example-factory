@@ -86,11 +86,11 @@ npx create-fhevm-example --example fhe-counter --output ./my-project --install
 
 **Concepts** (6): `fhe-access-control`, `fhe-input-proof`, `fhe-handles`, `control-flow`, `permissions`, `operations-gas-noise`
 
-**Gaming** (3): `rock-paper-scissors`, `encrypted-lottery`, `encrypted-poker`
+**Gaming** (4): `rock-paper-scissors`, `encrypted-lottery`, `encrypted-poker`, `encrypted-blackjack`
 
 **OpenZeppelin** (5): `erc7984`, `erc7984-erc20-wrapper`, `swap-erc7984-to-erc20`, `swap-erc7984-to-erc7984`, `vesting-wallet`
 
-**Advanced** (5): `blind-auction`, `hidden-voting`, `private-payroll`, `encrypted-escrow`, `private-kyc`
+**Advanced** (6): `blind-auction`, `hidden-voting`, `private-payroll`, `encrypted-escrow`, `private-kyc`, `private-order-book`
 
 ---
 

@@ -33,7 +33,7 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ### Key Features
 
-- 🎯 **31 Examples** - encryption, decryption, operations, OpenZeppelin and more
+- 🎯 **33 Examples** - encryption, decryption, operations, OpenZeppelin and more
 - 🛠️ **Interactive CLI** - Modern command-line interface with beautiful prompts
 - 📦 **Standalone Projects** - Generate, runnable Hardhat projects from any example
 - 📚 **Auto Documentation** - GitBook-formatted documentation automatically
@@ -149,7 +149,7 @@ This will:
 
 ## 📋 Available Examples
 
-**31 examples total** - Click to expand each category:
+**33 examples total** - Click to expand each category:
 
 <details>
 <summary><b>🔐 Encryption Examples (3)</b></summary>
@@ -196,11 +196,12 @@ This will:
 </details>
 
 <details>
-<summary><b>🎮 Gaming (3)</b></summary>
+<summary><b>🎮 Gaming (4)</b></summary>
 
 - `rock-paper-scissors` - Encrypted moves with FHE commit-reveal pattern
 - `encrypted-lottery` - Private lottery with encrypted ticket numbers
 - `encrypted-poker` - Texas Hold'em with hidden hole cards
+- `encrypted-blackjack` - Blackjack with encrypted cards and bust detection
 
 </details>
 
@@ -216,13 +217,14 @@ This will:
 </details>
 
 <details>
-<summary><b>🎯 Advanced Examples (5)</b></summary>
+<summary><b>🎯 Advanced Examples (6)</b></summary>
 
 - `blind-auction` - Encrypted bids, winner computed via FHE.gt/select
 - `hidden-voting` - Homomorphic vote tallying, private ballots
 - `private-payroll` - Confidential salary payments with encrypted amounts
 - `encrypted-escrow` - Secure escrow with hidden amounts until release
 - `private-kyc` - Identity verification with predicate proofs (age, credit score)
+- `private-order-book` - MEV-resistant trading with encrypted orders
 
 </details>
 

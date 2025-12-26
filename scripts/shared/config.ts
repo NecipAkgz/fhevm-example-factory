@@ -76,6 +76,15 @@ export const EXAMPLES: Record<string, ExampleConfig> = {
     docsOutput: "docs/advanced/private-kyc.md",
     title: "Private KYC"
   },
+  "private-order-book": {
+    contract: "contracts/advanced/PrivateOrderBook.sol",
+    test: "test/advanced/PrivateOrderBook.ts",
+    description:
+      "Private order book where order amounts and prices remain encrypted. Demonstrates MEV-resistant trading by hiding order details until matching. Uses FHE.ge for price matching and FHE.min for partial fills.",
+    category: "Advanced",
+    docsOutput: "docs/advanced/private-order-book.md",
+    title: "Private Order Book"
+  },
   "private-payroll": {
     contract: "contracts/advanced/PrivatePayroll.sol",
     test: "test/advanced/PrivatePayroll.ts",
@@ -503,6 +512,10 @@ export const CATEGORIES: Record<string, CategoryConfig> = {
       {
         sol: "contracts/advanced/PrivateKYC.sol",
         test: "test/advanced/PrivateKYC.ts",
+      },
+      {
+        sol: "contracts/advanced/PrivateOrderBook.sol",
+        test: "test/advanced/PrivateOrderBook.ts",
       },
       {
         sol: "contracts/advanced/PrivatePayroll.sol",

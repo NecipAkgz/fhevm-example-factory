@@ -36,6 +36,7 @@
 - [Rock Paper Scissors](gaming/rock-paper-scissors.md)
 - [Encrypted Lottery](gaming/encrypted-lottery.md)
 - [Encrypted Poker](gaming/encrypted-poker.md)
+- [Encrypted Blackjack](gaming/encrypted-blackjack.md)
 
 ## 🎯 Advanced Examples
 
@@ -44,6 +45,7 @@
 - [Private Payroll](advanced/private-payroll.md)
 - [Encrypted Escrow](advanced/encrypted-escrow.md)
 - [Private KYC](advanced/private-kyc.md)
+- [Private Order Book](advanced/private-order-book.md)
 
 ## 🏛️ OpenZeppelin Confidential
 
