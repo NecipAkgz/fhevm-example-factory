@@ -28,6 +28,18 @@ export function cleanupTemplate(outputDir: string): void {
     fs.rmSync(githubDir, { recursive: true, force: true });
   }
 
+  // Remove macOS .DS_Store files
+  const dsStore = path.join(outputDir, ".DS_Store");
+  if (fs.existsSync(dsStore)) {
+    fs.unlinkSync(dsStore);
+  }
+
+  // Remove template LICENSE (users should add their own)
+  const license = path.join(outputDir, "LICENSE");
+  if (fs.existsSync(license)) {
+    fs.unlinkSync(license);
+  }
+
   const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
   if (fs.existsSync(templateContract)) {
     fs.unlinkSync(templateContract);
@@ -47,19 +59,22 @@ export function cleanupTemplate(outputDir: string): void {
     });
   }
 
+  // Remove all task imports from hardhat.config.ts
   const configPath = path.join(outputDir, "hardhat.config.ts");
   if (fs.existsSync(configPath)) {
     let configContent = fs.readFileSync(configPath, "utf-8");
+    // Remove all ./tasks/* imports
     configContent = configContent.replace(
-      /import "\.\/tasks\/FHECounter";\n?/g,
+      /import ["']\.\/tasks\/[^"']+["'];?\n?/g,
       ""
     );
     fs.writeFileSync(configPath, configContent);
   }
 
-  const oldTaskFile = path.join(outputDir, "tasks", "FHECounter.ts");
-  if (fs.existsSync(oldTaskFile)) {
-    fs.unlinkSync(oldTaskFile);
+  // Remove entire tasks directory
+  const tasksDir = path.join(outputDir, "tasks");
+  if (fs.existsSync(tasksDir)) {
+    fs.rmSync(tasksDir, { recursive: true, force: true });
   }
 
   fs.writeFileSync(
@@ -325,6 +340,11 @@ export function updateProjectPackageJson(
       packageJson.dependencies = {};
     }
     Object.assign(packageJson.dependencies, npmDependencies);
+  }
+
+  // Remove minimatch override (causes ESM/CommonJS conflict with rimraf's glob)
+  if (packageJson.overrides?.minimatch) {
+    delete packageJson.overrides.minimatch;
   }
 
   fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
