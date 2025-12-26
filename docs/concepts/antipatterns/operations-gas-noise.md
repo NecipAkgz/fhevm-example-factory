@@ -240,7 +240,12 @@ import {
   FHEOperationsGasNoiseAntiPatterns,
   FHEOperationsGasNoiseAntiPatterns__factory,
 } from "../types";
-import type { Signers } from "./types";
+
+/** Common signers interface */
+interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
 
 async function deployFixture() {
   const factory = (await ethers.getContractFactory(

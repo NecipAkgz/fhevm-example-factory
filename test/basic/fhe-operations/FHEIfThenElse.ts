@@ -8,7 +8,12 @@ import { ethers } from "hardhat";
 import * as hre from "hardhat";
 
 import { FHEIfThenElse, FHEIfThenElse__factory } from "../types";
-import type { Signers } from "./types";
+
+/** Common signers interface */
+interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default

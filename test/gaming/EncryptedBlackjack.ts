@@ -2,7 +2,6 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { ethers, fhevm } from "hardhat";
 import { EncryptedBlackjack, EncryptedBlackjack__factory } from "../types";
 import { expect } from "chai";
-import { describe } from "node:test";
 
 type Signers = {
   deployer: HardhatEthersSigner;

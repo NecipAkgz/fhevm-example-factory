@@ -13,7 +13,6 @@ import {
   getContractName,
   getRootDir,
   getTemplateDir,
-  TEST_TYPES_CONTENT,
   log,
 } from "./utils";
 import {
@@ -275,9 +274,4 @@ export async function createLocalTestProject(
     `Testing ${exampleNames.length} examples`,
     Object.keys(allNpmDeps).length > 0 ? allNpmDeps : undefined
   );
-
-  const typesPath = path.join(outputDir, "test", "types.ts");
-  if (!fs.existsSync(typesPath)) {
-    fs.writeFileSync(typesPath, TEST_TYPES_CONTENT);
-  }
 }

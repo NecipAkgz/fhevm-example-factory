@@ -2,7 +2,6 @@ import {
   UserDecryptSingleValue,
   UserDecryptSingleValue__factory,
 } from "../types";
-import type { Signers } from "./types";
 import {
   FhevmType,
   HardhatFhevmRuntimeEnvironment,
@@ -11,6 +10,12 @@ import { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 import * as hre from "hardhat";
+
+/** Common signers interface */
+interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+}
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default

@@ -198,7 +198,13 @@ import { ethers, fhevm } from "hardhat";
 import * as hre from "hardhat";
 
 import { HighestDieRoll, HighestDieRoll__factory } from "../types";
-import { Signers } from "./types";
+
+/** Common signers interface */
+interface Signers {
+  owner: HardhatEthersSigner;
+  alice: HardhatEthersSigner;
+  bob: HardhatEthersSigner;
+}
 
 async function deployFixture() {
   // Contracts are deployed using the first signer/account by default

@@ -86,17 +86,6 @@ export const CATEGORY_ORDER = [
   "Openzeppelin",
 ];
 
-export const TEST_TYPES_CONTENT = `import type { HardhatEthersSigner } from "@nomicfoundation/hardhat-ethers/signers";
-
-/**
- * Common signers interface used across test files
- */
-export interface Signers {
-  owner: HardhatEthersSigner;
-  alice: HardhatEthersSigner;
-}
-`;
-
 export const ERROR_MESSAGES = {
   EXAMPLE_REQUIRED: "Error: Either --example or --category is required",
   BOTH_SPECIFIED: "Error: Cannot use both --example and --category",
