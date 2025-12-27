@@ -19,12 +19,12 @@
 
 <p align="center">
   <a href="#quick-start">🚀 <strong>Quick Start</strong></a> •
-  <a href="#-npm-package">📦 <strong>NPM Package</strong></a> •
-  <a href="#-available-examples">📚 <strong>Example Gallery</strong></a> •
-  <a href="#-automation-tools">🛠️ <strong>Automation Tools</strong></a> •
-  <a href="#-maintenance">🔄 <strong>Maintenance</strong></a> •
-  <a href="#-cli-reference">💻 <strong>CLI Reference</strong></a> •
-  <a href="#️-creating-a-new-example">✨ <strong>Add New Example</strong></a>
+  <a href="#npm-package">📦 <strong>NPM Package</strong></a> •
+  <a href="#available-examples">📚 <strong>Examples</strong></a> •
+  <a href="#automation-tools">🛠️ <strong>Tools</strong></a> •
+  <a href="#cli-reference">💻 <strong>CLI</strong></a> •
+  <a href="#maintenance-testing">🔄 <strong>Testing</strong></a> •
+  <a href="#contributing">🤝 <strong>Contributing</strong></a>
 </p>
 
 > **📖 Technical Deep Dive:** See [**OVERVIEW.md**](OVERVIEW.md) for architecture decisions, design patterns, and detailed module documentation.
@@ -32,7 +32,7 @@
 ---
 
 
-## <img src="https://img.shields.io/badge/📖-Overview-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<h2><img src="https://img.shields.io/badge/📖-Overview-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama.
 
@@ -46,7 +46,8 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ---
 
-## <img src="https://img.shields.io/badge/🚀-Quick_Start-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="quick-start"></a>
+<h2><img src="https://img.shields.io/badge/🚀-Quick_Start-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 > 💡 **Recommended**: Use `npx create-fhevm-example` - no installation needed!
 ### Option 1: NPX (Recommended)
@@ -102,7 +103,8 @@ npm run help:create
 ---
 
 
-## <img src="https://img.shields.io/badge/📦-NPM_Package-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="npm-package"></a>
+<h2><img src="https://img.shields.io/badge/📦-NPM_Package-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 Published as `create-fhevm-example` on NPM, this package allows you to create FHEVM projects **without cloning this repository**.
 
@@ -153,7 +155,8 @@ This will:
 
 ---
 
-## <img src="https://img.shields.io/badge/📋-Available_Examples-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="available-examples"></a>
+<h2><img src="https://img.shields.io/badge/📋-Available_Examples-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 **33 examples total** - Click to expand each category:
 
@@ -236,7 +239,8 @@ This will:
 
 ---
 
-## <img src="https://img.shields.io/badge/🔧-Automation_Tools-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="automation-tools"></a>
+<h2><img src="https://img.shields.io/badge/🔧-Automation_Tools-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 For local development, the repository provides automation tools:
 
@@ -286,7 +290,8 @@ npm run generate:docs                # All examples
 ---
 
 
-## <img src="https://img.shields.io/badge/💻-CLI_Reference-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="cli-reference"></a>
+<h2><img src="https://img.shields.io/badge/💻-CLI_Reference-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 **Local Development:**
 - `npm run create` - Interactive CLI
@@ -308,7 +313,8 @@ npm run generate:docs                # All examples
 
 ---
 
-## <img src="https://img.shields.io/badge/🔄-Maintenance_&_Testing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="maintenance-testing"></a>
+<h2><img src="https://img.shields.io/badge/🔄-Maintenance_&_Testing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 ### Test Examples
 
@@ -333,7 +339,7 @@ npm run test fhe-counter,fhe-add
 
 ---
 
-## <img src="https://img.shields.io/badge/📂-Project_Structure-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<h2><img src="https://img.shields.io/badge/📂-Project_Structure-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 <details>
 <summary><b>📂 Click to expand</b></summary>
@@ -375,7 +381,7 @@ npm run test fhe-counter,fhe-add
 
 ---
 
-## <img src="https://img.shields.io/badge/🛠️-Creating_a_New_Example-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<h2><img src="https://img.shields.io/badge/🛠️-Creating_a_New_Example-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 For contributors adding new examples:
 
@@ -435,7 +441,7 @@ For contributors adding new examples:
 
 ---
 
-## <img src="https://img.shields.io/badge/🔄-Updating_FHEVM_Dependencies-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<h2><img src="https://img.shields.io/badge/🔄-Updating_FHEVM_Dependencies-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 When `@fhevm/solidity` or related packages release new versions:
 
@@ -458,7 +464,7 @@ When `@fhevm/solidity` or related packages release new versions:
 
 ---
 
-## <img src="https://img.shields.io/badge/🔗-Resources-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<h2><img src="https://img.shields.io/badge/🔗-Resources-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 - 📖 [FHEVM Documentation](https://docs.zama.org/protocol)
 - 📚 [Protocol Examples](https://docs.zama.org/protocol/examples)
@@ -468,7 +474,8 @@ When `@fhevm/solidity` or related packages release new versions:
 
 ---
 
-## <img src="https://img.shields.io/badge/🤝-Contributing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
+<a id="contributing"></a>
+<h2><img src="https://img.shields.io/badge/🤝-Contributing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
 
 Contributions are welcome! When adding examples:
 
