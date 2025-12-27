@@ -5,6 +5,10 @@
 </p>
 
 <p align="center">
+  <img src="https://readme-typing-svg.demolab.com?font=Fira+Code&weight=600&size=22&pause=1000&color=FFCC00&center=true&vCenter=true&width=500&lines=Privacy-Preserving+Smart+Contracts;Fully+Homomorphic+Encryption;Ready-to-Use+Examples" alt="Typing SVG"/>
+</p>
+
+<p align="center">
   <a href="https://docs.zama.org/protocol"><img src="https://img.shields.io/badge/docs-fhevm-blue" alt="FHEVM Docs"></a>
   <a href="#"><img src="https://img.shields.io/badge/license-BSD--3--Clause--Clear-green" alt="License"></a>
   <a href="#"><img src="https://img.shields.io/badge/node-%3E%3D20-brightgreen" alt="Node"></a>
@@ -27,7 +31,8 @@
 
 ---
 
-## Overview
+
+## <img src="https://img.shields.io/badge/📖-Overview-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama.
 
@@ -41,7 +46,7 @@ This project provides tools and examples for building **privacy-preserving smart
 
 ---
 
-## Quick Start
+## <img src="https://img.shields.io/badge/🚀-Quick_Start-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 > 💡 **Recommended**: Use `npx create-fhevm-example` - no installation needed!
 ### Option 1: NPX (Recommended)
@@ -96,7 +101,8 @@ npm run help:create
 
 ---
 
-## 📦 NPM Package
+
+## <img src="https://img.shields.io/badge/📦-NPM_Package-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 Published as `create-fhevm-example` on NPM, this package allows you to create FHEVM projects **without cloning this repository**.
 
@@ -147,7 +153,7 @@ This will:
 
 ---
 
-## 📋 Available Examples
+## <img src="https://img.shields.io/badge/📋-Available_Examples-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 **33 examples total** - Click to expand each category:
 
@@ -230,7 +236,7 @@ This will:
 
 ---
 
-## 🔧 Automation Tools
+## <img src="https://img.shields.io/badge/🔧-Automation_Tools-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 For local development, the repository provides automation tools:
 
@@ -279,7 +285,8 @@ npm run generate:docs                # All examples
 
 ---
 
-## 💻 CLI Reference
+
+## <img src="https://img.shields.io/badge/💻-CLI_Reference-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 **Local Development:**
 - `npm run create` - Interactive CLI
@@ -301,7 +308,7 @@ npm run generate:docs                # All examples
 
 ---
 
-## 🔄 Maintenance & Testing
+## <img src="https://img.shields.io/badge/🔄-Maintenance_&_Testing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 ### Test Examples
 
@@ -319,14 +326,14 @@ npm run test fhe-counter,fhe-add
 ```
 
 <p align="left">
-  <img src="https://i.ibb.co/4wRP47Hs/test.gif" alt="Test Demo" width="600px" />
+  <img src="https://i.ibb.co/7NCD3bPs/tesy.gif" alt="Test Demo" width="600px" />
 </p>
 
 > 💡 Selected examples are bundled into a single project, so dependencies install once and all tests run together.
 
 ---
 
-## 📂 Project Structure
+## <img src="https://img.shields.io/badge/📂-Project_Structure-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 <details>
 <summary><b>📂 Click to expand</b></summary>
@@ -368,7 +375,7 @@ npm run test fhe-counter,fhe-add
 
 ---
 
-## 🛠️ Creating a New Example
+## <img src="https://img.shields.io/badge/🛠️-Creating_a_New_Example-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 For contributors adding new examples:
 
@@ -428,7 +435,7 @@ For contributors adding new examples:
 
 ---
 
-## 🔄 Updating FHEVM Dependencies
+## <img src="https://img.shields.io/badge/🔄-Updating_FHEVM_Dependencies-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 When `@fhevm/solidity` or related packages release new versions:
 
@@ -451,7 +458,7 @@ When `@fhevm/solidity` or related packages release new versions:
 
 ---
 
-## 🔗 Resources
+## <img src="https://img.shields.io/badge/🔗-Resources-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 - 📖 [FHEVM Documentation](https://docs.zama.org/protocol)
 - 📚 [Protocol Examples](https://docs.zama.org/protocol/examples)
@@ -461,7 +468,7 @@ When `@fhevm/solidity` or related packages release new versions:
 
 ---
 
-## 🤝 Contributing
+## <img src="https://img.shields.io/badge/🤝-Contributing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 Contributions are welcome! When adding examples:
 
@@ -474,3 +481,7 @@ Contributions are welcome! When adding examples:
 7. ✅ Verify documentation renders correctly
 
 ---
+
+<p align="center">
+  <sub>Built with 💛 by the FHEVM community</sub>
+</p>
