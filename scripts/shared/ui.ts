@@ -9,7 +9,7 @@ import * as p from "@clack/prompts";
 import pc from "picocolors";
 import { EXAMPLES, CATEGORIES } from "./config";
 import { CATEGORY_ICON, CATEGORY_ORDER, MAX_DESCRIPTION_LENGTH } from "./utils";
-import { runCommand, extractTestResults } from "./generators";
+import { runCommand } from "./generators";
 
 // =============================================================================
 // Category Helpers
@@ -46,10 +46,12 @@ export async function promptSelectCategory(): Promise<string | symbol> {
     message: "Select a category:",
     options: orderedCategories.map((category) => ({
       value: category,
-      label: `${CATEGORY_ICON} ${category}`,
-      hint: `${categoryCounts[category] || 0} example${
-        categoryCounts[category] !== 1 ? "s" : ""
-      }`,
+      label: `${CATEGORY_ICON} ${pc.cyan(category)}`,
+      hint: pc.dim(
+        `${categoryCounts[category] || 0} example${
+          categoryCounts[category] !== 1 ? "s" : ""
+        }`
+      ),
     })),
   });
 }
@@ -64,14 +66,15 @@ export async function promptSelectExampleFromCategory(
     .filter(([, config]) => config.category === category)
     .map(([key, config]) => ({
       value: key,
-      label: key,
-      hint:
+      label: pc.yellow(key),
+      hint: pc.dim(
         config.description.slice(0, MAX_DESCRIPTION_LENGTH) +
-        (config.description.length > MAX_DESCRIPTION_LENGTH ? "..." : ""),
+          (config.description.length > MAX_DESCRIPTION_LENGTH ? "..." : "")
+      ),
     }));
 
   return p.select({
-    message: `Select an example from ${category}:`,
+    message: `Select an example from ${pc.cyan(category)}:`,
     options: categoryExamples,
   });
 }
@@ -84,8 +87,8 @@ export async function promptSelectCategoryProject(): Promise<string | symbol> {
     message: "Select a category:",
     options: Object.entries(CATEGORIES).map(([key, config]) => ({
       value: key,
-      label: `${CATEGORY_ICON} ${config.name}`,
-      hint: `${config.contracts.length} contracts`,
+      label: `${CATEGORY_ICON} ${pc.cyan(config.name)}`,
+      hint: pc.dim(`${config.contracts.length} contracts`),
     })),
   });
 }
@@ -95,55 +98,24 @@ export async function promptSelectCategoryProject(): Promise<string | symbol> {
 // =============================================================================
 
 /**
- * Runs npm install, compile, and test in the project directory
+ * Runs npm install in the project directory
  */
-export async function runInstallAndTest(projectPath: string): Promise<void> {
-  const steps = [
-    {
-      name: "Installing dependencies",
-      cmd: "npm",
-      args: ["install"],
-      showOutput: false,
-    },
-    {
-      name: "Compiling contracts",
-      cmd: "npm",
-      args: ["run", "compile"],
-      showOutput: false,
-    },
-    {
-      name: "Running tests",
-      cmd: "npm",
-      args: ["run", "test"],
-      showOutput: true,
-    },
-  ];
+export async function runInstall(projectPath: string): Promise<void> {
+  const s = p.spinner();
+  s.start("Installing dependencies...");
 
-  for (const step of steps) {
-    const s = p.spinner();
-    s.start(step.name + "...");
-
-    try {
-      const output = await runCommand(step.cmd, step.args, projectPath);
-
-      if (step.showOutput) {
-        const testResults = extractTestResults(output);
-        s.stop(
-          testResults
-            ? pc.green(`✓ ${step.name} - ${testResults}`)
-            : pc.green(`✓ ${step.name} completed`)
-        );
-      } else {
-        s.stop(pc.green(`✓ ${step.name} completed`));
-      }
-    } catch (error) {
-      s.stop(pc.red(`✗ ${step.name} failed`));
-      if (error instanceof Error) {
-        p.log.error(error.message);
-      }
-      throw new Error(`${step.name} failed`);
+  try {
+    await runCommand("npm", ["install"], projectPath);
+    s.stop(pc.green("✓ Dependencies installed"));
+  } catch (error) {
+    s.stop(pc.red("✗ Installation failed"));
+    if (error instanceof Error) {
+      p.log.error(error.message);
     }
+    throw new Error("Installation failed");
   }
 
-  p.log.success(pc.green("🔐 All encryption tests passed!"));
+  p.log.success(
+    pc.green("🎉 Ready! Run 'npm run compile' then 'npm run test'.")
+  );
 }

@@ -40,6 +40,12 @@ export function cleanupTemplate(outputDir: string): void {
     fs.unlinkSync(license);
   }
 
+  // Remove .vscode/ directory (users have their own preferences)
+  const vscodeDir = path.join(outputDir, ".vscode");
+  if (fs.existsSync(vscodeDir)) {
+    fs.rmSync(vscodeDir, { recursive: true, force: true });
+  }
+
   const templateContract = path.join(outputDir, "contracts", "FHECounter.sol");
   if (fs.existsSync(templateContract)) {
     fs.unlinkSync(templateContract);

@@ -32,7 +32,7 @@ import {
   promptSelectCategory,
   promptSelectExampleFromCategory,
   promptSelectCategoryProject,
-  runInstallAndTest,
+  runInstall,
 } from "./shared/ui";
 
 import { runAddMode } from "./commands/add-mode";
@@ -114,8 +114,8 @@ async function getProjectConfig(): Promise<ProjectConfig | null> {
 
   const projectName = await p.text({
     message: "Project name:",
-    placeholder: `my-${name}-project`,
-    defaultValue: `my-${name}-project`,
+    placeholder: name,
+    defaultValue: name,
   });
   if (checkCancel(projectName)) return null;
 
@@ -127,7 +127,7 @@ async function getProjectConfig(): Promise<ProjectConfig | null> {
   if (checkCancel(outputDir)) return null;
 
   const shouldInstall = await p.confirm({
-    message: "Install dependencies and run tests?",
+    message: "Install dependencies?",
     initialValue: false,
   });
   if (checkCancel(shouldInstall)) return null;
@@ -182,7 +182,7 @@ async function scaffoldProject(config: ProjectConfig): Promise<void> {
 
     if (config.shouldInstall) {
       p.log.message("");
-      await runInstallAndTest(resolvedOutput);
+      await runInstall(resolvedOutput);
     } else {
       p.note(
         `${pc.dim("$")} cd ${relativePath}\n${pc.dim(
@@ -309,8 +309,7 @@ async function runDirectMode(args: string[]): Promise<void> {
     handleError(error);
   }
 
-  const defaultOutput =
-    mode === "example" ? `./my-${name}-project` : `./my-${name}-examples`;
+  const defaultOutput = mode === "example" ? `./${name}` : `./${name}-examples`;
   const output = outputDir || defaultOutput;
   const resolved = path.resolve(process.cwd(), output);
 
@@ -334,8 +333,8 @@ async function runDirectMode(args: string[]): Promise<void> {
     log.success(`\n✨ Successfully created: ${pc.cyan(output)}`);
 
     if (shouldInstall) {
-      log.dim("Installing dependencies and running tests...");
-      await runInstallAndTest(resolved);
+      log.dim("Installing dependencies...");
+      await runInstall(resolved);
     } else {
       log.message(pc.dim("\nNext steps:"));
       log.message(`  ${pc.cyan("cd")} ${output}`);

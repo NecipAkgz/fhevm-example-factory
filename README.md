@@ -32,11 +32,11 @@
 ---
 
 
-<h2><img src="https://img.shields.io/badge/📖-Overview-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/📖-Overview-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 This project provides tools and examples for building **privacy-preserving smart contracts** using [FHEVM](https://github.com/zama-ai/fhevm) by Zama.
 
-### Key Features
+#### Key Features
 
 - 🎯 **33 Examples** - encryption, decryption, operations, OpenZeppelin and more
 - 🛠️ **Interactive CLI** - Modern command-line interface with beautiful prompts
@@ -47,10 +47,10 @@ This project provides tools and examples for building **privacy-preserving smart
 ---
 
 <a id="quick-start"></a>
-<h2><img src="https://img.shields.io/badge/🚀-Quick_Start-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🚀-Quick_Start-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 > 💡 **Recommended**: Use `npx create-fhevm-example` - no installation needed!
-### Option 1: NPX (Recommended)
+#### Option 1: NPX (Recommended)
 
 ```bash
 # Interactive mode
@@ -64,7 +64,7 @@ npx create-fhevm-example --category basic --output ./my-project
 npx create-fhevm-example --add
 ```
 
-### Option 2: Clone Repository
+#### Option 2: Clone Repository
 
 For local development and contributing:
 
@@ -104,7 +104,7 @@ npm run help:create
 
 
 <a id="npm-package"></a>
-<h2><img src="https://img.shields.io/badge/📦-NPM_Package-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/📦-NPM_Package-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 Published as `create-fhevm-example` on NPM, this package allows you to create FHEVM projects **without cloning this repository**.
 
@@ -114,7 +114,7 @@ Published as `create-fhevm-example` on NPM, this package allows you to create FH
 - 🔧 **Works Anywhere** - No local dependencies or setup required
 - 🎯 **Production Ready** - Ideal for scaffolding new dApps or integrating into existing projects
 
-### Interactive Mode
+#### Interactive Mode
 
 ```bash
 npx create-fhevm-example
@@ -124,7 +124,7 @@ npx create-fhevm-example
   <img src="https://i.ibb.co/PvtZSQyd/create-fhevm.gif" alt="NPX Demo" width="600px" />
 </p>
 
-### Quick Commands
+#### Quick Commands
 
 ```bash
 # Create single example
@@ -134,7 +134,7 @@ npx create-fhevm-example --example fhe-counter
 npx create-fhevm-example --category basic --output ./my-project
 ```
 
-### Add to Existing Project
+#### Add to Existing Project
 
 Already have a Hardhat project? Inject FHEVM capabilities without starting from scratch:
 
@@ -156,7 +156,7 @@ This will:
 ---
 
 <a id="available-examples"></a>
-<h2><img src="https://img.shields.io/badge/📋-Available_Examples-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/📋-Available_Examples-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 **33 examples total** - Click to expand each category:
 
@@ -240,11 +240,11 @@ This will:
 ---
 
 <a id="automation-tools"></a>
-<h2><img src="https://img.shields.io/badge/🔧-Automation_Tools-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🔧-Automation_Tools-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 For local development, the repository provides automation tools:
 
-### 1. Standalone Project Generator
+#### 1. Standalone Project Generator
 
 Creates a production-ready Hardhat environment tailored for a single example:
 
@@ -259,7 +259,7 @@ npm run create:example fhe-counter ./my-counter
 npm run create
 ```
 
-### 2. Category Bundle Generator
+#### 2. Category Bundle Generator
 
 Generates a unified workspace containing all examples from a specific category:
 
@@ -273,7 +273,7 @@ npm run create:category openzeppelin ./my-oz-examples
 npm run create
 ```
 
-### 3. Documentation Engine
+#### 3. Documentation Engine
 
 Automatically builds GitBook-ready markdown files directly from your source code.
 
@@ -291,7 +291,7 @@ npm run generate:docs                # All examples
 
 
 <a id="cli-reference"></a>
-<h2><img src="https://img.shields.io/badge/💻-CLI_Reference-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/💻-CLI_Reference-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 **Local Development:**
 - `npm run create` - Interactive CLI
@@ -314,9 +314,9 @@ npm run generate:docs                # All examples
 ---
 
 <a id="maintenance-testing"></a>
-<h2><img src="https://img.shields.io/badge/🔄-Maintenance_&_Testing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🔄-Maintenance_&_Testing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
-### Test Examples
+#### Test Examples
 
 Test selected examples in a unified project for fast, efficient verification:
 
@@ -339,7 +339,7 @@ npm run test fhe-counter,fhe-add
 
 ---
 
-<h2><img src="https://img.shields.io/badge/📂-Project_Structure-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/📂-Project_Structure-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 <details>
 <summary><b>📂 Click to expand</b></summary>
@@ -381,7 +381,7 @@ npm run test fhe-counter,fhe-add
 
 ---
 
-<h2><img src="https://img.shields.io/badge/🛠️-Creating_a_New_Example-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🛠️-Creating_a_New_Example-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 For contributors adding new examples:
 
@@ -441,7 +441,7 @@ For contributors adding new examples:
 
 ---
 
-<h2><img src="https://img.shields.io/badge/🔄-Updating_FHEVM_Dependencies-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🔄-Updating_FHEVM_Dependencies-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 When `@fhevm/solidity` or related packages release new versions:
 
@@ -464,7 +464,7 @@ When `@fhevm/solidity` or related packages release new versions:
 
 ---
 
-<h2><img src="https://img.shields.io/badge/🔗-Resources-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🔗-Resources-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 - 📖 [FHEVM Documentation](https://docs.zama.org/protocol)
 - 📚 [Protocol Examples](https://docs.zama.org/protocol/examples)
@@ -475,7 +475,7 @@ When `@fhevm/solidity` or related packages release new versions:
 ---
 
 <a id="contributing"></a>
-<h2><img src="https://img.shields.io/badge/🤝-Contributing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/></h2>
+### <img src="https://img.shields.io/badge/🤝-Contributing-FFCC00?style=for-the-badge&labelColor=1A1A1A" height="40"/>
 
 Contributions are welcome! When adding examples:
 
